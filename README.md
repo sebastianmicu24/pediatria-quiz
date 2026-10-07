@@ -1,6 +1,6 @@
 # Pediatroma
 
-**La palestra dei futuri pediatri.** Piattaforma web per allenarsi con quiz di pediatria: domande con spiegazioni, filtri per argomento e difficoltà, statistiche personali e un pannello riservato con gli esiti aggregati degli studenti.
+**Quiz per un domani più grande.** Piattaforma web per allenarsi con quiz di pediatria: domande con spiegazioni, filtri per argomento e difficoltà, statistiche personali e un pannello riservato con gli esiti aggregati degli studenti.
 
 ## Stack
 

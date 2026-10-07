@@ -1,5 +1,5 @@
 export const SITE_NAME = "Pediatroma";
-export const SITE_TAGLINE = "La palestra dei futuri pediatri";
+export const SITE_TAGLINE = "Quiz per un domani più grande";
 export const SITE_DESCRIPTION =
   "Pediatroma è la palestra dei futuri pediatri: quiz di pediatria con spiegazioni, statistiche personali e contenuti per studenti, specializzandi e professionisti. Registrati gratis.";
 

@@ -24,7 +24,7 @@ Conferma la tua email per attivare l'account — Pediatroma
   </p>
   <p style="margin:0 0 24px">
     <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email&amp;next=/dashboard"
-       style="display:inline-block;background:#0d9488;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:12px">
+       style="display:inline-block;background:#ae1c33;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:12px">
       Conferma la mia email
     </a>
   </p>
@@ -59,7 +59,7 @@ Reimposta la password del tuo account — Pediatroma
   </p>
   <p style="margin:0 0 24px">
     <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery&amp;next=/reimposta-password"
-       style="display:inline-block;background:#0d9488;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:12px">
+       style="display:inline-block;background:#ae1c33;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:12px">
       Scegli una nuova password
     </a>
   </p>
@@ -94,7 +94,7 @@ Conferma il tuo nuovo indirizzo email — Pediatroma
   </p>
   <p style="margin:0 0 24px">
     <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email_change&amp;next=/account"
-       style="display:inline-block;background:#0d9488;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:12px">
+       style="display:inline-block;background:#ae1c33;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:12px">
       Conferma il nuovo indirizzo
     </a>
   </p>

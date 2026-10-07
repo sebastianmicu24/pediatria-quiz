@@ -102,15 +102,15 @@ export async function DashboardContent() {
       ) : null}
 
       {!setupError && profileResult.data && !profileResult.data.status ? (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-orange-200 bg-orange-50/60 px-4 py-3.5">
-          <p className="text-sm leading-relaxed text-orange-900">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-200 bg-brand-50/70 px-4 py-3.5">
+          <p className="text-sm leading-relaxed text-brand-900">
             <strong>Aiutaci a migliorare:</strong> aggiungi status, città e
             scuola al profilo — sono facoltativi e usati solo per statistiche
             aggregate.
           </p>
           <Link
             href="/account"
-            className="text-sm font-medium text-orange-800 underline underline-offset-2"
+            className="text-sm font-medium text-brand-700 underline underline-offset-2"
           >
             Completa il profilo
           </Link>

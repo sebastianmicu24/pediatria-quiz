@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoWordmark } from "@/components/logo";
+import { LogoFull } from "@/components/logo";
 import { LEGAL } from "@/lib/legal";
 import { COOKIE_PATH, PRIVACY_PATH, TERMS_PATH } from "@/lib/legal";
 
@@ -14,9 +14,9 @@ export function Footer() {
       <div className="mx-auto w-full max-w-6xl px-4 py-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
-            <LogoWordmark />
+            <LogoFull className="w-40 sm:w-44" />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-500">
-              Pediatroma è la palestra dei futuri pediatri: quiz con
+              Quiz per un domani più grande: domande di pediatria con
               spiegazioni dettagliate, statistiche personali e ripasso
               strutturato per argomento. Da Roma, per chi studia e lavora in
               pediatria.

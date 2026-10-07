@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { MedicalDisclaimer } from "@/components/medical-disclaimer";
+import { LogoFull } from "@/components/logo";
 import { QUIZ_STATS } from "@/lib/constants";
 
 export default function HomePage() {
@@ -20,19 +21,20 @@ export default function HomePage() {
           className="pointer-events-none absolute inset-0 -z-10"
           aria-hidden="true"
         >
-          <div className="absolute -top-32 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-gradient-to-r from-brand-100 via-teal-50 to-emerald-100 blur-3xl" />
+          <div className="absolute -top-32 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-gradient-to-r from-brand-100 via-brand-50 to-brand-200 blur-3xl" />
         </div>
 
         <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pb-16 pt-12 sm:gap-14 sm:pb-20 sm:pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:pb-28">
           <div className="animate-fade-up">
-            <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3.5 py-1.5 text-xs font-medium text-brand-800 shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+            <LogoFull className="w-36 sm:w-44" priority />
+            <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3.5 py-1.5 text-xs font-medium text-brand-800 shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
               {QUIZ_STATS.questions} quiz · {QUIZ_STATS.topics} argomenti · sempre gratuito
             </p>
 
             <h1 className="mt-6 text-balance text-3xl font-bold leading-[1.12] tracking-tight text-slate-900 sm:text-5xl lg:text-[3.4rem] lg:leading-[1.1]">
               La pediatria si impara{" "}
-              <span className="bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">
                 un quiz alla volta
               </span>
               .
@@ -278,7 +280,7 @@ export default function HomePage() {
       {/* ── CTA finale ───────────────────────────────────────── */}
       <section className="border-t border-slate-200">
         <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:py-20">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-emerald-600 px-6 py-12 text-center shadow-xl sm:px-16 sm:py-14">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 px-6 py-12 text-center shadow-xl sm:px-16 sm:py-14">
             <h2 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-4xl">
               Pronto a metterti alla prova?
             </h2>

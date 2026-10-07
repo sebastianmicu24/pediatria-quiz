@@ -130,7 +130,7 @@ export async function AccountContent() {
       {isAdmin ? (
         <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
           <div className="flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
               <BarChart3 className="h-4 w-4" aria-hidden="true" />
             </span>
             <h2 className="text-lg font-semibold text-slate-900">
