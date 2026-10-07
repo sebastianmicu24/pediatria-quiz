@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import {
   Activity,
   BarChart3,
@@ -236,9 +237,17 @@ export async function StatisticheContent() {
             Dati aggregati e anonimi su utenti ed esiti dei quiz.
           </p>
         </div>
-        <p className="text-xs text-slate-400">
-          Aggiornato: {formatDate(new Date(now).toISOString())}
-        </p>
+        <div className="flex flex-col items-end gap-1">
+          <Link
+            href="/admin"
+            className="text-sm font-medium text-brand-700 underline underline-offset-2"
+          >
+            Gestione quiz
+          </Link>
+          <p className="text-xs text-slate-400">
+            Aggiornato: {formatDate(new Date(now).toISOString())}
+          </p>
+        </div>
       </header>
 
       {/* KPI */}

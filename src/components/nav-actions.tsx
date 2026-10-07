@@ -39,9 +39,14 @@ export function NavActions({
               Account
             </Link>
             {isAdmin ? (
-              <Link href="/statistiche" className={navLink}>
-                Statistiche
-              </Link>
+              <>
+                <Link href="/statistiche" className={navLink}>
+                  Statistiche
+                </Link>
+                <Link href="/admin" className={navLink}>
+                  Gestione quiz
+                </Link>
+              </>
             ) : null}
             <LogoutButton />
           </>
@@ -98,13 +103,18 @@ export function NavActions({
                     Account
                   </Link>
                   {isAdmin ? (
-                    <Link
-                      href="/statistiche"
-                      className={mobileLink}
-                      onClick={close}
-                    >
-                      Statistiche
-                    </Link>
+                    <>
+                      <Link
+                        href="/statistiche"
+                        className={mobileLink}
+                        onClick={close}
+                      >
+                        Statistiche
+                      </Link>
+                      <Link href="/admin" className={mobileLink} onClick={close}>
+                        Gestione quiz
+                      </Link>
+                    </>
                   ) : null}
                   <div className="px-1 pt-1">
                     <LogoutButton className="h-11 w-full justify-start px-3" />

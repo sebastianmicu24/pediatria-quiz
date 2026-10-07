@@ -63,12 +63,23 @@ export function sanitizeHtml(html: string): string {
 
 /**
  * Garantisce che un parametro ?next= sia un percorso interno
- * (evita open redirect verso siti esterni).
+ * (evita open redirect verso siti esterni, inclusi i trucchi
+ * con backslash tipo "/\evil.com").
  */
 export function safeNextPath(next: string | null | undefined, fallback = "/dashboard"): string {
   if (!next) return fallback;
-  if (!next.startsWith("/") || next.startsWith("//")) return fallback;
+  if (!next.startsWith("/")) return fallback;
+  if (next.startsWith("//")) return fallback;
+  if (next.includes("\\")) return fallback;
   return next;
+}
+
+/** Rimuove i tag HTML, per anteprime in testo semplice. */
+export function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /** Interpreta il parametro ?count= dell'URL del quiz. */

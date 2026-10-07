@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { requireSupabaseEnv } from "@/lib/env";
+import { authCookieOptions, requireSupabaseEnv } from "@/lib/env";
 
 /**
  * Client Supabase lato server (Server Component, Server Action, Route Handler).
@@ -11,6 +11,7 @@ export async function createClient() {
   const { url, anonKey } = requireSupabaseEnv();
 
   return createServerClient(url, anonKey, {
+    cookieOptions: authCookieOptions(),
     cookies: {
       getAll() {
         return cookieStore.getAll();

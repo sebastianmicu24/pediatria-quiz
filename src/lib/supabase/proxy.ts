@@ -1,6 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { supabaseEnv } from "@/lib/env";
+import { authCookieOptions, supabaseEnv } from "@/lib/env";
 
 /** Rotte accessibili solo agli utenti autenticati. */
 const PROTECTED_PREFIXES = [
@@ -8,6 +8,7 @@ const PROTECTED_PREFIXES = [
   "/quiz",
   "/account",
   "/statistiche",
+  "/admin",
   "/reimposta-password",
 ];
 
@@ -34,6 +35,7 @@ export async function updateSession(request: NextRequest) {
   let pendingHeaders: Record<string, string> = {};
 
   const supabase = createServerClient(env.url, env.anonKey, {
+    cookieOptions: authCookieOptions(),
     cookies: {
       getAll() {
         return request.cookies.getAll();

@@ -29,3 +29,16 @@ export function siteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000";
   return raw.replace(/\/+$/, "");
 }
+
+/**
+ * Opzioni comuni per i cookie di autenticazione Supabase.
+ * In produzione imposta il flag `Secure` (solo HTTPS); in sviluppo
+ * (http://localhost) resta disattivo.
+ */
+export function authCookieOptions() {
+  return {
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+  };
+}

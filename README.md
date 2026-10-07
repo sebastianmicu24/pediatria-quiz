@@ -18,6 +18,7 @@
 - **Feedback immediato** con spiegazione della risposta e revisione finale degli errori.
 - **Statistiche personali**: precisione complessiva, prestazioni per argomento, storico dei quiz. Il punteggio è ricalcolato server-side: non falsificabile dal client.
 - **Pannello statistiche (admin)** su `/statistiche`: esiti aggregati e anonimi per status (studente/specializzando/professionista), città e scuola, attività giornaliera e precisione per argomento. Accesso tramite allowlist `ADMIN_EMAILS`.
+- **Gestione quiz (admin)** su `/admin`: ricerca, modifica con editor formattato (grassetto, corsivo, elenchi) ed eliminazione delle domande, con validazione e sanitizzazione lato server.
 - **Profilo con dati facoltativi**: status, città e scuola di provenienza — modificabili e rimovibili in ogni momento, usati solo per statistiche aggregate.
 - **Privacy by design**: solo cookie tecnici, nessun analytics, esportazione dei dati in JSON ed eliminazione definitiva dell'account self-service.
 - **Pagine legali complete**: Privacy Policy, Cookie Policy e Termini di servizio (GDPR + normativa italiana).
@@ -29,6 +30,7 @@
 │  └─ questions.json                 # Domande generate da train.jsonl (297 quiz)
 ├─ docs/
 │  ├─ SETUP.md                       # Guida dettagliata: Supabase, Resend, Vercel
+│  ├─ SICUREZZA.md                   # Report di audit e raccomandazioni
 │  └─ email-templates-it.md          # Template email italiani per Supabase Auth
 ├─ scripts/
 │  ├─ generate-data.mjs              # Converte train.jsonl → data/questions.json
@@ -100,6 +102,8 @@ Tutte le variabili sono documentate in [`.env.example`](.env.example):
 - Elenco responsabili del trattamento (Supabase, Vercel, Resend) e informazioni sui trasferimenti extra-UE nella Privacy Policy.
 - Diritti esercitabili self-service: **esportazione dati** (art. 20) ed **eliminazione account** (art. 17).
 - Età minima 14 anni (art. 2-quinquies Codice Privacy) e avvertenza medica sui contenuti.
+
+Report di audit e raccomandazioni operative: **[docs/SICUREZZA.md](docs/SICUREZZA.md)** — RLS, sanitizzazione XSS, punteggi non falsificabili, header di sicurezza e gestione dei segreti.
 
 > **Nota**: i dati del Titolare in `src/lib/legal.ts` sono precompilati ma è responsabilità del gestore verificarne esattezza e aggiornare le pagine legali (es. indirizzo, eventuale P.IVA).
 

@@ -241,6 +241,8 @@ declare
   v_attempt_id uuid;
   v_total int;
   v_correct int;
+  v_topic text;
+  v_difficulty int;
 begin
   if v_user_id is null then
     raise exception 'Utente non autenticato';
@@ -253,6 +255,10 @@ begin
   if jsonb_array_length(p_answers) = 0 or jsonb_array_length(p_answers) > 500 then
     raise exception 'Numero di risposte non valido';
   end if;
+
+  -- Normalizza e limita i parametri testuali/opzionali.
+  v_topic := nullif(left(btrim(coalesce(p_topic, '')), 80), '');
+  v_difficulty := case when p_difficulty in (1, 2, 3) then p_difficulty else null end;
 
   -- Punteggio calcolato in un'unica passata, confrontando ogni risposta
   -- con la domanda originale (le risposte non valide vengono scartate).
@@ -274,8 +280,8 @@ begin
   )
   values (
     v_user_id,
-    nullif(btrim(coalesce(p_topic, '')), ''),
-    p_difficulty,
+    v_topic,
+    v_difficulty,
     v_total,
     v_correct
   )
@@ -306,7 +312,13 @@ grant usage on schema public to anon, authenticated, service_role;
 
 grant select on public.questions to authenticated;
 
-grant select, update on public.profiles to authenticated;
+-- L'utente può aggiornare solo i campi che gli competono: i riferimenti
+-- ai consensi (accepted_terms_at) e i timestamp di auditoria non sono
+-- modificabili nemmeno tramite API dirette.
+revoke update on public.profiles from authenticated;
+grant select on public.profiles to authenticated;
+grant update (display_name, marketing_consent, status, school, city)
+  on public.profiles to authenticated;
 
 grant select, insert, delete on public.quiz_attempts to authenticated;
 
@@ -336,5 +348,18 @@ begin
       check (
         status is null or status in ('studente', 'specializzando', 'professionista', 'altro')
       );
+  end if;
+end $$;
+
+-- Difficoltà dei tentativi: vincolo per le nuove righe (lascia intatte
+-- eventuali righe storiche già presenti).
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'quiz_attempts_difficulty_check'
+  ) then
+    alter table public.quiz_attempts
+      add constraint quiz_attempts_difficulty_check
+      check (difficulty is null or difficulty between 1 and 3) not valid;
   end if;
 end $$;

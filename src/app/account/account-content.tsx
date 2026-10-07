@@ -8,6 +8,7 @@ import {
   BarChart3,
   Download,
   KeyRound,
+  Pencil,
   ShieldCheck,
   Trash2,
   UserRound,
@@ -142,13 +143,22 @@ export async function AccountContent() {
             distribuzione per status, città e scuola, sempre in forma
             aggregata e anonima.
           </p>
-          <Link
-            href="/statistiche"
-            className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-slate-700 sm:w-auto"
-          >
-            <BarChart3 className="h-4 w-4" aria-hidden="true" />
-            Apri il pannello statistiche
-          </Link>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/statistiche"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-slate-700 sm:w-auto"
+            >
+              <BarChart3 className="h-4 w-4" aria-hidden="true" />
+              Apri le statistiche
+            </Link>
+            <Link
+              href="/admin"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 sm:w-auto"
+            >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+              Gestisci i quiz
+            </Link>
+          </div>
         </section>
       ) : null}
 

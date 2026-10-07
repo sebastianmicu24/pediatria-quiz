@@ -183,6 +183,17 @@ ADMIN_EMAILS                   = sebastianmicu24@gmail.com
 
 ---
 
+## 5. Sicurezza (consigliato)
+
+- **Migrazioni**: dopo ogni aggiornamento applica i file in `supabase/migrations/` (l'ultimo applica l'hardening di sicurezza).
+- **Supabase → Authentication**: password minima 8 caratteri; mantieni attiva l'Email Enumeration Protection; controlla periodicamente **Database → Advisors → Security**.
+- **Vercel**: durante la fase alfa valuta **Settings → Deployment Protection** per limitare l'accesso al sito.
+- **Secret key**: non condividerla mai; in caso di sospetta compromissione ruotala da Settings → API Keys.
+
+Il report completo dell'audit (vulnerabilità trovate, corrette e raccomandate) è in [`SICUREZZA.md`](SICUREZZA.md).
+
+---
+
 ## Problemi comuni
 
 | Sintomo | Causa probabile | Soluzione |

@@ -188,9 +188,10 @@ export function QuizClient({
       </div>
 
       <article className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <h1 className="text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl">
-          {question.question}
-        </h1>
+        <div
+          className="rich-text text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(question.question) }}
+        />
 
         <div
           className="mt-6 space-y-2.5"
@@ -275,7 +276,7 @@ export function QuizClient({
           </h2>
           {question.explanation ? (
             <div
-              className="legal-prose mt-3 !text-sm"
+              className="rich-text mt-3 text-sm leading-relaxed text-slate-700"
               dangerouslySetInnerHTML={{
                 __html: sanitizeHtml(question.explanation),
               }}
@@ -451,7 +452,7 @@ function QuizResults({
                         Mostra la spiegazione
                       </summary>
                       <div
-                        className="legal-prose mt-2 !text-xs"
+                        className="rich-text mt-2 text-xs leading-relaxed text-slate-600"
                         dangerouslySetInnerHTML={{
                           __html: sanitizeHtml(question.explanation),
                         }}

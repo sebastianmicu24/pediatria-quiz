@@ -141,6 +141,45 @@ body {
   animation: fade-up 0.5s ease-out both;
 }
 
+/* ── Testo formattato (editor admin, domande e spiegazioni) ──── */
+.rich-text p {
+  margin: 0 0 0.6em;
+}
+
+.rich-text p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-text ul,
+.rich-text ol {
+  margin: 0.4em 0 0.6em;
+  padding-left: 1.4em;
+}
+
+.rich-text ul {
+  list-style: disc;
+}
+
+.rich-text ol {
+  list-style: decimal;
+}
+
+.rich-text li {
+  margin: 0.2em 0;
+}
+
+.rich-text li p {
+  margin: 0;
+}
+
+.rich-text strong {
+  font-weight: 600;
+}
+
+.rich-text em {
+  font-style: italic;
+}
+
 /* ── Ottimizzazioni mobile ───────────────────────────────────── */
 @media (max-width: 640px) {
   /* Evita lo zoom automatico di iOS Safari sui campi di input */
