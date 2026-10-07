@@ -57,13 +57,14 @@ e incolla `supabase/seed.sql` nell'SQL Editor di Supabase.
 
 **Authentication → URL Configuration**:
 
-- **Site URL**: l'URL di produzione, es. `https://tuodominio.it`
+- **Site URL**: il dominio di produzione, es. `https://pediatria-quiz.vercel.app`
 - **Redirect URLs** (una per riga):
   ```
   http://localhost:3000/**
-  https://tuodominio.it/**
-  https://*.vercel.app/**
+  https://pediatria-quiz.vercel.app/**
   ```
+
+> ⚠️ **Attenzione — è il passaggio più importante**: la **Site URL** determina il dominio dei link nelle email (`{{ .SiteURL }}` nei template). Se resta `http://localhost:3000` (valore predefinito), le email di conferma registrazione e recupero password punteranno a localhost e non funzioneranno. Impostala sul dominio di produzione **prima** di testare le registrazioni.
 
 **Authentication → Emails → SMTP Settings**: vedi la sezione [Resend](#2-resend) qui sotto.
 
@@ -185,3 +186,4 @@ NEXT_PUBLIC_LEGAL_EMAIL        = contact@sebastianmicu.com
 | Quiz vuoti "Nessuna domanda" | Domande non importate | Esegui `npm run import:questions` |
 | Errore 500 su "Elimina account" | Manca la chiave segreta | Aggiungi `SUPABASE_SERVICE_ROLE_KEY` (la **Secret key**) su Vercel e ridai il deploy |
 | Link email "non valido o scaduto" | Redirect URL non configurato o link già usato | Aggiorna le Redirect URLs su Supabase; i link sono monouso e scadono |
+| Il link nelle email punta a `http://localhost:3000` | La **Site URL** è rimasta quella predefinita | Authentication → URL Configuration → imposta la Site URL sul dominio di produzione (i template usano `{{ .SiteURL }}`) |
