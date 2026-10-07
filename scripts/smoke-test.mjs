@@ -190,6 +190,49 @@ if (userId) {
   }
 }
 
+console.log("\n[4b] Blocco login per utenti NON confermati");
+{
+  const unconfirmedEmail = `unconfirmed-${Date.now()}@example.com`;
+  const unconfirmedPassword = "Unconfirmed-Check-1234!";
+  const created = await admin.auth.admin.createUser({
+    email: unconfirmedEmail,
+    password: unconfirmedPassword,
+    email_confirm: false,
+  });
+  if (created.error || !created.data.user) {
+    fail("Creazione utente non confermato", created.error?.message ?? "errore");
+  } else {
+    const anonClient = createClient(url, anon, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const signIn = await anonClient.auth.signInWithPassword({
+      email: unconfirmedEmail,
+      password: unconfirmedPassword,
+    });
+    if (
+      signIn.error &&
+      (signIn.error.code === "email_not_confirmed" ||
+        /not confirmed/i.test(signIn.error.message))
+    ) {
+      ok(
+        "Login bloccato per utente non confermato",
+        `errore: ${signIn.error.code ?? signIn.error.message}`
+      );
+    } else if (signIn.data?.session) {
+      fail(
+        "Blocco utente non confermato",
+        "ATTENZIONE: il login è stato consentito senza conferma email"
+      );
+    } else {
+      fail(
+        "Blocco utente non confermato",
+        signIn.error?.message ?? "risultato inatteso"
+      );
+    }
+    await admin.auth.admin.deleteUser(created.data.user.id);
+  }
+}
+
 console.log("\n[5] Pulizia utente di test");
 if (userId) {
   const del = await admin.auth.admin.deleteUser(userId);

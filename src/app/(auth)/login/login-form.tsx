@@ -21,10 +21,34 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [notConfirmed, setNotConfirmed] = useState<string | null>(null);
+  const [resendState, setResendState] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
+
+  async function handleResend() {
+    if (!notConfirmed) return;
+    setResendState("sending");
+    try {
+      const supabase = createClient();
+      const { error: resendError } = await supabase.auth.resend({
+        type: "signup",
+        email: notConfirmed,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm?next=/dashboard`,
+        },
+      });
+      setResendState(resendError ? "error" : "sent");
+    } catch {
+      setResendState("error");
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setNotConfirmed(null);
+    setResendState("idle");
 
     if (!email.trim() || !password) {
       setError("Inserisci email e password.");
@@ -40,6 +64,12 @@ export function LoginForm() {
       });
 
       if (signInError) {
+        const isNotConfirmed =
+          signInError.code === "email_not_confirmed" ||
+          signInError.message.toLowerCase().includes("email not confirmed");
+        if (isNotConfirmed) {
+          setNotConfirmed(email.trim());
+        }
         setError(authErrorMessage(signInError.message));
         setPending(false);
         return;
@@ -98,6 +128,37 @@ export function LoginForm() {
         </div>
 
         {error ? <Alert variant="error">{error}</Alert> : null}
+
+        {notConfirmed ? (
+          <div className="space-y-2">
+            {resendState === "sent" ? (
+              <Alert variant="success">
+                Email di conferma reinviata a {notConfirmed}. Controlla la
+                posta (anche la cartella spam).
+              </Alert>
+            ) : null}
+            {resendState === "error" ? (
+              <Alert variant="error">
+                Non è stato possibile reinviare l&apos;email. Riprova tra
+                qualche minuto.
+              </Alert>
+            ) : null}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleResend}
+              disabled={resendState === "sending"}
+            >
+              {resendState === "sending" ? (
+                <>
+                  <Spinner /> Invio in corso…
+                </>
+              ) : (
+                "Reinvia email di conferma"
+              )}
+            </Button>
+          </div>
+        ) : null}
 
         <Button type="submit" disabled={pending} className="w-full">
           {pending ? (
