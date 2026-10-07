@@ -208,6 +208,8 @@ create policy "quiz_answers_delete_own"
 -- 8. Funzione RPC: salvataggio atomico di un tentativo.
 --    Il punteggio viene calcolato lato server confrontando le
 --    risposte con public.questions: il client non può falsificarlo.
+--    Nessun UPDATE sui tentativi (bloccato dalle policy RLS):
+--    i totali vengono calcolati prima dell'insert.
 -- ─────────────────────────────────────────────────────────────
 create or replace function public.save_quiz_attempt(
   p_answers jsonb,
@@ -237,11 +239,30 @@ begin
     raise exception 'Numero di risposte non valido';
   end if;
 
-  insert into public.quiz_attempts (user_id, topic, difficulty)
+  -- Punteggio calcolato in un'unica passata, confrontando ogni risposta
+  -- con la domanda originale (le risposte non valide vengono scartate).
+  select
+    count(*),
+    count(*) filter (where (e ->> 'selected_index')::int = q.answer_index)
+  into v_total, v_correct
+  from jsonb_array_elements(p_answers) as e
+  join public.questions q on q.id = (e ->> 'question_id')::uuid
+  where (e ->> 'selected_index')::int >= 0
+    and (e ->> 'selected_index')::int < jsonb_array_length(q.options);
+
+  if v_total = 0 then
+    raise exception 'Nessuna risposta valida da salvare';
+  end if;
+
+  insert into public.quiz_attempts (
+    user_id, topic, difficulty, total_questions, correct_answers
+  )
   values (
     v_user_id,
     nullif(btrim(coalesce(p_topic, '')), ''),
-    p_difficulty
+    p_difficulty,
+    v_total,
+    v_correct
   )
   returning id into v_attempt_id;
 
@@ -255,20 +276,6 @@ begin
   join public.questions q on q.id = (e ->> 'question_id')::uuid
   where (e ->> 'selected_index')::int >= 0
     and (e ->> 'selected_index')::int < jsonb_array_length(q.options);
-
-  select count(*), count(*) filter (where is_correct)
-    into v_total, v_correct
-  from public.quiz_answers
-  where attempt_id = v_attempt_id;
-
-  if v_total = 0 then
-    raise exception 'Nessuna risposta valida da salvare';
-  end if;
-
-  update public.quiz_attempts
-  set total_questions = v_total,
-      correct_answers = v_correct
-  where id = v_attempt_id;
 
   return v_attempt_id;
 end;

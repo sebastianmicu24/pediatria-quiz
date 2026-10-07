@@ -72,6 +72,7 @@ Guida completa con schermate dei passaggi e configurazione email/Vercel: **[docs
 | `npm run lint` | Analisi ESLint |
 | `npm run generate:data` | Rigenera `data/questions.json` da `train.jsonl` |
 | `npm run import:questions` | Importa le domande su Supabase (service role) |
+| `npm run smoke` | Verifica end-to-end la configurazione Supabase (crea ed elimina un utente di test) |
 | `node scripts/import-questions.mjs --print-sql > supabase/seed.sql` | Genera lo SQL di seed da incollare nell'SQL Editor |
 
 ## Variabili d'ambiente

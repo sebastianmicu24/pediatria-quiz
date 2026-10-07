@@ -171,6 +171,7 @@ NEXT_PUBLIC_LEGAL_EMAIL        = contact@sebastianmicu.com
 4. **Password dimenticata** → ricevi l'email → reimposta → accedi con la nuova password.
 5. Pagina **Account** → scarica l'export JSON → prova l'eliminazione di un account di test.
 6. Controlla la pagina `/privacy`, `/cookie` e `/termini` con i tuoi dati definitivi.
+7. Verifica automatica dell'intera configurazione: `npm run smoke` (crea ed elimina un utente di test, non invia email).
 
 ---
 
