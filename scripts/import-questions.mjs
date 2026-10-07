@@ -66,7 +66,7 @@ if (process.argv.includes("--print-sql")) {
         )})`
     )
     .join(",\n");
-  const sql = `-- Seed delle domande di Quiz Pediatria (generato da scripts/import-questions.mjs)
+  const sql = `-- Seed delle domande di Pediatroma (generato da scripts/import-questions.mjs)
 insert into public.questions (source_id, question, options, answer_index, topic, difficulty, explanation)
 values
 ${rows}

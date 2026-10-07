@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -7,7 +7,7 @@ import { NavbarSkeleton } from "@/components/navbar-skeleton";
 import { Footer } from "@/components/footer";
 import { CookieNotice } from "@/components/cookie-notice";
 import { AuthHashHandler } from "@/components/auth-hash-handler";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
 import { siteUrl } from "@/lib/env";
 
 const inter = Inter({
@@ -19,25 +19,33 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: `${SITE_NAME} — allenati con i quiz di pediatria`,
+    default: `${SITE_NAME} — ${SITE_TAGLINE.toLowerCase()}`,
     template: `%s · ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [
+    "pediatroma",
     "quiz pediatria",
     "pediatria",
     "quiz medicina",
     "test pediatria",
     "ripasso pediatria",
+    "specializzandi pediatria",
   ],
   openGraph: {
     type: "website",
     locale: "it_IT",
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — allenati con i quiz di pediatria`,
+    title: `${SITE_NAME} — ${SITE_TAGLINE.toLowerCase()}`,
     description: SITE_DESCRIPTION,
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0d9488",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

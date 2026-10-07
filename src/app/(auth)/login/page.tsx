@@ -5,7 +5,7 @@ import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
   title: "Accedi",
-  description: "Accedi al tuo account Quiz Pediatria per continuare ad allenarti.",
+  description: "Accedi al tuo account Pediatroma per continuare ad allenarti.",
 };
 
 export default function LoginPage() {

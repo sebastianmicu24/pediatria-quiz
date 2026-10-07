@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { requireUser } from "@/lib/auth";
+import { isProfileStatus } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 
 export type ProfileFormState = {
@@ -19,6 +20,10 @@ export async function updateProfile(
     .trim()
     .slice(0, 50);
   const marketingConsent = formData.get("marketing_consent") === "on";
+  const rawStatus = String(formData.get("status") ?? "").trim();
+  const status = isProfileStatus(rawStatus) ? rawStatus : null;
+  const school = String(formData.get("school") ?? "").trim().slice(0, 100);
+  const city = String(formData.get("city") ?? "").trim().slice(0, 60);
 
   const supabase = await createClient();
 
@@ -27,6 +32,9 @@ export async function updateProfile(
     .update({
       display_name: displayName || null,
       marketing_consent: marketingConsent,
+      status,
+      school: school || null,
+      city: city || null,
     })
     .eq("id", user.id);
 

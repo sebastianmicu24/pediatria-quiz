@@ -5,7 +5,7 @@ import { siteUrl } from "@/lib/env";
  * Modificali qui una volta sola (o tramite le variabili NEXT_PUBLIC_LEGAL_*).
  */
 export const LEGAL = {
-  siteName: "Quiz Pediatria",
+  siteName: "Pediatroma",
   owner: process.env.NEXT_PUBLIC_LEGAL_OWNER?.trim() || "Cristian Sebastian Micu",
   email: process.env.NEXT_PUBLIC_LEGAL_EMAIL?.trim() || "contact@sebastianmicu.com",
   address: process.env.NEXT_PUBLIC_LEGAL_ADDRESS?.trim() || null,

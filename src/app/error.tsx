@@ -15,7 +15,7 @@ export default function ErrorPage({
   const router = useRouter();
 
   useEffect(() => {
-    console.error("[Quiz Pediatria] Errore di rendering:", error);
+    console.error("[Pediatroma] Errore di rendering:", error);
   }, [error]);
 
   return (

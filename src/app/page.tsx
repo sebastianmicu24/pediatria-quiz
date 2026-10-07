@@ -23,14 +23,14 @@ export default function HomePage() {
           <div className="absolute -top-32 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-gradient-to-r from-brand-100 via-teal-50 to-emerald-100 blur-3xl" />
         </div>
 
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-4 pb-20 pt-16 sm:pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:pb-28">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pb-16 pt-12 sm:gap-14 sm:pb-20 sm:pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:pb-28">
           <div className="animate-fade-up">
             <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3.5 py-1.5 text-xs font-medium text-brand-800 shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
               {QUIZ_STATS.questions} quiz · {QUIZ_STATS.topics} argomenti · sempre gratuito
             </p>
 
-            <h1 className="mt-6 text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl lg:text-[3.4rem]">
+            <h1 className="mt-6 text-balance text-3xl font-bold leading-[1.12] tracking-tight text-slate-900 sm:text-5xl lg:text-[3.4rem] lg:leading-[1.1]">
               La pediatria si impara{" "}
               <span className="bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">
                 un quiz alla volta
@@ -38,18 +38,24 @@ export default function HomePage() {
               .
             </h1>
 
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
-              Domande di pediatria con spiegazioni dettagliate, filtrabili per
-              argomento e difficoltà. Metti alla prova la tua preparazione,
-              individua le lacune e monitora i progressi nel tempo.
+            <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-slate-600 sm:mt-6 sm:text-lg">
+              Pediatroma raccoglie domande di pediatria con spiegazioni
+              dettagliate, filtrabili per argomento e difficoltà. Metti alla
+              prova la tua preparazione, individua le lacune e monitora i
+              progressi nel tempo.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/registrati" size="lg">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
+              <ButtonLink href="/registrati" size="lg" className="w-full sm:w-auto">
                 Inizia gratis
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </ButtonLink>
-              <ButtonLink href="/login" variant="secondary" size="lg">
+              <ButtonLink
+                href="/login"
+                variant="secondary"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
                 Hai già un account? Accedi
               </ButtonLink>
             </div>
@@ -72,7 +78,7 @@ export default function HomePage() {
 
           {/* Anteprima del quiz */}
           <div className="animate-fade-up lg:justify-self-end">
-            <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5">
+            <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-900/5 sm:p-6">
               <div className="flex items-center justify-between text-xs font-medium text-slate-500">
                 <span className="rounded-full bg-brand-50 px-2.5 py-1 text-brand-700">
                   Neonatologia
@@ -128,18 +134,18 @@ export default function HomePage() {
 
       {/* ── Funzionalità ─────────────────────────────────────── */}
       <section className="border-t border-slate-200 bg-white">
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:py-20">
           <div className="max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Tutto ciò che serve per ripassare bene
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-slate-600">
+            <p className="mt-4 text-pretty text-base leading-relaxed text-slate-600 sm:text-lg">
               Uno strumento essenziale, senza distrazioni: domande, spiegazioni
               e statistiche.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {[
               {
                 icon: BookOpenCheck,
@@ -183,11 +189,11 @@ export default function HomePage() {
 
       {/* ── Come funziona ────────────────────────────────────── */}
       <section className="border-t border-slate-200">
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:py-20">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             Come funziona
           </h2>
-          <div className="mt-12 grid gap-10 sm:grid-cols-3">
+          <div className="mt-10 grid gap-8 sm:mt-12 sm:grid-cols-3 sm:gap-10">
             {[
               {
                 step: "1",
@@ -223,14 +229,14 @@ export default function HomePage() {
 
       {/* ── FAQ ──────────────────────────────────────────────── */}
       <section className="border-t border-slate-200 bg-white">
-        <div className="mx-auto w-full max-w-3xl px-4 py-20">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:py-20">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             Domande frequenti
           </h2>
-          <div className="mt-10 space-y-3">
+          <div className="mt-8 space-y-3 sm:mt-10">
             {[
               {
-                q: "Quiz Pediatria è gratuito?",
+                q: "Pediatroma è gratuito?",
                 a: "Sì. La registrazione e l'utilizzo dei quiz sono completamente gratuiti: serve solo un indirizzo email valido.",
               },
               {
@@ -238,17 +244,21 @@ export default function HomePage() {
                 a: "No. I quiz sono uno strumento di autovalutazione e ripasso: non sostituiscono lo studio sui manuali né le linee guida ufficiali.",
               },
               {
+                q: "Perché mi chiedete scuola, città e status?",
+                a: "Sono dati facoltativi: ci aiutano a capire chi usa Pediatroma e a misurare in forma aggregata (mai individuale) come migliorano gli esiti degli studenti. Puoi compilarli, modificarli o rimuoverli in qualsiasi momento dalla pagina Account.",
+              },
+              {
                 q: "Come vengono trattati i miei dati?",
                 a: "I dati sono ospitati su infrastrutture con server in Unione Europea, protetti con connessioni cifrate. Non effettuiamo profilazione pubblicitaria né vendiamo dati. Puoi esportare o eliminare il tuo account in qualsiasi momento dalla pagina Account.",
               },
               {
                 q: "Le spiegazioni sono affidabili?",
-                a: "Le domande derivano da materiale di studio pediatrico e le spiegazioni sono generate e riviste per finalità didattiche. In ambito clinico fanno sempre fede le linee guida ufficiali e il giudizio del medico.",
+                a: "Le domande derivano da materiale di studio pediatrico e le spiegazioni sono riviste per finalità didattiche. In ambito clinico fanno sempre fede le linee guida ufficiali e il giudizio del medico.",
               },
             ].map((faq) => (
               <details
                 key={faq.q}
-                className="group rounded-2xl border border-slate-200 bg-slate-50/50 px-5 py-4 open:bg-white open:shadow-sm"
+                className="group rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-4 open:bg-white open:shadow-sm sm:px-5"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-slate-900">
                   {faq.q}
@@ -267,19 +277,19 @@ export default function HomePage() {
 
       {/* ── CTA finale ───────────────────────────────────────── */}
       <section className="border-t border-slate-200">
-        <div className="mx-auto w-full max-w-6xl px-4 py-20">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-emerald-600 px-8 py-14 text-center shadow-xl sm:px-16">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:py-20">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-emerald-600 px-6 py-12 text-center shadow-xl sm:px-16 sm:py-14">
+            <h2 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-4xl">
               Pronto a metterti alla prova?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-brand-50">
-              Crea il tuo account gratuito e inizia subito con il primo quiz di
-              pediatria.
+              Crea il tuo account gratuito su Pediatroma e inizia subito con il
+              primo quiz di pediatria.
             </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
               <Link
                 href="/registrati"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-7 text-base font-semibold text-brand-800 shadow-sm transition-colors hover:bg-brand-50"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-white px-7 text-base font-semibold text-brand-800 shadow-sm transition-colors hover:bg-brand-50 sm:w-auto"
               >
                 Registrati gratis
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />

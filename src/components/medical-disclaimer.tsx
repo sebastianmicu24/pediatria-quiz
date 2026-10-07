@@ -15,7 +15,7 @@ export function MedicalDisclaimer({ className }: { className?: string }) {
         aria-hidden="true"
       />
       <p className="text-xs leading-relaxed text-amber-900">
-        <strong>Avviso medico:</strong> i contenuti di Quiz Pediatria hanno
+        <strong>Avviso medico:</strong> i contenuti di Pediatroma hanno
         finalità esclusivamente informative e didattiche. Non costituiscono
         consulenza medica e non sostituiscono il giudizio clinico, le linee
         guida ufficiali o il parere di un professionista sanitario.

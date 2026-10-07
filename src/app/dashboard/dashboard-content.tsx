@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth";
 import { formatPercent } from "@/lib/utils";
 import { Alert } from "@/components/ui/alert";
+import Link from "next/link";
 import { StatCard } from "./stat-card";
 import { QuizSetup } from "./quiz-setup";
 import { RecentAttempts } from "./recent-attempts";
@@ -17,7 +18,7 @@ export async function DashboardContent() {
     await Promise.all([
       supabase
         .from("profiles")
-        .select("display_name")
+        .select("display_name, status")
         .eq("id", user.id)
         .maybeSingle(),
       supabase
@@ -86,7 +87,7 @@ export async function DashboardContent() {
         </h1>
         <p className="mt-2 text-base text-slate-600">
           {totalAttempts === 0
-            ? "Benvenuto in Quiz Pediatria! Inizia con il tuo primo quiz tra poco."
+            ? "Benvenuto in Pediatroma! Inizia con il tuo primo quiz qui sotto."
             : "Ecco il riepilogo dei tuoi progressi. Continua così!"}
         </p>
       </header>
@@ -100,7 +101,23 @@ export async function DashboardContent() {
         </Alert>
       ) : null}
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {!setupError && profileResult.data && !profileResult.data.status ? (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-orange-200 bg-orange-50/60 px-4 py-3.5">
+          <p className="text-sm leading-relaxed text-orange-900">
+            <strong>Aiutaci a migliorare:</strong> aggiungi status, città e
+            scuola al profilo — sono facoltativi e usati solo per statistiche
+            aggregate.
+          </p>
+          <Link
+            href="/account"
+            className="text-sm font-medium text-orange-800 underline underline-offset-2"
+          >
+            Completa il profilo
+          </Link>
+        </div>
+      ) : null}
+
+      <section className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           icon={Trophy}
           label="Quiz completati"

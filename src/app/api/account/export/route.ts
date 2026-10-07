@@ -17,7 +17,9 @@ export async function GET() {
   const [profileResult, attemptsResult] = await Promise.all([
     supabase
       .from("profiles")
-      .select("display_name, marketing_consent, accepted_terms_at, created_at, updated_at")
+      .select(
+        "display_name, marketing_consent, accepted_terms_at, status, school, city, created_at, updated_at"
+      )
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -31,7 +33,7 @@ export async function GET() {
 
   const exportData = {
     exported_at: new Date().toISOString(),
-    format: "quiz-pediatria-export-v1",
+    format: "pediatroma-export-v1",
     account: {
       id: user.id,
       email: user.email,
@@ -46,7 +48,7 @@ export async function GET() {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Content-Disposition":
-        'attachment; filename="quiz-pediatria-dati-personali.json"',
+        'attachment; filename="pediatroma-dati-personali.json"',
       "Cache-Control": "private, no-store",
     },
   });

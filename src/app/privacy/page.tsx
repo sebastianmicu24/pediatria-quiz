@@ -7,7 +7,7 @@ import { COOKIE_PATH, TERMS_PATH } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Informativa sul trattamento dei dati personali ai sensi del Regolamento UE 2016/679 (GDPR) per gli utenti di Quiz Pediatria.",
+    "Informativa sul trattamento dei dati personali ai sensi del Regolamento UE 2016/679 (GDPR) per gli utenti di Pediatroma.",
 };
 
 export default function PrivacyPage() {
@@ -41,6 +41,12 @@ export default function PrivacyPage() {
           <strong>Consensi:</strong> data e ora di accettazione dei presenti
           documenti (Privacy Policy e Termini di servizio) ed eventuale consenso
           facoltativo a comunicazioni informative.
+        </li>
+        <li>
+          <strong>Dati facoltativi del profilo:</strong> status (studente,
+          specializzando/a, professionista o altro), città e scuola/università
+          di provenienza. Sono forniti volontariamente e utilizzati per
+          statistiche aggregate (vedi sezione 3).
         </li>
       </ul>
 
@@ -100,6 +106,18 @@ export default function PrivacyPage() {
               email
             </td>
             <td>Consenso (art. 6, par. 1, lett. a), revocabile in ogni momento</td>
+          </tr>
+          <tr>
+            <td>
+              Comprensione di chi utilizza il servizio e misurazione in forma
+              aggregata degli esiti dei quiz, per migliorare i contenuti
+              didattici
+            </td>
+            <td>
+              Consenso (art. 6, par. 1, lett. a): prestato conferendo
+              volontariamente i dati facoltativi; revocabile rimuovendoli dal
+              profilo
+            </td>
           </tr>
         </tbody>
       </table>
@@ -226,6 +244,13 @@ export default function PrivacyPage() {
           un mese.
         </li>
       </ul>
+      <p>
+        I dati facoltativi del profilo (status, città, scuola) possono essere
+        modificati o rimossi in qualsiasi momento dalla pagina Account. Le
+        statistiche interne di Pediatroma sono elaborate e mostrate
+        esclusivamente in forma aggregata e anonima, senza possibilità di
+        risalire al singolo utente.
+      </p>
       <p>
         Hai inoltre il diritto di proporre reclamo all&apos;Autorità di
         controllo italiana:{" "}

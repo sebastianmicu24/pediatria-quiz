@@ -5,7 +5,7 @@ import { SignupForm } from "./signup-form";
 export const metadata: Metadata = {
   title: "Registrati",
   description:
-    "Crea il tuo account gratuito su Quiz Pediatria e inizia subito ad allenarti.",
+    "Crea il tuo account gratuito su Pediatroma e inizia subito ad allenarti.",
 };
 
 export default function SignupPage() {

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Cookie } from "lucide-react";
 import { COOKIE_PATH } from "@/lib/legal";
 
-const STORAGE_KEY = "quiz-pediatria:cookie-notice-v1";
-const STORAGE_EVENT = "quiz-pediatria:cookie-notice-change";
+const STORAGE_KEY = "pediatroma:cookie-notice-v1";
+const STORAGE_EVENT = "pediatroma:cookie-notice-change";
 
 /**
  * Avviso informativo sui cookie.
@@ -52,7 +52,7 @@ export function CookieNotice() {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-50 p-3 sm:p-4"
+      className="fixed inset-x-0 bottom-0 z-50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4"
       role="region"
       aria-label="Informativa sull'uso dei cookie"
     >

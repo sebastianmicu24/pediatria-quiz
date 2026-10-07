@@ -3,7 +3,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "@/lib/env";
 
 /** Rotte accessibili solo agli utenti autenticati. */
-const PROTECTED_PREFIXES = ["/dashboard", "/quiz", "/account", "/reimposta-password"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/quiz",
+  "/account",
+  "/statistiche",
+  "/reimposta-password",
+];
 
 /** Rotte di autenticazione: un utente già connesso viene rimandato alla dashboard. */
 const AUTH_PAGES = ["/login", "/registrati", "/password-dimenticata"];

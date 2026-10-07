@@ -94,6 +94,9 @@ let userId = null;
       display_name: "Smoke Test",
       accepted_terms: true,
       marketing_consent: false,
+      status: "studente",
+      school: "Università Test",
+      city: "Roma",
     },
   });
   if (created.error || !created.data.user) {
@@ -104,15 +107,28 @@ let userId = null;
 
     const profile = await admin
       .from("profiles")
-      .select("display_name, accepted_terms_at, marketing_consent")
+      .select("display_name, accepted_terms_at, marketing_consent, status, school, city")
       .eq("id", userId)
       .maybeSingle();
     if (profile.error || !profile.data) {
       fail("Trigger profilo", profile.error?.message ?? "profilo non trovato");
+    } else if (
+      profile.data.status !== "studente" ||
+      profile.data.school !== "Università Test" ||
+      profile.data.city !== "Roma"
+    ) {
+      fail(
+        "Campi profilo (status/scuola/città)",
+        `${JSON.stringify({
+          status: profile.data.status,
+          school: profile.data.school,
+          city: profile.data.city,
+        })} — hai eseguito la migrazione supabase/migrations/2026-10-07_dati-statistiche-profilo.sql?`
+      );
     } else {
       ok(
         "Profilo creato dal trigger",
-        `nome="${profile.data.display_name}", consenso termini=${profile.data.accepted_terms_at !== null}`
+        `nome="${profile.data.display_name}", consenso termini=${profile.data.accepted_terms_at !== null}, status/scuola/città copiati`
       );
     }
   }

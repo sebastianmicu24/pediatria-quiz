@@ -3,7 +3,7 @@ import { UpdatePasswordForm } from "./update-password-form";
 
 export const metadata: Metadata = {
   title: "Reimposta password",
-  description: "Imposta una nuova password per il tuo account Quiz Pediatria.",
+  description: "Imposta una nuova password per il tuo account Pediatroma.",
 };
 
 export default function ResetPasswordPage() {

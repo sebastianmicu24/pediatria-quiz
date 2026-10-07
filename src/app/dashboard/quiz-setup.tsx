@@ -24,7 +24,7 @@ function Pill({
       onClick={onClick}
       aria-pressed={selected}
       className={cn(
-        "rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+        "touch-manipulation rounded-full border px-3.5 py-2 text-sm font-medium transition-colors sm:py-1.5",
         selected
           ? "border-brand-600 bg-brand-600 text-white shadow-sm"
           : "border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-900"
@@ -57,7 +57,26 @@ export function QuizSetup({ topics }: { topics: string[] }) {
         <legend className="text-sm font-semibold text-slate-900">
           Argomento
         </legend>
-        <div className="mt-3 flex flex-wrap gap-2">
+
+        {/* Mobile: tendina nativa, più comoda con 18 argomenti */}
+        <div className="mt-3 sm:hidden">
+          <select
+            value={topic}
+            onChange={(event) => setTopic(event.target.value)}
+            aria-label="Argomento"
+            className="block h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+          >
+            <option value="all">Tutti gli argomenti</option>
+            {topics.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Desktop: pillole */}
+        <div className="mt-3 hidden flex-wrap gap-2 sm:flex">
           <Pill selected={topic === "all"} onClick={() => setTopic("all")}>
             Tutti
           </Pill>

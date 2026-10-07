@@ -7,7 +7,7 @@ import { COOKIE_PATH, PRIVACY_PATH } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Termini di servizio",
   description:
-    "Condizioni d'uso del servizio Quiz Pediatria: descrizione, obblighi dell'utente, disclaimer medico e legge applicabile.",
+    "Condizioni d'uso del servizio Pediatroma: descrizione, obblighi dell'utente, disclaimer medico e legge applicabile.",
 };
 
 export default function TermsPage() {

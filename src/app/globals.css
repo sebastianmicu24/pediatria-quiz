@@ -21,6 +21,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -138,4 +139,22 @@ body {
 
 .animate-fade-up {
   animation: fade-up 0.5s ease-out both;
+}
+
+/* ── Ottimizzazioni mobile ───────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Evita lo zoom automatico di iOS Safari sui campi di input */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Tabelle legali scorrevoli in orizzontale */
+  .legal-prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

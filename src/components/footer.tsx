@@ -16,9 +16,10 @@ export function Footer() {
           <div className="lg:col-span-2">
             <LogoWordmark />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-500">
-              Quiz di pediatria con spiegazioni dettagliate, organizzati per
-              argomento e difficoltà. Un aiuto concreto per studenti di medicina
-              e professionisti che vogliono ripassare.
+              Pediatroma è la palestra dei futuri pediatri: quiz con
+              spiegazioni dettagliate, statistiche personali e ripasso
+              strutturato per argomento. Da Roma, per chi studia e lavora in
+              pediatria.
             </p>
           </div>
 

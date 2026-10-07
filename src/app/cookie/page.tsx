@@ -7,7 +7,7 @@ import { PRIVACY_PATH, TERMS_PATH } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Cookie Policy",
   description:
-    "Quali cookie utilizza Quiz Pediatria: solo cookie tecnici necessari all'autenticazione, nessun tracciamento.",
+    "Quali cookie utilizza Pediatroma: solo cookie tecnici necessari all'autenticazione, nessun tracciamento.",
 };
 
 export default function CookiePage() {
@@ -68,7 +68,7 @@ export default function CookiePage() {
       <h3>Memorizzazioni nel browser (localStorage)</h3>
       <ul>
         <li>
-          <code>quiz-pediatria:cookie-notice-v1</code> — ricorda che hai preso
+          <code>pediatroma:cookie-notice-v1</code> — ricorda che hai preso
           visione di questo avviso, così da non ripresentarlo a ogni visita.
         </li>
       </ul>

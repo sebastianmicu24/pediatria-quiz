@@ -1,12 +1,8 @@
 import Link from "next/link";
 import { LogoWordmark } from "@/components/logo";
-import { buttonStyles } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/auth";
-import { LogoutButton } from "@/components/logout-button";
-
-const navLink =
-  "rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900";
+import { isAdminEmail } from "@/lib/admin";
+import { NavActions } from "@/components/nav-actions";
 
 export async function Navbar() {
   const user = await getCurrentUser();
@@ -23,33 +19,10 @@ export async function Navbar() {
         >
           <LogoWordmark />
         </Link>
-
-        {user ? (
-          <div className="flex items-center gap-1 sm:gap-1.5">
-            <Link href="/dashboard" className={navLink}>
-              Dashboard
-            </Link>
-            <Link href="/quiz" className={navLink}>
-              Quiz
-            </Link>
-            <Link href="/account" className={cn(navLink, "hidden sm:inline-flex")}>
-              Account
-            </Link>
-            <LogoutButton />
-          </div>
-        ) : (
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <Link href="/login" className={navLink}>
-              Accedi
-            </Link>
-            <Link
-              href="/registrati"
-              className={cn(buttonStyles("primary", "sm"), "px-4")}
-            >
-              Registrati gratis
-            </Link>
-          </div>
-        )}
+        <NavActions
+          isLoggedIn={Boolean(user)}
+          isAdmin={isAdminEmail(user?.email)}
+        />
       </nav>
     </header>
   );

@@ -211,7 +211,7 @@ export function QuizClient({
                 disabled={revealed}
                 aria-pressed={isSelected}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left text-sm transition-colors",
+                  "flex w-full touch-manipulation items-center gap-3 rounded-2xl border px-4 py-4 text-left text-sm transition-colors sm:py-3.5",
                   !revealed &&
                     "border-slate-200 bg-white hover:border-brand-400 hover:bg-brand-50/40",
                   showCorrect &&
@@ -287,7 +287,7 @@ export function QuizClient({
               Premi <kbd className="rounded border border-slate-300 bg-slate-50 px-1.5 py-0.5 font-sans">Invio</kbd> per
               continuare
             </p>
-            <Button onClick={goNext}>
+            <Button onClick={goNext} className="w-full sm:w-auto">
               {index + 1 >= total ? "Vedi i risultati" : "Domanda successiva"}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>
@@ -343,7 +343,7 @@ function QuizResults({
 
       <section className="mt-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-center sm:gap-14">
-          <div className="relative h-36 w-36">
+          <div className="relative h-32 w-32 sm:h-36 sm:w-36">
             <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
               <circle
                 cx="60"

@@ -1,21 +1,41 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * Marchio Pediatroma: un arco romano attraversato da una linea ECG.
+ * Roma + pediatria, in un'unica forma minimale.
+ */
 export function Logo({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-sm",
+        "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 text-white shadow-sm",
         className
       )}
       aria-hidden="true"
     >
       <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+        {/* Arco romano */}
         <path
-          d="M3.5 12.5h3.2l1.7-4.7 3 8.4 2-5.2 1.4 1.5h5.7"
+          d="M6.5 18.8v-7.3a5.5 5.5 0 0 1 11 0v7.3"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+        />
+        {/* Battito */}
+        <path
+          d="M8.6 14.1h1.3l1-2.3 1.9 4.6 1.2-3.1h1.4"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* Basamento */}
+        <path
+          d="M5.2 19.6h13.6"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
         />
       </svg>
     </span>
@@ -27,7 +47,10 @@ export function LogoWordmark({ className }: { className?: string }) {
     <span className={cn("flex items-center gap-2.5", className)}>
       <Logo />
       <span className="text-[17px] font-semibold tracking-tight text-slate-900">
-        Quiz Pediatria
+        Pediatroma
+        <span className="text-orange-500" aria-hidden="true">
+          .
+        </span>
       </span>
     </span>
   );

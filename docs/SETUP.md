@@ -10,7 +10,7 @@ Questa guida copre la configurazione completa: **Supabase** (database + auth), *
 
 1. Vai su [supabase.com](https://supabase.com) → **Start your project** (piano gratuito).
 2. Crea un'organizzazione e un progetto:
-   - **Name**: `pediatria-quiz`
+   - **Name**: `pediatroma`
    - **Database Password**: scegline una robusta e conservala.
    - **Region**: **Central EU (Frankfurt)** o altra regione UE — importante per la conformità GDPR promessa nella Privacy Policy.
 
@@ -19,6 +19,8 @@ Questa guida copre la configurazione completa: **Supabase** (database + auth), *
 1. Nel dashboard Supabase, apri **SQL Editor** → **New query**.
 2. Incolla il contenuto di `supabase/schema.sql` ed esegui (**Run**).
 3. Verifica in **Table Editor** che siano presenti le tabelle: `profiles`, `questions`, `quiz_attempts`, `quiz_answers`.
+
+> **Database già esistente?** Dopo un aggiornamento dello schema, esegui anche i file in `supabase/migrations/` (es. `2026-10-07_dati-statistiche-profilo.sql` per i campi status/scuola/città). In alternativa, riesegui l'intero `schema.sql`: è idempotente e include le migrazioni.
 
 Lo schema include: Row Level Security su tutte le tabelle, creazione automatica del profilo alla registrazione (con registrazione dei consensi) e la funzione RPC `save_quiz_attempt` (punteggio calcolato server-side).
 
@@ -57,12 +59,13 @@ e incolla `supabase/seed.sql` nell'SQL Editor di Supabase.
 
 **Authentication → URL Configuration**:
 
-- **Site URL**: il dominio di produzione, es. `https://pediatria-quiz.vercel.app`
+- **Site URL**: il dominio di produzione, es. `https://pediatria-quiz.vercel.app` (o `https://pediatro.me` con il dominio personalizzato)
 - **Redirect URLs** (una per riga):
   ```
   http://localhost:3000/**
   https://pediatria-quiz.vercel.app/**
   ```
+  Se usi un dominio personalizzato aggiungi anche `https://pediatro.me/**`.
 
 > ⚠️ **Attenzione — è il passaggio più importante**: la **Site URL** determina il dominio dei link nelle email (`{{ .SiteURL }}` nei template). Se resta `http://localhost:3000` (valore predefinito), le email di conferma registrazione e recupero password punteranno a localhost e non funzioneranno. Impostala sul dominio di produzione **prima** di testare le registrazioni.
 
@@ -117,7 +120,7 @@ Supabase sul piano gratuito ha un limite molto basso di email/ora. Collegando **
 | Username | `resend` |
 | Password | la tua API key `re_...` |
 | Sender email | es. `noreply@tuodominio.it` (dominio verificato) |
-| Sender name | `Quiz Pediatria` |
+| Sender name | `Pediatroma` |
 
 Salva e usa il pulsante di invio email di test.
 
@@ -148,9 +151,10 @@ In **Settings → Environment Variables** aggiungi (per tutti gli ambienti, o al
 NEXT_PUBLIC_SUPABASE_URL       = https://xxxxxxxxxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY  = eyJ...
 SUPABASE_SERVICE_ROLE_KEY      = eyJ...   ← segreta
-NEXT_PUBLIC_SITE_URL           = https://tuodominio.it
+NEXT_PUBLIC_SITE_URL           = https://pediatria-quiz.vercel.app
 NEXT_PUBLIC_LEGAL_OWNER        = Cristian Sebastian Micu
 NEXT_PUBLIC_LEGAL_EMAIL        = contact@sebastianmicu.com
+ADMIN_EMAILS                   = sebastianmicu24@gmail.com
 ```
 
 > `SUPABASE_SERVICE_ROLE_KEY` serve solo alla route di eliminazione account: senza di essa tutto il resto funziona, ma il pulsante "Elimina account" restituirà un errore di configurazione.
@@ -158,21 +162,24 @@ NEXT_PUBLIC_LEGAL_EMAIL        = contact@sebastianmicu.com
 ### 3.3 Deploy e dominio
 
 1. **Deploy**. Alla prima build Vercel rileverà Next.js 16.
-2. Aggiungi il dominio custom in **Settings → Domains** (es. `tuodominio.it`).
+2. Aggiungi il dominio custom in **Settings → Domains** (es. `pediatro.me` o `quiz.tuodominio.it`).
 3. Aggiorna su Supabase la **Site URL** e le **Redirect URLs** con il dominio definitivo.
-4. Se cambi variabili d'ambiente, rifai il deploy (**Deployments → … → Redeploy**).
+4. Aggiorna la variabile `NEXT_PUBLIC_SITE_URL` su Vercel con il dominio definitivo e rifai il deploy.
+5. Se vuoi inviare le email dal dominio personalizzato, verifica anche quel dominio su **Resend** (Domains → Add Domain) e aggiorna il mittente SMTP in Supabase.
+6. Se cambi variabili d'ambiente, rifai il deploy (**Deployments → … → Redeploy**).
 
 ---
 
 ## 4. Checklist di collaudo
 
 1. Apri il sito → **Registrati** con una email vera.
-2. Ricevi l'email di conferma (mittente `Quiz Pediatria`) → clicca il link → vieni portato alla dashboard.
+2. Ricevi l'email di conferma (mittente `Pediatroma`) → clicca il link → vieni portato alla dashboard.
 3. Esegui un quiz completo → verifica che la dashboard mostri statististiche aggiornate.
 4. **Password dimenticata** → ricevi l'email → reimposta → accedi con la nuova password.
-5. Pagina **Account** → scarica l'export JSON → prova l'eliminazione di un account di test.
+5. Pagina **Account** → compila status/città/scuola (facoltativi) → scarica l'export JSON → prova l'eliminazione di un account di test.
 6. Controlla la pagina `/privacy`, `/cookie` e `/termini` con i tuoi dati definitivi.
 7. Verifica automatica dell'intera configurazione: `npm run smoke` (crea ed elimina un utente di test, non invia email).
+8. Se la tua email è in `ADMIN_EMAILS`, apri `/statistiche` e controlla il pannello aggregato.
 
 ---
 

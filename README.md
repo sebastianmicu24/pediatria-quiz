@@ -1,6 +1,6 @@
-# Quiz Pediatria
+# Pediatroma
 
-Piattaforma web per allenarsi con **quiz di pediatria**: domande con spiegazioni, filtri per argomento e difficoltà, statistiche personali. Registrazione con email e password, nessun tracciamento, conformità GDPR.
+**La palestra dei futuri pediatri.** Piattaforma web per allenarsi con quiz di pediatria: domande con spiegazioni, filtri per argomento e difficoltà, statistiche personali e un pannello riservato con gli esiti aggregati degli studenti.
 
 ## Stack
 
@@ -13,31 +13,35 @@ Piattaforma web per allenarsi con **quiz di pediatria**: domande con spiegazioni
 
 ## Funzionalità
 
-- **Registrazione e accesso** con email e password; conferma email e recupero password con link sicuri.
+- **Registrazione e accesso** con email e password; conferma email, recupero password e reinvio del link di conferma.
 - **Quiz configurabili**: filtra per argomento (18) e difficoltà (Base / Intermedia / Avanzata), scegli quante domande (10–50), estrazione casuale.
 - **Feedback immediato** con spiegazione della risposta e revisione finale degli errori.
 - **Statistiche personali**: precisione complessiva, prestazioni per argomento, storico dei quiz. Il punteggio è ricalcolato server-side: non falsificabile dal client.
+- **Pannello statistiche (admin)** su `/statistiche`: esiti aggregati e anonimi per status (studente/specializzando/professionista), città e scuola, attività giornaliera e precisione per argomento. Accesso tramite allowlist `ADMIN_EMAILS`.
+- **Profilo con dati facoltativi**: status, città e scuola di provenienza — modificabili e rimovibili in ogni momento, usati solo per statistiche aggregate.
 - **Privacy by design**: solo cookie tecnici, nessun analytics, esportazione dei dati in JSON ed eliminazione definitiva dell'account self-service.
-- **Pagine legali** complete: Privacy Policy, Cookie Policy e Termini di servizio (GDPR + normativa italiana).
+- **Pagine legali complete**: Privacy Policy, Cookie Policy e Termini di servizio (GDPR + normativa italiana).
 
 ## Struttura del progetto
 
 ```
 ├─ data/
-│  └─ questions.json          # Domande generate da train.jsonl (297 quiz)
+│  └─ questions.json                 # Domande generate da train.jsonl (297 quiz)
 ├─ docs/
-│  ├─ SETUP.md                # Guida dettagliata: Supabase, Resend, Vercel
-│  └─ email-templates-it.md   # Template email italiani per Supabase Auth
+│  ├─ SETUP.md                       # Guida dettagliata: Supabase, Resend, Vercel
+│  └─ email-templates-it.md          # Template email italiani per Supabase Auth
 ├─ scripts/
-│  ├─ generate-data.mjs       # Converte train.jsonl → data/questions.json
-│  └─ import-questions.mjs    # Importa/semeina le domande su Supabase
+│  ├─ generate-data.mjs              # Converte train.jsonl → data/questions.json
+│  ├─ import-questions.mjs           # Importa/semeina le domande su Supabase
+│  └─ smoke-test.mjs                 # Verifica end-to-end della configurazione
 ├─ supabase/
-│  └─ schema.sql              # Tabelle, RLS, trigger e RPC di salvataggio
+│  ├─ schema.sql                     # Tabelle, RLS, trigger e RPC (idempotente)
+│  └─ migrations/                    # Migrazioni incrementali da applicare sull'SQL Editor
 └─ src/
-   ├─ app/                    # Rotte (pubbliche, auth, dashboard, quiz, account, API)
-   ├─ components/             # UI riutilizzabile
-   ├─ lib/                    # Client Supabase, auth, utility, dati legali
-   └─ proxy.ts                # Sessione Supabase + protezione rotte (ex middleware)
+   ├─ app/                           # Rotte: pubbliche, auth, dashboard, quiz, account, statistiche, API
+   ├─ components/                    # UI riutilizzabile (brand Pediatroma)
+   ├─ lib/                           # Client Supabase, auth, admin, utility, dati legali
+   └─ proxy.ts                       # Sessione Supabase + protezione rotte (ex middleware)
 ```
 
 ## Avvio rapido
@@ -53,6 +57,7 @@ copy .env.example .env.local     # macOS/Linux: cp .env.example .env.local
 #    → compila i valori (vedi docs/SETUP.md, passo "Supabase")
 
 # 3. Database: incolla supabase/schema.sql nell'SQL Editor di Supabase
+#    (per database esistenti: supabase/migrations/*.sql)
 
 # 4. Importa le 297 domande
 npm run import:questions
@@ -61,7 +66,7 @@ npm run import:questions
 npm run dev
 ```
 
-Guida completa con schermate dei passaggi e configurazione email/Vercel: **[docs/SETUP.md](docs/SETUP.md)**.
+Guida completa con i passaggi nei dashboard e la configurazione di email, dominio e Vercel: **[docs/SETUP.md](docs/SETUP.md)**.
 
 ## Comandi disponibili
 
@@ -71,7 +76,7 @@ Guida completa con schermate dei passaggi e configurazione email/Vercel: **[docs
 | `npm run build` | Build di produzione |
 | `npm run lint` | Analisi ESLint |
 | `npm run generate:data` | Rigenera `data/questions.json` da `train.jsonl` |
-| `npm run import:questions` | Importa le domande su Supabase (service role) |
+| `npm run import:questions` | Importa le domande su Supabase (service key) |
 | `npm run smoke` | Verifica end-to-end la configurazione Supabase (crea ed elimina un utente di test) |
 | `node scripts/import-questions.mjs --print-sql > supabase/seed.sql` | Genera lo SQL di seed da incollare nell'SQL Editor |
 
@@ -80,15 +85,17 @@ Guida completa con schermate dei passaggi e configurazione email/Vercel: **[docs
 Tutte le variabili sono documentate in [`.env.example`](.env.example):
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — URL del progetto e **publishable key** (`sb_publishable_...`; accettata anche la legacy `anon`).
-- `SUPABASE_SERVICE_ROLE_KEY` — **secret key** (`sb_secret_...`; accettata anche la legacy `service_role`). **Segreta**, usata solo lato server per l'eliminazione account. Su Vercel va aggiunta senza prefisso `NEXT_PUBLIC_`.
-- `NEXT_PUBLIC_SITE_URL` — URL pubblico del sito (es. `https://quiz.example.it`).
+- `SUPABASE_SERVICE_ROLE_KEY` — **secret key** (`sb_secret_...`; accettata anche la legacy `service_role`). **Segreta**, usata solo lato server (pannello statistiche, eliminazione account). Su Vercel va aggiunta senza prefisso `NEXT_PUBLIC_`.
+- `NEXT_PUBLIC_SITE_URL` — URL pubblico del sito (es. `https://pediatro.me`).
 - `NEXT_PUBLIC_LEGAL_OWNER`, `NEXT_PUBLIC_LEGAL_EMAIL`, `NEXT_PUBLIC_LEGAL_ADDRESS` — dati del titolare del trattamento mostrati nelle pagine legali.
+- `ADMIN_EMAILS` — email separate da virgola abilitate a `/statistiche`.
 
 > Trovi URL e chiavi nel dashboard Supabase: pulsante **Connect** oppure **Settings (⚙) → API Keys**. Dettagli in [`docs/SETUP.md`](docs/SETUP.md).
 
 ## Conformità normativa (GDPR e Italia)
 
 - Basi giuridiche esplicitate (art. 6 GDPR); consensi registrati con data in fase di registrazione.
+- Dati facoltativi del profilo (status, città, scuola) raccolti su consenso e usati **solo in forma aggregata**; modificabili e rimovibili dalla pagina Account.
 - Solo **cookie tecnici** (sessione di autenticazione): nessun banner di consenso richiesto, informativa presente.
 - Elenco responsabili del trattamento (Supabase, Vercel, Resend) e informazioni sui trasferimenti extra-UE nella Privacy Policy.
 - Diritti esercitabili self-service: **esportazione dati** (art. 20) ed **eliminazione account** (art. 17).
