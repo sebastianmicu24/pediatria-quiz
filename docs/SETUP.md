@@ -28,7 +28,7 @@ Il file `data/questions.json` è già incluso nel repository. Nel `.env.local` d
 
 ```ini
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJ...   # Project Settings → API → service_role (SEGRETA)
+SUPABASE_SERVICE_ROLE_KEY=sb_secret_...   # oppure la legacy service_role (eyJ...)
 ```
 
 Poi esegui:
@@ -73,13 +73,18 @@ e incolla `supabase/seed.sql` nell'SQL Editor di Supabase.
 
 ### 1.5 Recupera le chiavi API
 
-**Project Settings → API**:
+Nel dashboard del progetto, il pulsante **Connect** (in alto) mostra subito Project URL e chiave pubblica; **tutte** le chiavi (comprese le legacy) vivono in **Settings (⚙) → API Keys**.
 
-| Valore | Dove va |
-| --- | --- |
-| Project URL | `NEXT_PUBLIC_SUPABASE_URL` |
-| `anon` public key | `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
-| `service_role` secret key | `SUPABASE_SERVICE_ROLE_KEY` (**solo server**, mai nel client) |
+| Valore nel dashboard | Dove va nel progetto | Note |
+| --- | --- | --- |
+| **Project URL** | `NEXT_PUBLIC_SUPABASE_URL` | es. `https://abcdefgh.supabase.co` |
+| **Publishable key** (`sb_publishable_...`) | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | chiave pubblica: può stare nel browser, è protetta dalle policy RLS |
+| **Secret key** (`sb_secret_...`) | `SUPABASE_SERVICE_ROLE_KEY` | ⚠️ segreta: **solo server**, mai nel browser, in chat o su git |
+
+- Se nella sezione **API Keys** non esiste ancora una chiave publishable o secret, creala lì con **Create new key**.
+- Supabase sta dismettendo le vecchie chiavi `anon` e `service_role` (JWT che iniziano con `eyJ`, nella scheda **Legacy API keys**): entro fine 2026. Preferisci sempre publishable/secret; il progetto accetta comunque entrambe le versioni.
+- Copia la **secret key** subito dopo averla creata: non sarà più visibile integralmente.
+- Il progetto accetta anche i nomi alternativi `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` e `SUPABASE_SECRET_KEY`, se preferisci usare la nomenclatura ufficiale.
 
 ---
 
@@ -177,5 +182,5 @@ NEXT_PUBLIC_LEGAL_EMAIL        = contact@sebastianmicu.com
 | Le email non arrivano | SMTP non configurato o dominio non verificato | Controlla **Authentication → Emails** e i record DNS di Resend (anche cartella spam) |
 | Dashboard dice "Database non inizializzato" | Schema non applicato | Esegui `supabase/schema.sql` nell'SQL Editor |
 | Quiz vuoti "Nessuna domanda" | Domande non importate | Esegui `npm run import:questions` |
-| Errore 500 su "Elimina account" | Manca la service role key | Aggiungi `SUPABASE_SERVICE_ROLE_KEY` su Vercel e ridai il deploy |
+| Errore 500 su "Elimina account" | Manca la chiave segreta | Aggiungi `SUPABASE_SERVICE_ROLE_KEY` (la **Secret key**) su Vercel e ridai il deploy |
 | Link email "non valido o scaduto" | Redirect URL non configurato o link già usato | Aggiorna le Redirect URLs su Supabase; i link sono monouso e scadono |

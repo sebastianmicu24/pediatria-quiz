@@ -78,10 +78,12 @@ Guida completa con schermate dei passaggi e configurazione email/Vercel: **[docs
 
 Tutte le variabili sono documentate in [`.env.example`](.env.example):
 
-- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — chiavi pubbliche Supabase.
-- `SUPABASE_SERVICE_ROLE_KEY` — **segreta**, usata solo lato server per l'eliminazione account. Su Vercel va aggiunta senza prefisso `NEXT_PUBLIC_`.
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — URL del progetto e **publishable key** (`sb_publishable_...`; accettata anche la legacy `anon`).
+- `SUPABASE_SERVICE_ROLE_KEY` — **secret key** (`sb_secret_...`; accettata anche la legacy `service_role`). **Segreta**, usata solo lato server per l'eliminazione account. Su Vercel va aggiunta senza prefisso `NEXT_PUBLIC_`.
 - `NEXT_PUBLIC_SITE_URL` — URL pubblico del sito (es. `https://quiz.example.it`).
 - `NEXT_PUBLIC_LEGAL_OWNER`, `NEXT_PUBLIC_LEGAL_EMAIL`, `NEXT_PUBLIC_LEGAL_ADDRESS` — dati del titolare del trattamento mostrati nelle pagine legali.
+
+> Trovi URL e chiavi nel dashboard Supabase: pulsante **Connect** oppure **Settings (⚙) → API Keys**. Dettagli in [`docs/SETUP.md`](docs/SETUP.md).
 
 ## Conformità normativa (GDPR e Italia)
 

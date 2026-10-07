@@ -24,12 +24,16 @@ export async function POST(request: NextRequest) {
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  // Accetta sia "SUPABASE_SECRET_KEY" (nuovo nome Supabase) sia
+  // "SUPABASE_SERVICE_ROLE_KEY" (nome storico).
+  const serviceKey = (
+    process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY
+  )?.trim();
   if (!url || !serviceKey) {
     return NextResponse.json(
       {
         error:
-          "Configurazione incompleta: manca SUPABASE_SERVICE_ROLE_KEY. Contatta l'assistenza.",
+          "Configurazione incompleta: manca SUPABASE_SERVICE_ROLE_KEY (o SUPABASE_SECRET_KEY). Contatta l'assistenza.",
       },
       { status: 500 }
     );

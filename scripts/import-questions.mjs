@@ -84,11 +84,14 @@ on conflict (source_id) do update set
 
 // ── Import su Supabase ────────────────────────────────────────
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Accetta sia "SUPABASE_SECRET_KEY" (nuovo nome Supabase) sia
+// "SUPABASE_SERVICE_ROLE_KEY" (nome storico).
+const serviceKey =
+  process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!url || !serviceKey) {
   console.error(
-    "Configurazione mancante: imposta NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY in .env.local"
+    "Configurazione mancante: imposta NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY (o SUPABASE_SECRET_KEY) in .env.local"
   );
   process.exit(1);
 }
