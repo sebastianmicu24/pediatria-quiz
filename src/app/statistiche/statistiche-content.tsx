@@ -12,6 +12,7 @@ import {
 import { requireUser } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 import { formatDate, formatPercent } from "@/lib/utils";
 import { statusLabel } from "@/lib/constants";
 
@@ -47,29 +48,6 @@ function addAttempt(bucket: Bucket, attempt: AttemptRow) {
   bucket.correct += attempt.correct_answers;
 }
 
-/**
- * Legge tutte le righe a pagine (PostgREST limita a 1000 righe per richiesta).
- */
-async function fetchAllRows<T>(
-  makeQuery: () => {
-    range: (
-      from: number,
-      to: number
-    ) => PromiseLike<{ data: unknown[] | null; error: { message: string } | null }>;
-  },
-  maxRows = 50_000
-): Promise<T[]> {
-  const pageSize = 1000;
-  const rows: T[] = [];
-  for (let from = 0; from < maxRows; from += pageSize) {
-    const { data, error } = await makeQuery().range(from, from + pageSize - 1);
-    if (error || !data) break;
-    rows.push(...(data as T[]));
-    if (data.length < pageSize) break;
-  }
-  return rows;
-}
-
 const DAY = 86_400_000;
 
 export async function StatisticheContent() {
@@ -78,7 +56,7 @@ export async function StatisticheContent() {
 
   const admin = createAdminClient();
 
-  const [profiles, attempts, answers] = await Promise.all([
+  const [profilesResult, attemptsResult, answersResult] = await Promise.all([
     fetchAllRows<ProfileRow>(() =>
       admin
         .from("profiles")
@@ -98,6 +76,10 @@ export async function StatisticheContent() {
         .order("id", { ascending: true })
     ),
   ]);
+
+  const profiles = profilesResult.rows;
+  const attempts = attemptsResult.rows;
+  const answers = answersResult.rows;
 
   // Il pannello è renderizzato a request time (dopo la lettura dei cookie
   // in requireUser): leggere l'orologio qui è sicuro.

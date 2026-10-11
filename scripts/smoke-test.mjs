@@ -47,6 +47,7 @@ if (!url || !anon || !service) {
 
 let failures = 0;
 const ok = (name, extra = "") => console.log(`  OK   ${name}${extra ? ` — ${extra}` : ""}`);
+const warn = (name, msg) => console.log(`  WARN ${name} — ${msg}`);
 const fail = (name, msg) => {
   failures++;
   console.log(`  FAIL ${name} — ${msg}`);
@@ -190,6 +191,30 @@ if (userId) {
         // Pulizia manuale del tentativo (poi verrà comunque rimosso col cascade)
         await userClient.from("quiz_attempts").delete().eq("id", rpc.data);
       }
+    }
+
+    // Estrazione casuale delle domande (RPC scalabile su migliaia di quiz)
+    const rpcQuiz = await userClient.rpc("get_quiz_questions", {
+      p_count: 3,
+      p_topic: null,
+      p_difficulty: null,
+    });
+    if (rpcQuiz.error) {
+      if (/could not find the function/i.test(rpcQuiz.error.message)) {
+        warn(
+          "RPC get_quiz_questions",
+          "non ancora applicata: esegui supabase/migrations/2026-10-11_funzione-quiz-random.sql (il sito usa il fallback)"
+        );
+      } else {
+        fail("RPC get_quiz_questions", rpcQuiz.error.message);
+      }
+    } else if (!Array.isArray(rpcQuiz.data) || rpcQuiz.data.length !== 3) {
+      fail(
+        "RPC get_quiz_questions",
+        `attese 3 domande, ricevute ${Array.isArray(rpcQuiz.data) ? rpcQuiz.data.length : "?"}`
+      );
+    } else {
+      ok("RPC get_quiz_questions", "3 domande casuali estratte");
     }
 
     // Verifica che un client senza login non possa leggere l'elenco completo

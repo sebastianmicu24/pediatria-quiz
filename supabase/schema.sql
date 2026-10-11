@@ -306,6 +306,33 @@ revoke all on function public.save_quiz_attempt(jsonb, text, int) from public, a
 grant execute on function public.save_quiz_attempt(jsonb, text, int) to authenticated;
 
 -- ─────────────────────────────────────────────────────────────
+-- 8b. Funzione RPC: estrazione casuale di domande per un quiz.
+--     Esegue ORDER BY random() nel database: scala su migliaia di
+--     domande senza trasferire l'intero archivio al server Next.
+-- ─────────────────────────────────────────────────────────────
+create or replace function public.get_quiz_questions(
+  p_count int default 20,
+  p_topic text default null,
+  p_difficulty int default null
+)
+returns setof public.questions
+language sql
+volatile
+security invoker
+set search_path = ''
+as $$
+  select q.*
+  from public.questions q
+  where (nullif(btrim(coalesce(p_topic, '')), '') is null or q.topic = btrim(p_topic))
+    and (p_difficulty is null or q.difficulty = p_difficulty)
+  order by random()
+  limit least(greatest(coalesce(p_count, 20), 1), 100);
+$$;
+
+revoke all on function public.get_quiz_questions(int, text, int) from public, anon;
+grant execute on function public.get_quiz_questions(int, text, int) to authenticated;
+
+-- ─────────────────────────────────────────────────────────────
 -- 9. Permessi (le policy RLS restano il vero filtro)
 -- ─────────────────────────────────────────────────────────────
 grant usage on schema public to anon, authenticated, service_role;

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 import { requireUser } from "@/lib/auth";
 import { formatPercent } from "@/lib/utils";
 import { Alert } from "@/components/ui/alert";
@@ -9,6 +10,11 @@ import { RecentAttempts } from "./recent-attempts";
 import { TopicStats } from "./topic-stats";
 import type { AttemptSummary, TopicStat } from "@/lib/types";
 import { BarChart3, BookOpenCheck, Target, Trophy } from "lucide-react";
+
+type AnswerStatRow = {
+  is_correct: boolean;
+  questions: { topic?: string } | { topic?: string }[] | null;
+};
 
 export async function DashboardContent() {
   const user = await requireUser("/dashboard");
@@ -29,14 +35,28 @@ export async function DashboardContent() {
         .eq("user_id", user.id)
         .order("completed_at", { ascending: false })
         .limit(500),
-      supabase
-        .from("quiz_answers")
-        .select("is_correct, questions!inner(topic)")
-        .limit(2000),
-      supabase.from("questions").select("topic"),
+      fetchAllRows<AnswerStatRow>(
+        () =>
+          supabase
+            .from("quiz_answers")
+            .select("is_correct, questions!inner(topic)")
+            .order("id", { ascending: true }),
+        20_000
+      ),
+      fetchAllRows<{ topic: string | null }>(() =>
+        supabase
+          .from("questions")
+          .select("topic")
+          .order("topic", { ascending: true })
+      ),
     ]);
 
-  const setupError = [profileResult.error, attemptsResult.error].find(Boolean);
+  const setupError = [
+    profileResult.error,
+    attemptsResult.error,
+    answersResult.error,
+    topicsResult.error,
+  ].find(Boolean);
 
   const displayName =
     profileResult.data?.display_name ??
@@ -51,7 +71,7 @@ export async function DashboardContent() {
 
   // Statistiche per argomento
   const topicMap = new Map<string, { total: number; correct: number }>();
-  for (const row of answersResult.data ?? []) {
+  for (const row of answersResult.rows) {
     const nested = row.questions as { topic?: string } | { topic?: string }[] | null;
     const topic = Array.isArray(nested)
       ? nested[0]?.topic
@@ -69,7 +89,7 @@ export async function DashboardContent() {
   // Elenco argomenti per il configuratore
   const topics = [
     ...new Set(
-      (topicsResult.data ?? [])
+      topicsResult.rows
         .map((row) => row.topic)
         .filter((t): t is string => Boolean(t))
     ),

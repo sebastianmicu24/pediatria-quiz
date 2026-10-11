@@ -39,7 +39,7 @@ Poi esegui:
 npm run import:questions
 ```
 
-Vedrai l'avanzamento in lotti da 100; al termine le 297 domande saranno in `public.questions`.
+Vedrai l'avanzamento in lotti da 100; al termine tutte le domande saranno in `public.questions` (migliaia di quiz, a seconda del dataset).
 
 **Alternativa senza script** (es. da un'altra macchina):
 

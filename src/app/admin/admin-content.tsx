@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 import { Alert } from "@/components/ui/alert";
 import { AdminQuizManager, type AdminQuestion } from "./admin-quiz-manager";
 
@@ -11,14 +12,15 @@ export async function AdminContent() {
   if (!isAdminEmail(user.email)) notFound();
 
   const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("questions")
-    .select(
-      "id, source_id, question, options, answer_index, topic, difficulty, explanation"
-    )
-    .order("topic", { ascending: true })
-    .order("source_id", { ascending: true })
-    .limit(2000);
+  const { rows, error } = await fetchAllRows<AdminQuestion>(() =>
+    admin
+      .from("questions")
+      .select(
+        "id, source_id, question, options, answer_index, topic, difficulty, explanation"
+      )
+      .order("topic", { ascending: true })
+      .order("source_id", { ascending: true })
+  );
 
   if (error) {
     return (
@@ -28,7 +30,7 @@ export async function AdminContent() {
     );
   }
 
-  const questions: AdminQuestion[] = (data ?? []).map((row) => ({
+  const questions: AdminQuestion[] = rows.map((row) => ({
     id: row.id,
     source_id: row.source_id ?? "",
     question: row.question,
