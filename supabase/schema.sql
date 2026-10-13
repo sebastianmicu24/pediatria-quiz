@@ -252,7 +252,7 @@ begin
     raise exception 'Payload risposte non valido';
   end if;
 
-  if jsonb_array_length(p_answers) = 0 or jsonb_array_length(p_answers) > 500 then
+  if jsonb_array_length(p_answers) = 0 or jsonb_array_length(p_answers) > 2000 then
     raise exception 'Numero di risposte non valido';
   end if;
 
@@ -309,11 +309,14 @@ grant execute on function public.save_quiz_attempt(jsonb, text, int) to authenti
 -- 8b. Funzione RPC: estrazione casuale di domande per un quiz.
 --     Esegue ORDER BY random() nel database: scala su migliaia di
 --     domande senza trasferire l'intero archivio al server Next.
+--     p_exclude: id già mostrati, da non riproporre nei lotti
+--     successivi dell'esercitazione progressiva.
 -- ─────────────────────────────────────────────────────────────
 create or replace function public.get_quiz_questions(
   p_count int default 20,
   p_topic text default null,
-  p_difficulty int default null
+  p_difficulty int default null,
+  p_exclude uuid[] default '{}'
 )
 returns setof public.questions
 language sql
@@ -325,12 +328,15 @@ as $$
   from public.questions q
   where (nullif(btrim(coalesce(p_topic, '')), '') is null or q.topic = btrim(p_topic))
     and (p_difficulty is null or q.difficulty = p_difficulty)
+    and (cardinality(p_exclude) = 0 or not (q.id = any(p_exclude)))
   order by random()
   limit least(greatest(coalesce(p_count, 20), 1), 100);
 $$;
 
-revoke all on function public.get_quiz_questions(int, text, int) from public, anon;
-grant execute on function public.get_quiz_questions(int, text, int) to authenticated;
+drop function if exists public.get_quiz_questions(int, text, int);
+
+revoke all on function public.get_quiz_questions(int, text, int, uuid[]) from public, anon;
+grant execute on function public.get_quiz_questions(int, text, int, uuid[]) to authenticated;
 
 -- ─────────────────────────────────────────────────────────────
 -- 9. Permessi (le policy RLS restano il vero filtro)

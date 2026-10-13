@@ -82,14 +82,6 @@ export function stripHtml(html: string): string {
     .trim();
 }
 
-/** Interpreta il parametro ?count= dell'URL del quiz. */
-export function parseQuestionCount(value: string | undefined, max: number): number {
-  if (value === "all") return max;
-  const parsed = Number.parseInt(value ?? "", 10);
-  if (!Number.isFinite(parsed)) return 20;
-  return Math.min(Math.max(parsed, 1), max);
-}
-
 export function parseDifficulty(value: string | undefined): number | null {
   const parsed = Number.parseInt(value ?? "", 10);
   if (![1, 2, 3].includes(parsed)) return null;

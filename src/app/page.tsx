@@ -204,8 +204,8 @@ export default function HomePage() {
               },
               {
                 step: "2",
-                title: "Scegli il quiz",
-                text: "Seleziona argomento, difficoltà e numero di domande. Le domande vengono estratte a caso.",
+                title: "Scegli l'argomento",
+                text: "Seleziona argomento e difficoltà: le domande arrivano una alla volta, finché vuoi allenarti.",
               },
               {
                 step: "3",

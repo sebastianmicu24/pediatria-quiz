@@ -107,7 +107,7 @@ export async function DashboardContent() {
         </h1>
         <p className="mt-2 text-base text-slate-600">
           {totalAttempts === 0
-            ? "Benvenuto in Pediatroma! Inizia con il tuo primo quiz qui sotto."
+            ? "Benvenuto in Pediatroma! Inizia con la tua prima esercitazione qui sotto."
             : "Ecco il riepilogo dei tuoi progressi. Continua così!"}
         </p>
       </header>
@@ -140,9 +140,9 @@ export async function DashboardContent() {
       <section className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           icon={Trophy}
-          label="Quiz completati"
+          label="Esercitazioni completate"
           value={String(totalAttempts)}
-          hint={totalAttempts === 0 ? "Nessun quiz ancora" : "In totale"}
+          hint={totalAttempts === 0 ? "Nessuna esercitazione ancora" : "In totale"}
         />
         <StatCard
           icon={BookOpenCheck}
@@ -171,14 +171,14 @@ export async function DashboardContent() {
       <section className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-            Inizia un nuovo quiz
+            Inizia un&apos;esercitazione
           </h2>
           <div className="mt-4">
             <QuizSetup topics={topics} />
           </div>
 
           <h2 className="mt-10 text-xl font-semibold tracking-tight text-slate-900">
-            Ultimi quiz
+            Ultime esercitazioni
           </h2>
           <div className="mt-4">
             <RecentAttempts attempts={attempts.slice(0, 5)} />

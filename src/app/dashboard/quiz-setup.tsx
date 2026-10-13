@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { COUNT_OPTIONS, DEFAULT_QUESTION_COUNT } from "@/lib/constants";
 
 type DifficultyValue = "all" | "1" | "2" | "3";
 
@@ -39,14 +38,12 @@ export function QuizSetup({ topics }: { topics: string[] }) {
   const router = useRouter();
   const [topic, setTopic] = useState<string>("all");
   const [difficulty, setDifficulty] = useState<DifficultyValue>("all");
-  const [count, setCount] = useState<number>(DEFAULT_QUESTION_COUNT);
   const [starting, setStarting] = useState(false);
 
   function startQuiz() {
     const params = new URLSearchParams();
     if (topic !== "all") params.set("topic", topic);
     if (difficulty !== "all") params.set("difficulty", difficulty);
-    params.set("count", String(count));
     setStarting(true);
     router.push(`/quiz?${params.toString()}`);
   }
@@ -58,7 +55,7 @@ export function QuizSetup({ topics }: { topics: string[] }) {
           Argomento
         </legend>
 
-        {/* Mobile: tendina nativa, più comoda con 18 argomenti */}
+        {/* Mobile: tendina nativa, più comoda con molti argomenti */}
         <div className="mt-3 sm:hidden">
           <select
             value={topic}
@@ -111,22 +108,16 @@ export function QuizSetup({ topics }: { topics: string[] }) {
         </div>
       </fieldset>
 
-      <fieldset className="mt-6">
-        <legend className="text-sm font-semibold text-slate-900">
-          Numero di domande
-        </legend>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {COUNT_OPTIONS.map((n) => (
-            <Pill key={n} selected={count === n} onClick={() => setCount(n)}>
-              {n}
-            </Pill>
-          ))}
-        </div>
-      </fieldset>
+      <p className="mt-6 text-sm leading-relaxed text-slate-500">
+        Le domande arrivano{" "}
+        <strong className="font-semibold text-slate-700">una alla volta</strong>
+        , con spiegazione immediata dopo ogni risposta: continua finché vuoi e
+        termina quando sei soddisfatto.
+      </p>
 
-      <Button onClick={startQuiz} disabled={starting} className="mt-7 w-full sm:w-auto">
+      <Button onClick={startQuiz} disabled={starting} className="mt-5 w-full sm:w-auto">
         <Play className="h-4 w-4" aria-hidden="true" />
-        {starting ? "Preparo il quiz…" : "Inizia il quiz"}
+        {starting ? "Preparo l'esercitazione…" : "Inizia l'esercitazione"}
       </Button>
     </div>
   );

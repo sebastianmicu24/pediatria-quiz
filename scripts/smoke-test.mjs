@@ -193,11 +193,12 @@ if (userId) {
       }
     }
 
-    // Estrazione casuale delle domande (RPC scalabile su migliaia di quiz)
+    // Estrazione casuale progressiva (RPC): base + filtri + esclusione
     const rpcQuiz = await userClient.rpc("get_quiz_questions", {
       p_count: 3,
       p_topic: null,
       p_difficulty: null,
+      p_exclude: [],
     });
     if (rpcQuiz.error) {
       if (/could not find the function/i.test(rpcQuiz.error.message)) {
@@ -215,6 +216,59 @@ if (userId) {
       );
     } else {
       ok("RPC get_quiz_questions", "3 domande casuali estratte");
+
+      // I filtri devono valere davvero (bug: mostrava tutte le domande)
+      const rpcFiltered = await userClient.rpc("get_quiz_questions", {
+        p_count: 5,
+        p_topic: "Cardiologia",
+        p_difficulty: null,
+        p_exclude: [],
+      });
+      if (rpcFiltered.error) {
+        fail("RPC get_quiz_questions (filtri)", rpcFiltered.error.message);
+      } else if (
+        !Array.isArray(rpcFiltered.data) ||
+        rpcFiltered.data.length === 0 ||
+        rpcFiltered.data.some((row) => row.topic !== "Cardiologia")
+      ) {
+        fail(
+          "RPC get_quiz_questions (filtri)",
+          "restituite domande di argomenti diversi da Cardiologia"
+        );
+      } else {
+        ok(
+          "RPC get_quiz_questions (filtri)",
+          `${rpcFiltered.data.length} domande solo di Cardiologia`
+        );
+
+        // Le domande già mostrate non vanno riproposte (esercitazione progressiva)
+        const excludeId = rpcFiltered.data[0].id;
+        const rpcExclude = await userClient.rpc("get_quiz_questions", {
+          p_count: 5,
+          p_topic: "Cardiologia",
+          p_difficulty: null,
+          p_exclude: [excludeId],
+        });
+        if (rpcExclude.error) {
+          fail(
+            "RPC get_quiz_questions (esclusione)",
+            rpcExclude.error.message
+          );
+        } else if (
+          Array.isArray(rpcExclude.data) &&
+          rpcExclude.data.some((row) => row.id === excludeId)
+        ) {
+          fail(
+            "RPC get_quiz_questions (esclusione)",
+            "la domanda esclusa è stata comunque restituita"
+          );
+        } else {
+          ok(
+            "RPC get_quiz_questions (esclusione)",
+            "la domanda già vista non viene riproposta"
+          );
+        }
+      }
     }
 
     // Verifica che un client senza login non possa leggere l'elenco completo

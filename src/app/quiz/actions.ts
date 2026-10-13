@@ -2,6 +2,8 @@
 
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { fetchQuestionBatch } from "@/lib/questions";
+import type { Question } from "@/lib/types";
 
 export type SaveAttemptInput = {
   topic: string | null;
@@ -24,7 +26,7 @@ export async function saveQuizAttempt(
   await requireUser("/quiz");
 
   const answers = input?.answers;
-  if (!Array.isArray(answers) || answers.length === 0 || answers.length > 500) {
+  if (!Array.isArray(answers) || answers.length === 0 || answers.length > 2000) {
     return { ok: false, message: "Dati del tentativo non validi." };
   }
 
@@ -62,4 +64,55 @@ export async function saveQuizAttempt(
   }
 
   return { ok: true, attemptId: String(data) };
+}
+
+export type QuizBatchInput = {
+  topic: string | null;
+  difficulty: number | null;
+  exclude: string[];
+  count: number;
+};
+
+export type QuizBatchResult =
+  | { ok: true; questions: Question[] }
+  | { ok: false; message: string };
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Prossimo lotto di domande per l'esercitazione progressiva.
+ * Le domande già mostrate (exclude) non vengono riproposte.
+ */
+export async function fetchQuizBatch(
+  input: QuizBatchInput
+): Promise<QuizBatchResult> {
+  await requireUser("/quiz");
+
+  const topic =
+    typeof input?.topic === "string" && input.topic.trim()
+      ? input.topic.trim().slice(0, 200)
+      : null;
+  const difficulty =
+    input?.difficulty === 1 || input?.difficulty === 2 || input?.difficulty === 3
+      ? input.difficulty
+      : null;
+  const count = Number.isInteger(input?.count)
+    ? Math.min(Math.max(input.count, 1), 50)
+    : 10;
+  const exclude = Array.isArray(input?.exclude)
+    ? input.exclude
+        .filter((id): id is string => typeof id === "string" && UUID_RE.test(id))
+        .slice(0, 5000)
+    : [];
+
+  const supabase = await createClient();
+  const questions = await fetchQuestionBatch(supabase, {
+    topic,
+    difficulty,
+    count,
+    exclude,
+  });
+
+  return { ok: true, questions };
 }

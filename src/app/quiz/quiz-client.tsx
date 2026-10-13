@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -12,11 +11,11 @@ import {
 } from "lucide-react";
 import type { Question } from "@/lib/types";
 import { cn, formatPercent, sanitizeHtml } from "@/lib/utils";
-import { difficultyLabel } from "@/lib/constants";
+import { EXERCISE_BATCH_SIZE, difficultyLabel } from "@/lib/constants";
 import { Alert } from "@/components/ui/alert";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { saveQuizAttempt } from "./actions";
+import { fetchQuizBatch, saveQuizAttempt } from "./actions";
 
 type AnswerRecord = {
   questionId: string;
@@ -26,30 +25,66 @@ type AnswerRecord = {
 
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
+/**
+ * Quando restano così tante domande nel lotto corrente, precarica il
+ * prossimo: l'esercitazione continua senza pause fino a "Termina".
+ */
+const PREFETCH_THRESHOLD = 3;
+
+/**
+ * Esercitazione progressiva: una domanda alla volta, con risposta
+ * immediata e spiegazione. Nessun set predefinito: si continua finché
+ * l'utente non decide di terminare, poi si vede il riepilogo.
+ */
 export function QuizClient({
-  questions,
+  initialQuestions,
   meta,
 }: {
-  questions: Question[];
+  initialQuestions: Question[];
   meta: { topic: string | null; difficulty: number | null };
 }) {
   const router = useRouter();
 
+  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [answers, setAnswers] = useState<AnswerRecord[]>([]);
-  const [finished, setFinished] = useState(false);
+  const [phase, setPhase] = useState<"active" | "summary">("active");
   const [saveState, setSaveState] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [exhausted, setExhausted] = useState(false);
+  const [durationMs, setDurationMs] = useState(0);
 
-  const total = questions.length;
+  const startedAtRef = useRef<number | null>(null);
+  const phaseRef = useRef<"active" | "summary">("active");
+  const loadingRef = useRef(false);
+  const pendingAdvanceRef = useRef(false);
+  const explanationRef = useRef<HTMLElement | null>(null);
+
+  // Avvia il cronometro dell'esercitazione al montaggio.
+  useEffect(() => {
+    startedAtRef.current = Date.now();
+  }, []);
+
   const question = questions[index];
+  const correctCount = answers.filter((a) => a.isCorrect).length;
 
-  const finishQuiz = useCallback(
+  const finish = useCallback(
     (finalAnswers: AnswerRecord[]) => {
-      setFinished(true);
+      if (phaseRef.current === "summary") return;
+      phaseRef.current = "summary";
+      setDurationMs(
+        startedAtRef.current !== null
+          ? Date.now() - startedAtRef.current
+          : 0
+      );
+      setPhase("summary");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (finalAnswers.length === 0) return;
       setSaveState("saving");
       saveQuizAttempt({
         topic: meta.topic,
@@ -69,9 +104,71 @@ export function QuizClient({
     [meta.topic, meta.difficulty]
   );
 
+  const advance = useCallback(() => {
+    setSelected(null);
+    setRevealed(false);
+    setIndex((i) => i + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  /** Richiede il prossimo lotto di domande (esclude quelle già viste). */
+  const ensureMore = useCallback(() => {
+    if (loadingRef.current || exhausted || phaseRef.current === "summary") {
+      return;
+    }
+    loadingRef.current = true;
+    setLoadingMore(true);
+    fetchQuizBatch({
+      topic: meta.topic,
+      difficulty: meta.difficulty,
+      exclude: questions.map((q) => q.id),
+      count: EXERCISE_BATCH_SIZE,
+    })
+      .then((result) => {
+        const known = new Set(questions.map((q) => q.id));
+        const fresh = result.ok
+          ? result.questions.filter((q) => !known.has(q.id))
+          : [];
+
+        if (fresh.length === 0) {
+          // Archivio esaurito con questi filtri (o errore del server):
+          // il pulsante diventa "Concludi esercitazione".
+          setExhausted(true);
+          return;
+        }
+
+        setQuestions((prev) => {
+          const have = new Set(prev.map((q) => q.id));
+          const added = fresh.filter((q) => !have.has(q.id));
+          return added.length > 0 ? [...prev, ...added] : prev;
+        });
+
+        // Se l'utente stava aspettando alla fine del lotto, prosegue subito.
+        if (pendingAdvanceRef.current && questions.length + fresh.length > index) {
+          pendingAdvanceRef.current = false;
+          advance();
+        }
+      })
+      .catch(() => {
+        // Errore di rete transitorio: verrà ritentato alla prossima
+        // richiesta (tasto "Domanda successiva" o prefetch).
+      })
+      .finally(() => {
+        loadingRef.current = false;
+        setLoadingMore(false);
+      });
+  }, [questions, index, meta.topic, meta.difficulty, exhausted, advance]);
+
+  // Precarica il prossimo lotto quando il corrente è quasi finito.
+  useEffect(() => {
+    if (phase !== "active") return;
+    if (questions.length - index > PREFETCH_THRESHOLD) return;
+    ensureMore();
+  }, [phase, index, questions.length, ensureMore]);
+
   const handleSelect = useCallback(
     (optionIndex: number) => {
-      if (revealed || finished) return;
+      if (revealed || phase !== "active") return;
       setSelected(optionIndex);
       setRevealed(true);
       setAnswers((prev) => [
@@ -82,25 +179,44 @@ export function QuizClient({
           isCorrect: optionIndex === question.answer_index,
         },
       ]);
+      // Porta la spiegazione in vista senza nascondere l'opzione scelta.
+      requestAnimationFrame(() => {
+        explanationRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      });
     },
-    [revealed, finished, question]
+    [revealed, phase, question]
   );
 
   const goNext = useCallback(() => {
-    if (!revealed || finished) return;
-    if (index + 1 >= total) {
-      finishQuiz(answers);
+    if (!revealed || phase !== "active") return;
+    if (index + 1 < questions.length) {
+      advance();
       return;
     }
-    setIndex((i) => i + 1);
-    setSelected(null);
-    setRevealed(false);
-  }, [revealed, finished, index, total, answers, finishQuiz]);
+    if (exhausted) {
+      finish(answers);
+      return;
+    }
+    // Fine del lotto: richiedi il prossimo e prosegui appena pronto.
+    pendingAdvanceRef.current = true;
+    ensureMore();
+  }, [revealed, phase, index, questions.length, exhausted, answers, advance, finish, ensureMore]);
+
+  const handleTerminate = useCallback(() => {
+    if (answers.length === 0) {
+      router.push("/dashboard");
+      return;
+    }
+    finish(answers);
+  }, [answers, finish, router]);
 
   // Scorciatoie da tastiera: 1-6 / A-F per rispondere, Invio per proseguire.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (finished) return;
+      if (phase !== "active") return;
       const target = event.target as HTMLElement | null;
       if (
         target &&
@@ -131,14 +247,15 @@ export function QuizClient({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [revealed, question, handleSelect, goNext, finished]);
+  }, [revealed, question, handleSelect, goNext, phase]);
 
-  if (finished) {
+  if (phase === "summary") {
     return (
       <QuizResults
         questions={questions}
         answers={answers}
         saveState={saveState}
+        durationMs={durationMs}
         onReplay={() => {
           router.refresh();
           window.scrollTo({ top: 0 });
@@ -147,7 +264,14 @@ export function QuizClient({
     );
   }
 
-  const progress = (index + 1) / total;
+  const atEndOfBatch = index + 1 >= questions.length;
+  const continueLabel = !atEndOfBatch
+    ? "Domanda successiva"
+    : loadingMore
+      ? "Caricamento…"
+      : exhausted
+        ? "Concludi esercitazione"
+        : "Domanda successiva";
 
   return (
     <>
@@ -162,32 +286,35 @@ export function QuizClient({
         </div>
         <div className="flex items-center gap-4">
           <p className="text-sm font-medium text-slate-500">
-            Domanda {index + 1} di {total}
+            Domanda {index + 1}
           </p>
-          <Link
-            href="/dashboard"
+          <p className="flex items-center gap-2.5 text-sm font-semibold">
+            <span
+              className="flex items-center gap-1 text-emerald-700"
+              title="Risposte corrette"
+            >
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+              {correctCount}
+            </span>
+            <span
+              className="flex items-center gap-1 text-rose-700"
+              title="Risposte errate"
+            >
+              <XCircle className="h-4 w-4" aria-hidden="true" />
+              {answers.length - correctCount}
+            </span>
+          </p>
+          <button
+            type="button"
+            onClick={handleTerminate}
             className="text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
           >
-            Esci
-          </Link>
+            Termina
+          </button>
         </div>
       </header>
 
-      <div
-        className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-200"
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={total}
-        aria-valuenow={index + 1}
-        aria-label="Avanzamento del quiz"
-      >
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-600 transition-all duration-300"
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
-
-      <article className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <article className="mt-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div
           className="rich-text text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(question.question) }}
@@ -259,7 +386,10 @@ export function QuizClient({
       </article>
 
       {revealed ? (
-        <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section
+          ref={explanationRef}
+          className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+        >
           <h2
             className={cn(
               "text-sm font-semibold",
@@ -288,9 +418,17 @@ export function QuizClient({
               Premi <kbd className="rounded border border-slate-300 bg-slate-50 px-1.5 py-0.5 font-sans">Invio</kbd> per
               continuare
             </p>
-            <Button onClick={goNext} className="w-full sm:w-auto">
-              {index + 1 >= total ? "Vedi i risultati" : "Domanda successiva"}
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            <Button
+              onClick={goNext}
+              disabled={atEndOfBatch && loadingMore}
+              className="w-full sm:w-auto"
+            >
+              {atEndOfBatch && loadingMore ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              )}
+              {continueLabel}
             </Button>
           </div>
         </section>
@@ -308,11 +446,13 @@ function QuizResults({
   questions,
   answers,
   saveState,
+  durationMs,
   onReplay,
 }: {
   questions: Question[];
   answers: AnswerRecord[];
   saveState: "idle" | "saving" | "saved" | "error";
+  durationMs: number;
   onReplay: () => void;
 }) {
   const total = answers.length;
@@ -320,6 +460,14 @@ function QuizResults({
   const percent = total > 0 ? correct / total : 0;
   const wrong = answers.filter((a) => !a.isCorrect);
   const questionById = new Map(questions.map((q) => [q.id, q]));
+  const [reviewFilter, setReviewFilter] = useState<"errori" | "tutte">(
+    wrong.length > 0 ? "errori" : "tutte"
+  );
+  const shown = reviewFilter === "errori" ? wrong : answers;
+
+  const minutes = Math.floor(durationMs / 60_000);
+  const seconds = Math.floor((durationMs % 60_000) / 1000);
+  const durationLabel = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
   const message =
     percent >= 0.85
@@ -337,7 +485,7 @@ function QuizResults({
     <div>
       <header className="text-center">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-          Quiz completato!
+          Esercitazione completata!
         </h1>
         <p className="mt-2 text-base text-slate-600">{message}</p>
       </header>
@@ -386,6 +534,12 @@ function QuizResults({
                 {total - correct}
               </dd>
             </div>
+            <div>
+              <dt className="text-sm text-slate-500">Tempo di esercitazione</dt>
+              <dd className="text-xl font-semibold text-slate-700">
+                {durationLabel}
+              </dd>
+            </div>
             <div className="pt-1">
               {saveState === "saving" ? (
                 <p className="flex items-center gap-2 text-xs text-slate-500">
@@ -398,7 +552,7 @@ function QuizResults({
               ) : saveState === "error" ? (
                 <p className="text-xs font-medium text-amber-700">
                   Risultati non salvati: le statistiche potrebbero non includere
-                  questo quiz.
+                  questa esercitazione.
                 </p>
               ) : null}
             </div>
@@ -412,39 +566,99 @@ function QuizResults({
           </ButtonLink>
           <Button variant="secondary" onClick={onReplay}>
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
-            Rigioca con nuove domande
+            Nuova esercitazione
           </Button>
         </div>
       </section>
 
-      {wrong.length > 0 ? (
+      {total > 0 ? (
         <section className="mt-8">
-          <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-            Rivedi le risposte errate ({wrong.length})
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+              Rivedi le tue risposte
+            </h2>
+            {wrong.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setReviewFilter("tutte")}
+                  aria-pressed={reviewFilter === "tutte"}
+                  className={cn(
+                    "touch-manipulation rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+                    reviewFilter === "tutte"
+                      ? "border-brand-600 bg-brand-600 text-white shadow-sm"
+                      : "border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-900"
+                  )}
+                >
+                  Tutte ({total})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReviewFilter("errori")}
+                  aria-pressed={reviewFilter === "errori"}
+                  className={cn(
+                    "touch-manipulation rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+                    reviewFilter === "errori"
+                      ? "border-brand-600 bg-brand-600 text-white shadow-sm"
+                      : "border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-900"
+                  )}
+                >
+                  Solo errori ({wrong.length})
+                </button>
+              </div>
+            ) : null}
+          </div>
+
           <ul className="mt-4 space-y-3">
-            {wrong.map((answer) => {
+            {shown.map((answer) => {
               const question = questionById.get(answer.questionId);
               if (!question) return null;
-              const correctOption = question.options[question.answer_index];
+              const isCorrect = answer.isCorrect;
               const yourOption = question.options[answer.selectedIndex];
+              const correctOption = question.options[question.answer_index];
+
               return (
                 <li
                   key={answer.questionId}
                   className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
                 >
-                  <p className="text-sm font-medium leading-relaxed text-slate-900">
-                    {question.question}
-                  </p>
+                  <div className="flex items-start gap-2.5">
+                    {isCorrect ? (
+                      <CheckCircle2
+                        className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <XCircle
+                        className="mt-0.5 h-5 w-5 shrink-0 text-rose-600"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <div
+                      className="rich-text flex-1 text-sm font-medium leading-relaxed text-slate-900"
+                      dangerouslySetInnerHTML={{
+                        __html: sanitizeHtml(question.question),
+                      }}
+                    />
+                  </div>
                   <div className="mt-3 space-y-1.5 text-sm">
-                    <p className="text-rose-700">
-                      <span className="font-medium">La tua risposta:</span>{" "}
-                      {yourOption ?? "—"}
-                    </p>
-                    <p className="text-emerald-700">
-                      <span className="font-medium">Risposta corretta:</span>{" "}
-                      {correctOption ?? "—"}
-                    </p>
+                    {isCorrect ? (
+                      <p className="text-emerald-700">
+                        <span className="font-medium">La tua risposta:</span>{" "}
+                        {OPTION_LETTERS[answer.selectedIndex]} {yourOption}
+                      </p>
+                    ) : (
+                      <>
+                        <p className="text-rose-700">
+                          <span className="font-medium">La tua risposta:</span>{" "}
+                          {OPTION_LETTERS[answer.selectedIndex]} {yourOption}
+                        </p>
+                        <p className="text-emerald-700">
+                          <span className="font-medium">Risposta corretta:</span>{" "}
+                          {OPTION_LETTERS[question.answer_index]} {correctOption}
+                        </p>
+                      </>
+                    )}
                   </div>
                   {question.explanation ? (
                     <details className="group mt-3">
@@ -463,12 +677,14 @@ function QuizResults({
               );
             })}
           </ul>
+
+          {wrong.length === 0 ? (
+            <Alert variant="success" className="mt-6">
+              Nessuna risposta errata: punteggio pieno! 🎉
+            </Alert>
+          ) : null}
         </section>
-      ) : (
-        <Alert variant="success" className="mt-8">
-          Nessuna risposta errata: punteggio pieno! 🎉
-        </Alert>
-      )}
+      ) : null}
     </div>
   );
 }

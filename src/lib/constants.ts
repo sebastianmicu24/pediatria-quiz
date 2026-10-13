@@ -20,9 +20,11 @@ export function difficultyLabel(difficulty: number | null | undefined): string {
   return DIFFICULTY_LABELS[difficulty] ?? `Livello ${difficulty}`;
 }
 
-export const COUNT_OPTIONS = [10, 20, 30, 50] as const;
-export const DEFAULT_QUESTION_COUNT = 20;
-export const MAX_QUESTIONS = 50;
+/**
+ * Dimensione dei lotti di domande caricati progressivamente durante
+ * un'esercitazione (primo lotto + richiami successivi).
+ */
+export const EXERCISE_BATCH_SIZE = 10;
 
 /**
  * Status dell'utente (dato facoltativo del profilo).
