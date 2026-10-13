@@ -6,6 +6,7 @@ import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Spinner } from "@/components/ui/spinner";
+import { REVIEW_OPTIONS } from "@/lib/constants";
 import { useResetOnHide } from "@/lib/use-reset-on-hide";
 
 const DIFFICULTY_OPTIONS = [
@@ -20,6 +21,7 @@ export function QuizSetup({ topics }: { topics: string[] }) {
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>(
     []
   );
+  const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
   const [starting, setStarting] = useState(false);
 
   // Se l'utente naviga via e poi torna indietro, il pulsante non deve
@@ -33,6 +35,7 @@ export function QuizSetup({ topics }: { topics: string[] }) {
     for (const difficulty of selectedDifficulties) {
       params.append("difficulty", difficulty);
     }
+    for (const status of selectedReviews) params.append("status", status);
     setStarting(true);
     const query = params.toString();
     router.push(query ? `/quiz?${query}` : "/quiz");
@@ -60,8 +63,27 @@ export function QuizSetup({ topics }: { topics: string[] }) {
         />
       </div>
 
+      <div className="mt-6">
+        <MultiSelect
+          legend="Ripasso"
+          options={REVIEW_OPTIONS.map((option) => ({
+            value: option.value,
+            label: option.label,
+          }))}
+          selected={selectedReviews}
+          onChange={setSelectedReviews}
+          allLabel="Tutte le domande"
+        />
+        <p className="mt-2 text-xs leading-relaxed text-slate-500">
+          Ogni nuova risposta aggiorna il ripasso: una domanda sbagliata entra
+          tra le «sbagliate», una corretta tra le «corrette». Suggerimento:
+          seleziona «nuove» e «sbagliate» per un ripasso mirato.
+        </p>
+      </div>
+
       <p className="mt-6 text-sm leading-relaxed text-slate-500">
-        Puoi selezionare più argomenti e più difficoltà. Le domande arrivano{" "}
+        Puoi selezionare più argomenti, più difficoltà e più stati di ripasso.
+        Le domande arrivano{" "}
         <strong className="font-semibold text-slate-700">una alla volta</strong>
         , con spiegazione immediata: continua finché vuoi e termina quando sei
         soddisfatto.

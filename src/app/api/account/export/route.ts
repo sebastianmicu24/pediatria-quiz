@@ -18,7 +18,7 @@ export async function GET() {
     supabase
       .from("profiles")
       .select(
-        "display_name, marketing_consent, accepted_terms_at, status, school, city, created_at, updated_at"
+        "display_name, marketing_consent, accepted_terms_at, status, school, city, year, tags, created_at, updated_at"
       )
       .eq("id", user.id)
       .maybeSingle(),

@@ -46,6 +46,9 @@ export function NavActions({
                 <Link href="/admin" className={navLink}>
                   Gestione quiz
                 </Link>
+                <Link href="/admin/utenti" className={navLink}>
+                  Utenti
+                </Link>
               </>
             ) : null}
             <LogoutButton />
@@ -113,6 +116,13 @@ export function NavActions({
                       </Link>
                       <Link href="/admin" className={mobileLink} onClick={close}>
                         Gestione quiz
+                      </Link>
+                      <Link
+                        href="/admin/utenti"
+                        className={mobileLink}
+                        onClick={close}
+                      >
+                        Utenti
                       </Link>
                     </>
                   ) : null}

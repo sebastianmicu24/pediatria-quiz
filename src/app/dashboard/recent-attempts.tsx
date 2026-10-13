@@ -8,8 +8,8 @@ export function RecentAttempts({ attempts }: { attempts: AttemptSummary[] }) {
     return (
       <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
         <p className="text-sm text-slate-500">
-          Non hai ancora completato nessun quiz. Inizia dal configuratore qui
-          sopra!
+          Non hai ancora fatto nessuna esercitazione. Inizia dal configuratore
+          qui sopra!
         </p>
       </div>
     );

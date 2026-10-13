@@ -15,8 +15,14 @@ create table if not exists public.profiles (
   status text check (
     status is null or status in ('studente', 'specializzando', 'professionista', 'altro')
   ),
+  year text check (
+    year is null or year in ('1','2','3','4','5','6','specializzazione','altro')
+  ),
   school text,
   city text,
+  tags text[] not null default '{}' check (
+    array_length(tags, 1) is null or array_length(tags, 1) <= 10
+  ),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -76,6 +82,27 @@ create index if not exists quiz_answers_attempt_idx
 comment on table public.quiz_answers is 'Singole risposte date durante un tentativo.';
 
 -- ─────────────────────────────────────────────────────────────
+-- 4b. PROGRESSI PER DOMANDA
+--     Ultima risposta di ciascun utente a ciascuna domanda:
+--     ogni nuova risposta sovrascrive la precedente, così le
+--     percentuali per materia riflettono sempre l'ultima risposta.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.question_progress (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  question_id uuid not null references public.questions (id) on delete cascade,
+  selected_index int not null check (selected_index >= 0),
+  is_correct boolean not null,
+  answer_count int not null default 1 check (answer_count >= 1),
+  answered_at timestamptz not null default now(),
+  primary key (user_id, question_id)
+);
+
+create index if not exists question_progress_user_correct_idx
+  on public.question_progress (user_id, is_correct);
+
+comment on table public.question_progress is 'Ultima risposta di ciascun utente a ciascuna domanda: ogni nuova risposta sovrascrive la precedente.';
+
+-- ─────────────────────────────────────────────────────────────
 -- 5. Trigger updated_at per i profili
 -- ─────────────────────────────────────────────────────────────
 create or replace function public.set_updated_at()
@@ -107,7 +134,7 @@ set search_path = ''
 as $$
 begin
   insert into public.profiles (
-    id, display_name, accepted_terms_at, marketing_consent, status, school, city
+    id, display_name, accepted_terms_at, marketing_consent, status, year, school, city
   )
   values (
     new.id,
@@ -121,6 +148,12 @@ begin
       when (new.raw_user_meta_data ->> 'status') in
         ('studente', 'specializzando', 'professionista', 'altro')
       then new.raw_user_meta_data ->> 'status'
+      else null
+    end,
+    case
+      when (new.raw_user_meta_data ->> 'year') in
+        ('1','2','3','4','5','6','specializzazione','altro')
+      then new.raw_user_meta_data ->> 'year'
       else null
     end,
     nullif(left(btrim(coalesce(new.raw_user_meta_data ->> 'school', '')), 100), ''),
@@ -219,6 +252,27 @@ create policy "quiz_answers_delete_own"
     )
   );
 
+-- question_progress: ogni utente vede e aggiorna solo i propri progressi
+-- (le scritture avvengono tramite la RPC save_quiz_attempt).
+drop policy if exists "question_progress_select_own" on public.question_progress;
+create policy "question_progress_select_own"
+  on public.question_progress for select
+  to authenticated
+  using ((select auth.uid()) = user_id);
+
+drop policy if exists "question_progress_insert_own" on public.question_progress;
+create policy "question_progress_insert_own"
+  on public.question_progress for insert
+  to authenticated
+  with check ((select auth.uid()) = user_id);
+
+drop policy if exists "question_progress_update_own" on public.question_progress;
+create policy "question_progress_update_own"
+  on public.question_progress for update
+  to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
 -- ─────────────────────────────────────────────────────────────
 -- 8. Funzione RPC: salvataggio atomico di un tentativo.
 --    Il punteggio viene calcolato lato server confrontando le
@@ -298,6 +352,27 @@ begin
   where (e ->> 'selected_index')::int >= 0
     and (e ->> 'selected_index')::int < jsonb_array_length(q.options);
 
+  -- Progressi: l'ultima risposta sovrascrive quella precedente.
+  insert into public.question_progress (
+    user_id, question_id, selected_index, is_correct, answer_count, answered_at
+  )
+  select
+    v_user_id,
+    q.id,
+    (e ->> 'selected_index')::int,
+    ((e ->> 'selected_index')::int = q.answer_index),
+    1,
+    now()
+  from jsonb_array_elements(p_answers) as e
+  join public.questions q on q.id = (e ->> 'question_id')::uuid
+  where (e ->> 'selected_index')::int >= 0
+    and (e ->> 'selected_index')::int < jsonb_array_length(q.options)
+  on conflict (user_id, question_id) do update
+    set selected_index = excluded.selected_index,
+        is_correct = excluded.is_correct,
+        answer_count = public.question_progress.answer_count + 1,
+        answered_at = now();
+
   return v_attempt_id;
 end;
 $$;
@@ -312,12 +387,15 @@ grant execute on function public.save_quiz_attempt(jsonb, text, int) to authenti
 --     p_topics / p_difficulties: filtri multipli (array).
 --     p_exclude: id già mostrati, da non riproporre nei lotti
 --     successivi dell'esercitazione progressiva.
+--     p_status: filtro di ripasso basato sull'ultima risposta
+--     ('new' = mai risposta, 'correct', 'wrong').
 -- ─────────────────────────────────────────────────────────────
 create or replace function public.get_quiz_questions(
   p_count int default 20,
   p_topics text[] default '{}',
   p_difficulties int[] default '{}',
-  p_exclude uuid[] default '{}'
+  p_exclude uuid[] default '{}',
+  p_status text[] default '{}'
 )
 returns setof public.questions
 language sql
@@ -327,9 +405,18 @@ set search_path = ''
 as $$
   select q.*
   from public.questions q
+  left join public.question_progress qp
+    on qp.question_id = q.id
+   and qp.user_id = (select auth.uid())
   where (coalesce(cardinality(p_topics), 0) = 0 or q.topic = any(p_topics))
     and (coalesce(cardinality(p_difficulties), 0) = 0 or q.difficulty = any(p_difficulties))
     and (coalesce(cardinality(p_exclude), 0) = 0 or not (q.id = any(p_exclude)))
+    and (
+      coalesce(cardinality(p_status), 0) = 0
+      or (qp.question_id is null and 'new' = any(p_status))
+      or (qp.is_correct is true and 'correct' = any(p_status))
+      or (qp.is_correct is false and 'wrong' = any(p_status))
+    )
   order by random()
   limit least(greatest(coalesce(p_count, 20), 1), 100);
 $$;
@@ -337,9 +424,10 @@ $$;
 -- Rimuove eventuali versioni precedenti (firme diverse).
 drop function if exists public.get_quiz_questions(int, text, int);
 drop function if exists public.get_quiz_questions(int, text, int, uuid[]);
+drop function if exists public.get_quiz_questions(int, text[], int[], uuid[]);
 
-revoke all on function public.get_quiz_questions(int, text[], int[], uuid[]) from public, anon;
-grant execute on function public.get_quiz_questions(int, text[], int[], uuid[]) to authenticated;
+revoke all on function public.get_quiz_questions(int, text[], int[], uuid[], text[]) from public, anon;
+grant execute on function public.get_quiz_questions(int, text[], int[], uuid[], text[]) to authenticated;
 
 -- ─────────────────────────────────────────────────────────────
 -- 9. Permessi (le policy RLS restano il vero filtro)
@@ -349,19 +437,23 @@ grant usage on schema public to anon, authenticated, service_role;
 grant select on public.questions to authenticated;
 
 -- L'utente può aggiornare solo i campi che gli competono: i riferimenti
--- ai consensi (accepted_terms_at) e i timestamp di auditoria non sono
--- modificabili nemmeno tramite API dirette.
+-- ai consensi (accepted_terms_at), i timestamp di auditoria e i tag
+-- (assegnati dagli admin) non sono modificabili nemmeno tramite API dirette.
 revoke update on public.profiles from authenticated;
 grant select on public.profiles to authenticated;
-grant update (display_name, marketing_consent, status, school, city)
+grant update (display_name, marketing_consent, status, school, city, year)
   on public.profiles to authenticated;
 
 grant select, insert, delete on public.quiz_attempts to authenticated;
 
 grant select, insert, delete on public.quiz_answers to authenticated;
 
+grant select, insert, update on public.question_progress to authenticated;
+
 grant all on public.profiles, public.questions, public.quiz_attempts, public.quiz_answers
   to service_role;
+
+grant all on public.question_progress to service_role;
 
 grant usage, select on all sequences in schema public to authenticated, service_role;
 
@@ -373,6 +465,8 @@ grant usage, select on all sequences in schema public to authenticated, service_
 alter table public.profiles add column if not exists status text;
 alter table public.profiles add column if not exists school text;
 alter table public.profiles add column if not exists city text;
+alter table public.profiles add column if not exists year text;
+alter table public.profiles add column if not exists tags text[] not null default '{}';
 
 do $$
 begin
@@ -384,6 +478,24 @@ begin
       check (
         status is null or status in ('studente', 'specializzando', 'professionista', 'altro')
       );
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint where conname = 'profiles_year_check'
+  ) then
+    alter table public.profiles
+      add constraint profiles_year_check
+      check (
+        year is null or year in ('1','2','3','4','5','6','specializzazione','altro')
+      );
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint where conname = 'profiles_tags_check'
+  ) then
+    alter table public.profiles
+      add constraint profiles_tags_check
+      check (array_length(tags, 1) is null or array_length(tags, 1) <= 10);
   end if;
 end $$;
 

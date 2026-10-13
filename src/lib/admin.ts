@@ -1,3 +1,6 @@
+import { notFound } from "next/navigation";
+import { requireUser } from "@/lib/auth";
+
 /**
  * Verifica se un'email appartiene agli amministratori
  * (variabile ADMIN_EMAILS, lista separata da virgole).
@@ -11,4 +14,15 @@ export function isAdminEmail(email: string | null | undefined): boolean {
     .filter(Boolean);
   if (allowlist.length === 0) return false;
   return allowlist.includes(email.toLowerCase());
+}
+
+/**
+ * Accesso alle pagine amministrazione: richiede l'utente autenticato e,
+ * se non è nell'allowlist ADMIN_EMAILS, risponde 404 (non rivela
+ * nemmeno l'esistenza della pagina). Da usare solo lato server.
+ */
+export async function requireAdmin() {
+  const user = await requireUser("/admin");
+  if (!isAdminEmail(user.email)) notFound();
+  return user;
 }

@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   Activity,
@@ -9,16 +8,16 @@ import {
   Target,
   Users,
 } from "lucide-react";
-import { requireUser } from "@/lib/auth";
-import { isAdminEmail } from "@/lib/admin";
+import { requireAdmin } from "@/lib/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchAllRows } from "@/lib/supabase/paginate";
 import { formatDate, formatPercent } from "@/lib/utils";
-import { statusLabel } from "@/lib/constants";
+import { statusLabel, yearLabel, YEAR_OPTIONS } from "@/lib/constants";
 
 type ProfileRow = {
   id: string;
   status: string | null;
+  year: string | null;
   school: string | null;
   city: string | null;
   created_at: string;
@@ -50,19 +49,38 @@ function addAttempt(bucket: Bucket, attempt: AttemptRow) {
 
 const DAY = 86_400_000;
 
+/**
+ * Profili per le statistiche. Se la migrazione di anno/tag non è ancora
+ * applicata al database, degrada senza la colonna year (la sezione
+ * "Esiti per anno di studi" mostrerà solo "Non indicato").
+ */
+async function fetchProfilesCompat(
+  admin: ReturnType<typeof createAdminClient>
+): Promise<ProfileRow[]> {
+  const withYear = await fetchAllRows<ProfileRow>(() =>
+    admin
+      .from("profiles")
+      .select("id, status, year, school, city, created_at")
+      .order("created_at", { ascending: true })
+  );
+  if (!withYear.error) return withYear.rows;
+
+  const withoutYear = await fetchAllRows<Omit<ProfileRow, "year">>(() =>
+    admin
+      .from("profiles")
+      .select("id, status, school, city, created_at")
+      .order("created_at", { ascending: true })
+  );
+  return withoutYear.rows.map((row) => ({ ...row, year: null }));
+}
+
 export async function StatisticheContent() {
-  const user = await requireUser("/statistiche");
-  if (!isAdminEmail(user.email)) notFound();
+  await requireAdmin();
 
   const admin = createAdminClient();
 
-  const [profilesResult, attemptsResult, answersResult] = await Promise.all([
-    fetchAllRows<ProfileRow>(() =>
-      admin
-        .from("profiles")
-        .select("id, status, school, city, created_at")
-        .order("created_at", { ascending: true })
-    ),
+  const [profiles, attemptsResult, answersResult] = await Promise.all([
+    fetchProfilesCompat(admin),
     fetchAllRows<AttemptRow>(() =>
       admin
         .from("quiz_attempts")
@@ -77,7 +95,6 @@ export async function StatisticheContent() {
     ),
   ]);
 
-  const profiles = profilesResult.rows;
   const attempts = attemptsResult.rows;
   const answers = answersResult.rows;
 
@@ -110,6 +127,14 @@ export async function StatisticheContent() {
     statusBuckets.set(key, bucket);
   }
 
+  const yearBuckets = new Map<string, Bucket>();
+  for (const profile of profiles) {
+    const key = yearLabel(profile.year) ?? "Non indicato";
+    const bucket = yearBuckets.get(key) ?? emptyBucket();
+    bucket.users.add(profile.id);
+    yearBuckets.set(key, bucket);
+  }
+
   const cityBuckets = new Map<string, Bucket>();
   const schoolBuckets = new Map<string, Bucket>();
   for (const profile of profiles) {
@@ -135,6 +160,11 @@ export async function StatisticheContent() {
     addAttempt(statusBucket, attempt);
     statusBuckets.set(statusKey, statusBucket);
 
+    const yearKey = yearLabel(profile?.year ?? null) ?? "Non indicato";
+    const yearBucket = yearBuckets.get(yearKey) ?? emptyBucket();
+    addAttempt(yearBucket, attempt);
+    yearBuckets.set(yearKey, yearBucket);
+
     const city = profile?.city?.trim();
     if (city) {
       const bucket = cityBuckets.get(city) ?? emptyBucket();
@@ -154,6 +184,12 @@ export async function StatisticheContent() {
   const statusRows = [...statusBuckets.entries()].sort(sortByUsers);
   const cityRows = [...cityBuckets.entries()].sort(sortByUsers).slice(0, 8);
   const schoolRows = [...schoolBuckets.entries()].sort(sortByUsers).slice(0, 8);
+
+  // Per l'anno di studi l'ordine cronologico è più utile di quello per utenti.
+  const yearOrder = [...YEAR_OPTIONS.map((option) => option.label), "Non indicato"];
+  const yearRows = [...yearBuckets.entries()].sort(
+    (a, b) => yearOrder.indexOf(a[0]) - yearOrder.indexOf(b[0])
+  );
 
   // ── Attività ultimi 14 giorni ───────────────────────────────
   const activityDays: { label: string; count: number }[] = [];
@@ -248,7 +284,7 @@ export async function StatisticheContent() {
         />
         <KpiCard
           icon={BarChart3}
-          label="Quiz completati"
+          label="Quiz svolti"
           value={String(totalAttempts)}
           hint={`${totalQuestions} risposte totali`}
         />
@@ -332,6 +368,27 @@ export async function StatisticheContent() {
           ) : (
             <ul className="mt-5 space-y-4">
               {statusRows.map(([label, bucket]) => (
+                <RankItem key={label} label={label} bucket={bucket} />
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Esiti per anno di studi */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+              <GraduationCap className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <h2 className="text-base font-semibold text-slate-900">
+              Esiti per anno di studi
+            </h2>
+          </div>
+          {yearRows.length === 0 ? (
+            <EmptyNote text="Nessun dato disponibile." />
+          ) : (
+            <ul className="mt-5 space-y-4">
+              {yearRows.map(([label, bucket]) => (
                 <RankItem key={label} label={label} bucket={bucket} />
               ))}
             </ul>
@@ -429,7 +486,7 @@ export async function StatisticheContent() {
       <p className="mt-6 text-xs leading-relaxed text-slate-400">
         Nota: i dati sono mostrati esclusivamente in forma aggregata; non è
         possibile risalire al singolo utente. Gli utenti non registrati con
-        almeno un quiz completato non compaiono nelle statistiche per
+        almeno un quiz svolto non compaiono nelle statistiche per
         argomento.
       </p>
     </>

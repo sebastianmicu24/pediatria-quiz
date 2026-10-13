@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { updateProfile, type ProfileFormState } from "./actions";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { STATUS_OPTIONS, YEAR_OPTIONS } from "@/lib/constants";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox, TextField } from "@/components/ui/input";
@@ -14,12 +14,14 @@ export function ProfileForm({
   defaultDisplayName,
   defaultMarketingConsent,
   defaultStatus,
+  defaultYear,
   defaultSchool,
   defaultCity,
 }: {
   defaultDisplayName: string;
   defaultMarketingConsent: boolean;
   defaultStatus: string;
+  defaultYear: string;
   defaultSchool: string;
   defaultCity: string;
 }) {
@@ -64,6 +66,28 @@ export function ProfileForm({
             >
               <option value="">Preferisco non indicarlo</option>
               {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="year"
+              className="block text-sm font-medium text-slate-700"
+            >
+              Anno di studi
+            </label>
+            <select
+              id="year"
+              name="year"
+              defaultValue={defaultYear}
+              className="block h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+            >
+              <option value="">Preferisco non indicarlo</option>
+              {YEAR_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>

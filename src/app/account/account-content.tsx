@@ -1,6 +1,7 @@
 import { requireUser } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
+import { isMissingColumnError } from "@/lib/supabase/schema-compat";
 import { LEGAL } from "@/lib/legal";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
@@ -12,18 +13,46 @@ import {
   ShieldCheck,
   Trash2,
   UserRound,
+  Users,
 } from "lucide-react";
 import { ProfileForm } from "./profile-form";
 import { ChangePasswordCard, DeleteAccountCard } from "./danger-zone";
 
+type AccountProfile = {
+  display_name: string | null;
+  marketing_consent: boolean;
+  accepted_terms_at: string | null;
+  status: string | null;
+  school: string | null;
+  city: string | null;
+  year?: string | null;
+  tags?: string[] | null;
+};
+
 export async function AccountContent() {
   const user = await requireUser("/account");
   const supabase = await createClient();
-  const { data: profile } = await supabase
+
+  // Se la migrazione di anno/tag non è ancora applicata al database,
+  // carica il profilo senza le colonne nuove (degradazione con grazia).
+  const fullProfile = await supabase
     .from("profiles")
-    .select("display_name, marketing_consent, accepted_terms_at, status, school, city")
+    .select(
+      "display_name, marketing_consent, accepted_terms_at, status, school, city, year, tags"
+    )
     .eq("id", user.id)
     .maybeSingle();
+  let profile = fullProfile.data as AccountProfile | null;
+  if (fullProfile.error && isMissingColumnError(fullProfile.error.message)) {
+    const legacyProfile = await supabase
+      .from("profiles")
+      .select(
+        "display_name, marketing_consent, accepted_terms_at, status, school, city"
+      )
+      .eq("id", user.id)
+      .maybeSingle();
+    profile = legacyProfile.data as AccountProfile | null;
+  }
 
   const isAdmin = isAdminEmail(user.email);
 
@@ -71,10 +100,29 @@ export async function AccountContent() {
             defaultDisplayName={profile?.display_name ?? user.displayName ?? ""}
             defaultMarketingConsent={profile?.marketing_consent ?? false}
             defaultStatus={profile?.status ?? ""}
+            defaultYear={profile?.year ?? ""}
             defaultSchool={profile?.school ?? ""}
             defaultCity={profile?.city ?? ""}
           />
         </div>
+
+        {Array.isArray(profile?.tags) && profile.tags.length > 0 ? (
+          <div className="mt-6 border-t border-slate-100 pt-5">
+            <p className="text-sm font-medium text-slate-500">
+              Tag assegnati dal team
+            </p>
+            <ul className="mt-2 flex flex-wrap gap-2">
+              {profile.tags.map((tag: string) => (
+                <li
+                  key={tag}
+                  className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700"
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </section>
 
       {/* Sicurezza */}
@@ -157,6 +205,13 @@ export async function AccountContent() {
             >
               <Pencil className="h-4 w-4" aria-hidden="true" />
               Gestisci i quiz
+            </Link>
+            <Link
+              href="/admin/utenti"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 sm:w-auto"
+            >
+              <Users className="h-4 w-4" aria-hidden="true" />
+              Gestisci gli utenti
             </Link>
           </div>
         </section>

@@ -1,15 +1,13 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
-import { isAdminEmail } from "@/lib/admin";
+import { requireAdmin } from "@/lib/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchAllRows } from "@/lib/supabase/paginate";
 import { Alert } from "@/components/ui/alert";
+import { AdminTabs } from "@/components/admin/admin-tabs";
 import { AdminQuizManager, type AdminQuestion } from "./admin-quiz-manager";
 
 export async function AdminContent() {
-  const user = await requireUser("/admin");
-  if (!isAdminEmail(user.email)) notFound();
+  await requireAdmin();
 
   const admin = createAdminClient();
   const { rows, error } = await fetchAllRows<AdminQuestion>(() =>
@@ -67,6 +65,10 @@ export async function AdminContent() {
           Vai alle statistiche
         </Link>
       </header>
+
+      <div className="mt-6">
+        <AdminTabs active="quiz" />
+      </div>
 
       <div className="mt-6">
         <AdminQuizManager questions={questions} topics={topics} />

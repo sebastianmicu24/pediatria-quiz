@@ -1,26 +1,51 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/paginate";
 import { requireUser } from "@/lib/auth";
 import { formatPercent } from "@/lib/utils";
 import { Alert } from "@/components/ui/alert";
-import Link from "next/link";
 import { StatCard } from "./stat-card";
 import { QuizSetup } from "./quiz-setup";
 import { RecentAttempts } from "./recent-attempts";
-import { TopicStats } from "./topic-stats";
+import { TopicPies } from "./topic-pies";
 import type { AttemptSummary, TopicStat } from "@/lib/types";
-import { BarChart3, BookOpenCheck, Target, Trophy } from "lucide-react";
+import { BarChart3, BookOpenCheck, Target } from "lucide-react";
 
-type AnswerStatRow = {
+type TopicAnswerRow = {
   is_correct: boolean;
   questions: { topic?: string } | { topic?: string }[] | null;
 };
+
+/**
+ * Esiti per materia basati sui progressi: una riga per domanda con
+ * l'ultima risposta data (le nuove risposte sovrascrivono le vecchie).
+ * Se la tabella question_progress non è ancora presente (migrazione
+ * non applicata), ricade sulle risposte storiche.
+ */
+async function fetchTopicProgress(
+  supabase: SupabaseClient
+): Promise<{ rows: TopicAnswerRow[]; error: string | null }> {
+  const progress = await fetchAllRows<TopicAnswerRow>(() =>
+    supabase
+      .from("question_progress")
+      .select("is_correct, questions!inner(topic)")
+      .order("question_id", { ascending: true })
+  );
+  if (!progress.error) return progress;
+
+  return fetchAllRows<TopicAnswerRow>(() =>
+    supabase
+      .from("quiz_answers")
+      .select("is_correct, questions!inner(topic)")
+      .order("id", { ascending: true })
+  );
+}
 
 export async function DashboardContent() {
   const user = await requireUser("/dashboard");
   const supabase = await createClient();
 
-  const [profileResult, attemptsResult, answersResult, topicsResult] =
+  const [profileResult, attemptsResult, topicProgressResult, topicsResult] =
     await Promise.all([
       supabase
         .from("profiles")
@@ -35,14 +60,7 @@ export async function DashboardContent() {
         .eq("user_id", user.id)
         .order("completed_at", { ascending: false })
         .limit(500),
-      fetchAllRows<AnswerStatRow>(
-        () =>
-          supabase
-            .from("quiz_answers")
-            .select("is_correct, questions!inner(topic)")
-            .order("id", { ascending: true }),
-        20_000
-      ),
+      fetchTopicProgress(supabase),
       fetchAllRows<{ topic: string | null }>(() =>
         supabase
           .from("questions")
@@ -54,7 +72,7 @@ export async function DashboardContent() {
   const setupError = [
     profileResult.error,
     attemptsResult.error,
-    answersResult.error,
+    topicProgressResult.error,
     topicsResult.error,
   ].find(Boolean);
 
@@ -69,9 +87,9 @@ export async function DashboardContent() {
   const totalQuestions = attempts.reduce((sum, a) => sum + a.total_questions, 0);
   const totalCorrect = attempts.reduce((sum, a) => sum + a.correct_answers, 0);
 
-  // Statistiche per argomento
+  // Statistiche per argomento (ultima risposta per domanda)
   const topicMap = new Map<string, { total: number; correct: number }>();
-  for (const row of answersResult.rows) {
+  for (const row of topicProgressResult.rows) {
     const nested = row.questions as { topic?: string } | { topic?: string }[] | null;
     const topic = Array.isArray(nested)
       ? nested[0]?.topic
@@ -121,34 +139,12 @@ export async function DashboardContent() {
         </Alert>
       ) : null}
 
-      {!setupError && profileResult.data && !profileResult.data.status ? (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-200 bg-brand-50/70 px-4 py-3.5">
-          <p className="text-sm leading-relaxed text-brand-900">
-            <strong>Aiutaci a migliorare:</strong> aggiungi status, città e
-            scuola al profilo — sono facoltativi e usati solo per statistiche
-            aggregate.
-          </p>
-          <Link
-            href="/account"
-            className="text-sm font-medium text-brand-700 underline underline-offset-2"
-          >
-            Completa il profilo
-          </Link>
-        </div>
-      ) : null}
-
-      <section className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard
-          icon={Trophy}
-          label="Esercitazioni completate"
-          value={String(totalAttempts)}
-          hint={totalAttempts === 0 ? "Nessuna esercitazione ancora" : "In totale"}
-        />
+      <section className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
         <StatCard
           icon={BookOpenCheck}
           label="Domande risposte"
           value={String(totalQuestions)}
-          hint="Su tutti i quiz"
+          hint="Su tutte le esercitazioni"
         />
         <StatCard
           icon={Target}
@@ -187,10 +183,14 @@ export async function DashboardContent() {
 
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-            Prestazioni per argomento
+            Percentuali per materia
           </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Fatti, corretti e sbagliati: ogni nuova risposta sovrascrive la
+            precedente.
+          </p>
           <div className="mt-4">
-            <TopicStats stats={topicStats.slice(0, 8)} />
+            <TopicPies stats={topicStats.slice(0, 10)} />
           </div>
         </div>
       </section>

@@ -42,7 +42,7 @@ export function QuizClient({
   meta,
 }: {
   initialQuestions: Question[];
-  meta: { topics: string[]; difficulties: number[] };
+  meta: { topics: string[]; difficulties: number[]; statuses: string[] };
 }) {
   const router = useRouter();
 
@@ -131,6 +131,7 @@ export function QuizClient({
     fetchQuizBatch({
       topics: meta.topics,
       difficulties: meta.difficulties,
+      statuses: meta.statuses,
       exclude: questions.map((q) => q.id),
       count: EXERCISE_BATCH_SIZE,
     })
@@ -167,7 +168,7 @@ export function QuizClient({
         loadingRef.current = false;
         setLoadingMore(false);
       });
-  }, [questions, index, meta.topics, meta.difficulties, exhausted, advance]);
+  }, [questions, index, meta.topics, meta.difficulties, meta.statuses, exhausted, advance]);
 
   // Precarica il prossimo lotto quando il corrente è quasi finito.
   useEffect(() => {
@@ -495,7 +496,7 @@ function QuizResults({
     <div>
       <header className="text-center">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-          Esercitazione completata!
+          Esercitazione terminata!
         </h1>
         <p className="mt-2 text-base text-slate-600">{message}</p>
       </header>

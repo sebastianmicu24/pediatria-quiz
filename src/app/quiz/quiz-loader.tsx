@@ -1,7 +1,7 @@
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { parseDifficulties } from "@/lib/utils";
-import { EXERCISE_BATCH_SIZE } from "@/lib/constants";
+import { EXERCISE_BATCH_SIZE, isReviewStatus } from "@/lib/constants";
 import { fetchQuestionBatch } from "@/lib/questions";
 import { QuizClient } from "./quiz-client";
 import { QuizEmpty } from "./quiz-empty";
@@ -31,11 +31,13 @@ export async function QuizLoader({
   const raw = await searchParams;
   const topics = toStringList(raw.topic).slice(0, 25);
   const difficulties = parseDifficulties(raw.difficulty);
+  const statuses = toStringList(raw.status).filter(isReviewStatus);
 
   const supabase = await createClient();
   const questions = await fetchQuestionBatch(supabase, {
     topics,
     difficulties,
+    statuses,
     count: EXERCISE_BATCH_SIZE,
     exclude: [],
   });
@@ -44,7 +46,7 @@ export async function QuizLoader({
     return (
       <QuizEmpty
         variant="empty"
-        message="Nessuna domanda trovata con i filtri selezionati. Prova a cambiare argomenti o difficoltà."
+        message="Nessuna domanda trovata con i filtri selezionati. Prova a cambiare argomenti, difficoltà o ripasso."
       />
     );
   }
@@ -58,7 +60,7 @@ export async function QuizLoader({
     <QuizClient
       key={quizKey}
       initialQuestions={questions}
-      meta={{ topics, difficulties }}
+      meta={{ topics, difficulties, statuses }}
     />
   );
 }

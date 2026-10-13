@@ -3,10 +3,10 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { MailCheck } from "lucide-react";
+import { ChevronDown, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { STATUS_OPTIONS, YEAR_OPTIONS } from "@/lib/constants";
 import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
+  const [year, setYear] = useState("");
   const [school, setSchool] = useState("");
   const [city, setCity] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -66,6 +67,7 @@ export function SignupForm() {
             accepted_terms: true,
             marketing_consent: marketingConsent,
             status: status || null,
+            year: year || null,
             school: school.trim().slice(0, 100) || null,
             city: city.trim().slice(0, 60) || null,
           },
@@ -171,66 +173,99 @@ export function SignupForm() {
           error={fieldError.password}
         />
 
-        {/* Dati facoltativi per le statistiche aggregate */}
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
-          <h3 className="text-sm font-semibold text-slate-900">
-            Raccontaci di te{" "}
-            <span className="font-normal text-slate-500">(facoltativo)</span>
-          </h3>
-          <p className="mt-1 text-xs leading-relaxed text-slate-500">
-            Ci aiuti a misurare — solo in forma aggregata — gli esiti degli
-            studenti. Puoi modificare o rimuovere questi dati quando vuoi dal
-            tuo account.
-          </p>
+        {/* Dati facoltativi per le statistiche aggregate: sezione discreta,
+            chiusa di default, per non appesantire la registrazione. */}
+        <details className="group rounded-2xl border border-slate-200 bg-slate-50/60">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm text-slate-600 transition-colors hover:text-slate-900 [&::-webkit-details-marker]:hidden">
+            <ChevronDown
+              className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180"
+              aria-hidden="true"
+            />
+            <span>
+              Raccontaci di te{" "}
+              <span className="text-slate-400">(facoltativo)</span>
+            </span>
+          </summary>
 
-          <div className="mt-4 space-y-4">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="status"
-                className="block text-sm font-medium text-slate-700"
-              >
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="block h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
-              >
-                <option value="">Preferisco non indicarlo</option>
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="border-t border-slate-200/70 px-4 pb-4 pt-3">
+            <p className="text-xs leading-relaxed text-slate-500">
+              Ci aiuti a misurare — solo in forma aggregata — gli esiti degli
+              studenti. Puoi modificare o rimuovere questi dati quando vuoi dal
+              tuo account.
+            </p>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <TextField
-                id="city"
-                name="city"
-                type="text"
-                label="Città"
-                placeholder="Es. Roma"
-                maxLength={60}
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-              <TextField
-                id="school"
-                name="school"
-                type="text"
-                label="Scuola / Università"
-                placeholder="Es. Sapienza"
-                maxLength={100}
-                value={school}
-                onChange={(e) => setSchool(e.target.value)}
-              />
+            <div className="mt-4 space-y-4">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-slate-700"
+                >
+                  Status
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="block h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                >
+                  <option value="">Preferisco non indicarlo</option>
+                  {STATUS_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="year"
+                  className="block text-sm font-medium text-slate-700"
+                >
+                  Anno di studi
+                </label>
+                <select
+                  id="year"
+                  name="year"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="block h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                >
+                  <option value="">Preferisco non indicarlo</option>
+                  {YEAR_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <TextField
+                  id="city"
+                  name="city"
+                  type="text"
+                  label="Città"
+                  placeholder="Es. Roma"
+                  maxLength={60}
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+                <TextField
+                  id="school"
+                  name="school"
+                  type="text"
+                  label="Scuola / Università"
+                  placeholder="Es. Sapienza"
+                  maxLength={100}
+                  value={school}
+                  onChange={(e) => setSchool(e.target.value)}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </details>
 
         <div className="space-y-3">
           <Checkbox

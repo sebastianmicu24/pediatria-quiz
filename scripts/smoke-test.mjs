@@ -53,6 +53,13 @@ const fail = (name, msg) => {
   console.log(`  FAIL ${name} — ${msg}`);
 };
 
+/** Errore dovuto a una colonna non ancora presente (migrazione non applicata). */
+const isMissingColumn = (error) =>
+  !!error &&
+  (error.code === "42703" ||
+    error.code === "PGRST204" ||
+    /does not exist|schema cache/i.test(error.message ?? ""));
+
 const admin = createClient(url, service, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
@@ -80,6 +87,23 @@ console.log("\n[2] Schema database");
   if ((res.count ?? 0) === 0) {
     console.log("→ Le domande non sono ancora state importate. Esegui: npm run import:questions");
   }
+
+  const profileColumns = await admin
+    .from("profiles")
+    .select("id, year, tags")
+    .limit(1);
+  if (profileColumns.error) {
+    if (isMissingColumn(profileColumns.error)) {
+      warn(
+        "Colonne profilo (anno/tag)",
+        "non ancora presenti: esegui supabase/migrations/2026-10-12_anno-e-tag-utenti.sql"
+      );
+    } else {
+      fail("Colonne profilo (anno/tag)", profileColumns.error.message);
+    }
+  } else {
+    ok("Colonne profilo (anno/tag)", "presenti");
+  }
 }
 
 console.log("\n[3] Utente di test + trigger profilo");
@@ -96,6 +120,7 @@ let userId = null;
       accepted_terms: true,
       marketing_consent: false,
       status: "studente",
+      year: "3",
       school: "Università Test",
       city: "Roma",
     },
@@ -106,11 +131,25 @@ let userId = null;
     userId = created.data.user.id;
     ok("Utente creato", testEmail);
 
-    const profile = await admin
+    let profile = await admin
       .from("profiles")
-      .select("display_name, accepted_terms_at, marketing_consent, status, school, city")
+      .select(
+        "display_name, accepted_terms_at, marketing_consent, status, year, school, city, tags"
+      )
       .eq("id", userId)
       .maybeSingle();
+    let hasYearTags = true;
+    if (profile.error && isMissingColumn(profile.error)) {
+      hasYearTags = false;
+      profile = await admin
+        .from("profiles")
+        .select(
+          "display_name, accepted_terms_at, marketing_consent, status, school, city"
+        )
+        .eq("id", userId)
+        .maybeSingle();
+    }
+
     if (profile.error || !profile.data) {
       fail("Trigger profilo", profile.error?.message ?? "profilo non trovato");
     } else if (
@@ -129,8 +168,45 @@ let userId = null;
     } else {
       ok(
         "Profilo creato dal trigger",
-        `nome="${profile.data.display_name}", consenso termini=${profile.data.accepted_terms_at !== null}, status/scuola/città copiati`
+        `nome="${profile.data.display_name}", consenso termini=${profile.data.accepted_terms_at !== null}, ${
+          hasYearTags ? "status/anno/scuola/città" : "status/scuola/città"
+        } copiati`
       );
+
+      if (!hasYearTags) {
+        warn(
+          "Campo profilo (anno) + tag utente",
+          "colonne non ancora presenti: esegui supabase/migrations/2026-10-12_anno-e-tag-utenti.sql"
+        );
+      } else if (profile.data.year !== "3") {
+        fail(
+          "Campo profilo (anno)",
+          `anno=${JSON.stringify(profile.data.year)} (atteso "3")`
+        );
+      } else {
+        ok("Campo profilo (anno)", "anno copiato dal trigger");
+
+        // I tag sono scrivibili solo dal service role (admin): round-trip.
+        const tagsUpdate = await admin
+          .from("profiles")
+          .update({ tags: ["smoke-test"] })
+          .eq("id", userId)
+          .select("tags")
+          .maybeSingle();
+        if (
+          tagsUpdate.error ||
+          !Array.isArray(tagsUpdate.data?.tags) ||
+          tagsUpdate.data.tags[0] !== "smoke-test"
+        ) {
+          fail(
+            "Tag utente (admin)",
+            tagsUpdate.error?.message ??
+              "scrittura/rilettura non riuscita"
+          );
+        } else {
+          ok("Tag utente (admin)", "scrittura e rilettura via service role ok");
+        }
+      }
     }
   }
 }
@@ -185,6 +261,68 @@ if (userId) {
             ok("Tentativo salvato e punteggio corretto", `${actual}/${attempt.data.total_questions} (attese ${expected}/${questions.data.length})`);
           } else {
             fail("Punteggio tentativo", `attese ${expected}/${questions.data.length}, ottenute ${actual}/${attempt.data.total_questions}`);
+          }
+        }
+
+        // Progressi: ogni risposta salvata aggiorna question_progress
+        const progress = await userClient
+          .from("question_progress")
+          .select("question_id, is_correct, answer_count")
+          .in(
+            "question_id",
+            questions.data.map((row) => row.id)
+          );
+        if (progress.error) {
+          if (isMissingColumn(progress.error)) {
+            warn(
+              "Progressi domande",
+              "tabella non ancora presente: esegui supabase/migrations/2026-10-13_progressi-domande.sql"
+            );
+          } else {
+            fail("Progressi domande", progress.error.message);
+          }
+        } else if ((progress.data ?? []).length !== questions.data.length) {
+          fail(
+            "Progressi domande",
+            `attese ${questions.data.length} righe, trovate ${progress.data?.length ?? 0}`
+          );
+        } else {
+          ok("Progressi domande", `${progress.data.length} righe create (2 corrette, 1 sbagliata)`);
+
+          // La nuova risposta sovrascrive la precedente: rispondi di nuovo
+          // alla prima domanda, stavolta in modo errato.
+          const first = questions.data[0];
+          const wrongIndex = (first.answer_index + 1) % first.options.length;
+          const overwrite = await userClient.rpc("save_quiz_attempt", {
+            p_answers: [{ question_id: first.id, selected_index: wrongIndex }],
+            p_topic: "Smoke Test",
+            p_difficulty: 2,
+          });
+          if (overwrite.error) {
+            fail("Sovrascrittura progressi", overwrite.error.message);
+          } else {
+            const updated = await userClient
+              .from("question_progress")
+              .select("is_correct, answer_count, selected_index")
+              .eq("question_id", first.id)
+              .maybeSingle();
+            if (
+              updated.error ||
+              !updated.data ||
+              updated.data.is_correct !== false ||
+              updated.data.answer_count !== 2 ||
+              updated.data.selected_index !== wrongIndex
+            ) {
+              fail(
+                "Sovrascrittura progressi",
+                `riga aggiornata: ${JSON.stringify(updated.data)}`
+              );
+            } else {
+              ok(
+                "Sovrascrittura progressi",
+                "la nuova risposta sostituisce la precedente (conteggio=2)"
+              );
+            }
           }
         }
 
@@ -296,6 +434,39 @@ if (userId) {
           ok(
             "RPC get_quiz_questions (esclusione)",
             "la domanda già vista non viene riproposta"
+          );
+        }
+
+        // Filtro di ripasso (richiede la migrazione 2026-10-13)
+        const answeredIds = new Set(questions.data.map((row) => row.id));
+        const rpcNew = await userClient.rpc("get_quiz_questions", {
+          p_count: 10,
+          p_topics: [],
+          p_difficulties: [],
+          p_exclude: [],
+          p_status: ["new"],
+        });
+        if (rpcNew.error) {
+          if (/could not find the function/i.test(rpcNew.error.message)) {
+            warn(
+              "RPC get_quiz_questions (ripasso)",
+              "filtro p_status non ancora supportato: esegui supabase/migrations/2026-10-13_progressi-domande.sql"
+            );
+          } else {
+            fail("RPC get_quiz_questions (ripasso)", rpcNew.error.message);
+          }
+        } else if (
+          Array.isArray(rpcNew.data) &&
+          rpcNew.data.some((row) => answeredIds.has(row.id))
+        ) {
+          fail(
+            "RPC get_quiz_questions (ripasso)",
+            "restituita una domanda già risposta tra le 'nuove'"
+          );
+        } else {
+          ok(
+            "RPC get_quiz_questions (ripasso)",
+            `${rpcNew.data.length} domande 'nuove', nessuna già risposta`
           );
         }
       }

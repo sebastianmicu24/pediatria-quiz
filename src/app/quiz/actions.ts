@@ -2,6 +2,7 @@
 
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { isReviewStatus } from "@/lib/constants";
 import { fetchQuestionBatch } from "@/lib/questions";
 import type { Question } from "@/lib/types";
 
@@ -69,6 +70,7 @@ export async function saveQuizAttempt(
 export type QuizBatchInput = {
   topics: string[];
   difficulties: number[];
+  statuses: string[];
   exclude: string[];
   count: number;
 };
@@ -106,6 +108,9 @@ export async function fetchQuizBatch(
         (d) => d === 1 || d === 2 || d === 3
       )
     : [];
+  const statuses = Array.isArray(input?.statuses)
+    ? [...new Set(input.statuses.filter((s) => isReviewStatus(s)))]
+    : [];
   const count = Number.isInteger(input?.count)
     ? Math.min(Math.max(input.count, 1), 50)
     : 10;
@@ -119,6 +124,7 @@ export async function fetchQuizBatch(
   const questions = await fetchQuestionBatch(supabase, {
     topics,
     difficulties,
+    statuses,
     count,
     exclude,
   });

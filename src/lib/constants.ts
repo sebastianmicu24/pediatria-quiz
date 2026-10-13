@@ -47,3 +47,45 @@ export function statusLabel(value: string | null | undefined): string | null {
   if (!value) return null;
   return STATUS_OPTIONS.find((option) => option.value === value)?.label ?? value;
 }
+
+/**
+ * Anno di studi (dato facoltativo del profilo).
+ * Usato per le statistiche aggregate: mai mostrato pubblicamente.
+ */
+export const YEAR_OPTIONS = [
+  { value: "1", label: "1° anno" },
+  { value: "2", label: "2° anno" },
+  { value: "3", label: "3° anno" },
+  { value: "4", label: "4° anno" },
+  { value: "5", label: "5° anno" },
+  { value: "6", label: "6° anno" },
+  { value: "specializzazione", label: "Scuola di specializzazione" },
+  { value: "altro", label: "Altro" },
+] as const;
+
+export type ProfileYear = (typeof YEAR_OPTIONS)[number]["value"];
+
+export function isProfileYear(value: string | null | undefined): value is ProfileYear {
+  return YEAR_OPTIONS.some((option) => option.value === value);
+}
+
+export function yearLabel(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return YEAR_OPTIONS.find((option) => option.value === value)?.label ?? value;
+}
+
+/**
+ * Filtro di ripasso basato sull'ultima risposta data a ogni domanda.
+ * Nessuna selezione = tutte le domande.
+ */
+export const REVIEW_OPTIONS = [
+  { value: "new", label: "Mai risposte (nuove)" },
+  { value: "correct", label: "Risposte correttamente" },
+  { value: "wrong", label: "Risposte in modo errato" },
+] as const;
+
+export type ReviewStatus = (typeof REVIEW_OPTIONS)[number]["value"];
+
+export function isReviewStatus(value: string | null | undefined): value is ReviewStatus {
+  return REVIEW_OPTIONS.some((option) => option.value === value);
+}
