@@ -1,12 +1,19 @@
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { parseDifficulty } from "@/lib/utils";
+import { parseDifficulties } from "@/lib/utils";
 import { EXERCISE_BATCH_SIZE } from "@/lib/constants";
 import { fetchQuestionBatch } from "@/lib/questions";
 import { QuizClient } from "./quiz-client";
 import { QuizEmpty } from "./quiz-empty";
 
 type QuizSearchParams = Awaited<PageProps<"/quiz">["searchParams"]>;
+
+/** Normalizza un parametro ripetuto (?topic=A&topic=B) in una lista. */
+function toStringList(value: string | string[] | undefined): string[] {
+  if (value === undefined) return [];
+  const list = Array.isArray(value) ? value : [value];
+  return [...new Set(list.map((item) => item.trim()).filter(Boolean))];
+}
 
 /**
  * Carica il primo lotto di domande dell'esercitazione.
@@ -22,18 +29,13 @@ export async function QuizLoader({
   await requireUser("/quiz");
 
   const raw = await searchParams;
-  const topic =
-    typeof raw.topic === "string" && raw.topic.trim() !== ""
-      ? raw.topic.trim()
-      : null;
-  const difficulty = parseDifficulty(
-    typeof raw.difficulty === "string" ? raw.difficulty : undefined
-  );
+  const topics = toStringList(raw.topic).slice(0, 25);
+  const difficulties = parseDifficulties(raw.difficulty);
 
   const supabase = await createClient();
   const questions = await fetchQuestionBatch(supabase, {
-    topic,
-    difficulty,
+    topics,
+    difficulties,
     count: EXERCISE_BATCH_SIZE,
     exclude: [],
   });
@@ -42,7 +44,7 @@ export async function QuizLoader({
     return (
       <QuizEmpty
         variant="empty"
-        message="Nessuna domanda trovata con i filtri selezionati. Prova a cambiare argomento o difficoltà."
+        message="Nessuna domanda trovata con i filtri selezionati. Prova a cambiare argomenti o difficoltà."
       />
     );
   }
@@ -56,7 +58,7 @@ export async function QuizLoader({
     <QuizClient
       key={quizKey}
       initialQuestions={questions}
-      meta={{ topic, difficulty }}
+      meta={{ topics, difficulties }}
     />
   );
 }

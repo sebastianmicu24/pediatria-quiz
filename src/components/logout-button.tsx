@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 export function LogoutButton({ className }: { className?: string }) {
-  const router = useRouter();
   const [pending, setPending] = useState(false);
 
   async function handleLogout() {
@@ -18,8 +16,11 @@ export function LogoutButton({ className }: { className?: string }) {
     } catch {
       // Ignora: in ogni caso l'utente viene riportato alla home.
     }
-    router.push("/");
-    router.refresh();
+    // Ricarica completa (non router.push): azzera lo stato delle pagine
+    // conservato dal router e sostituisce la cronologia, così il tasto
+    // "indietro" non riporta alla pagina autenticata. Cfr. guida Next.js
+    // "Preserving UI state" → State and authentication.
+    window.location.replace("/");
   }
 
   return (

@@ -7,6 +7,7 @@ import { MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { STATUS_OPTIONS } from "@/lib/constants";
+import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox, TextField } from "@/components/ui/input";
@@ -31,6 +32,13 @@ export function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+
+  // Al ritorno sulla pagina il form riparte pulito: niente pulsante
+  // bloccato in "Creazione account…" né schermata di conferma stantia.
+  useResetOnHide(() => {
+    setPending(false);
+    setEmailSent(false);
+  });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

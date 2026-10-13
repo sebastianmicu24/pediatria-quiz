@@ -40,8 +40,10 @@ export function isValidQuestion(question: Question): boolean {
 }
 
 type BatchFilters = {
-  topic: string | null;
-  difficulty: number | null;
+  /** Argomenti selezionati: vuoto = tutti. */
+  topics: string[];
+  /** Difficoltà selezionate: vuoto = tutte. */
+  difficulties: number[];
   count: number;
   /** Id delle domande già mostrate: non vengono riproposte. */
   exclude?: string[];
@@ -55,17 +57,17 @@ type BatchFilters = {
  *
  * Fallback: se la funzione non è ancora stata applicata al database,
  * legge le domande a pagine e mescola lato server — applicando
- * SEMPRE gli stessi filtri, così argomento e difficoltà funzionano
+ * SEMPRE gli stessi filtri, così argomenti e difficoltà funzionano
  * in entrambi i casi.
  */
 export async function fetchQuestionBatch(
   supabase: SupabaseClient,
-  { topic, difficulty, count, exclude = [] }: BatchFilters
+  { topics, difficulties, count, exclude = [] }: BatchFilters
 ): Promise<Question[]> {
   const { data, error } = await supabase.rpc("get_quiz_questions", {
     p_count: count,
-    p_topic: topic,
-    p_difficulty: difficulty,
+    p_topics: topics,
+    p_difficulties: difficulties,
     p_exclude: exclude,
   });
 
@@ -79,8 +81,8 @@ export async function fetchQuestionBatch(
       .from("questions")
       .select(QUESTION_COLUMNS)
       .order("id", { ascending: true });
-    if (topic) query = query.eq("topic", topic);
-    if (difficulty !== null) query = query.eq("difficulty", difficulty);
+    if (topics.length > 0) query = query.in("topic", topics);
+    if (difficulties.length > 0) query = query.in("difficulty", difficulties);
     return query;
   });
 

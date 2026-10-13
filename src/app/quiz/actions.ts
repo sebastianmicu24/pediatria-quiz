@@ -67,8 +67,8 @@ export async function saveQuizAttempt(
 }
 
 export type QuizBatchInput = {
-  topic: string | null;
-  difficulty: number | null;
+  topics: string[];
+  difficulties: number[];
   exclude: string[];
   count: number;
 };
@@ -89,14 +89,23 @@ export async function fetchQuizBatch(
 ): Promise<QuizBatchResult> {
   await requireUser("/quiz");
 
-  const topic =
-    typeof input?.topic === "string" && input.topic.trim()
-      ? input.topic.trim().slice(0, 200)
-      : null;
-  const difficulty =
-    input?.difficulty === 1 || input?.difficulty === 2 || input?.difficulty === 3
-      ? input.difficulty
-      : null;
+  const topics = Array.isArray(input?.topics)
+    ? [
+        ...new Set(
+          input.topics
+            .filter(
+              (topic): topic is string =>
+                typeof topic === "string" && topic.trim() !== ""
+            )
+            .map((topic) => topic.trim().slice(0, 200))
+        ),
+      ].slice(0, 25)
+    : [];
+  const difficulties = Array.isArray(input?.difficulties)
+    ? [...new Set(input.difficulties.map((d) => Number(d)))].filter(
+        (d) => d === 1 || d === 2 || d === 3
+      )
+    : [];
   const count = Number.isInteger(input?.count)
     ? Math.min(Math.max(input.count, 1), 50)
     : 10;
@@ -108,8 +117,8 @@ export async function fetchQuizBatch(
 
   const supabase = await createClient();
   const questions = await fetchQuestionBatch(supabase, {
-    topic,
-    difficulty,
+    topics,
+    difficulties,
     count,
     exclude,
   });

@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
+import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/input";
@@ -16,6 +17,10 @@ export function UpdatePasswordForm() {
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  // Se l'utente torna indietro dopo il salvataggio, il pulsante non
+  // deve restare bloccato in "Aggiornamento…".
+  useResetOnHide(() => setPending(false));
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
+import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/input";
@@ -62,10 +62,12 @@ export function ChangePasswordCard({ email }: { email: string }) {
 }
 
 export function DeleteAccountCard() {
-  const router = useRouter();
   const [confirmText, setConfirmText] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Al ritorno sulla pagina il pulsante non deve restare bloccato.
+  useResetOnHide(() => setPending(false));
 
   async function handleDelete() {
     if (confirmText !== "ELIMINA") return;
@@ -83,15 +85,16 @@ export function DeleteAccountCard() {
         return;
       }
 
-      // Pulizia lato browser della sessione, poi ritorno alla home.
+      // Pulizia lato browser della sessione, poi ritorno alla home con
+      // ricarica completa: azzera lo stato conservato dal router e
+      // sostituisce la cronologia.
       try {
         const supabase = createClient();
         await supabase.auth.signOut();
       } catch {
         // Ignora: i cookie sono già stati invalidati dal server.
       }
-      router.push("/");
-      router.refresh();
+      window.location.replace("/");
     } catch {
       setError("Errore di rete: verifica la connessione e riprova.");
       setPending(false);

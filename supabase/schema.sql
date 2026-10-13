@@ -309,13 +309,14 @@ grant execute on function public.save_quiz_attempt(jsonb, text, int) to authenti
 -- 8b. Funzione RPC: estrazione casuale di domande per un quiz.
 --     Esegue ORDER BY random() nel database: scala su migliaia di
 --     domande senza trasferire l'intero archivio al server Next.
+--     p_topics / p_difficulties: filtri multipli (array).
 --     p_exclude: id già mostrati, da non riproporre nei lotti
 --     successivi dell'esercitazione progressiva.
 -- ─────────────────────────────────────────────────────────────
 create or replace function public.get_quiz_questions(
   p_count int default 20,
-  p_topic text default null,
-  p_difficulty int default null,
+  p_topics text[] default '{}',
+  p_difficulties int[] default '{}',
   p_exclude uuid[] default '{}'
 )
 returns setof public.questions
@@ -326,17 +327,19 @@ set search_path = ''
 as $$
   select q.*
   from public.questions q
-  where (nullif(btrim(coalesce(p_topic, '')), '') is null or q.topic = btrim(p_topic))
-    and (p_difficulty is null or q.difficulty = p_difficulty)
-    and (cardinality(p_exclude) = 0 or not (q.id = any(p_exclude)))
+  where (coalesce(cardinality(p_topics), 0) = 0 or q.topic = any(p_topics))
+    and (coalesce(cardinality(p_difficulties), 0) = 0 or q.difficulty = any(p_difficulties))
+    and (coalesce(cardinality(p_exclude), 0) = 0 or not (q.id = any(p_exclude)))
   order by random()
   limit least(greatest(coalesce(p_count, 20), 1), 100);
 $$;
 
+-- Rimuove eventuali versioni precedenti (firme diverse).
 drop function if exists public.get_quiz_questions(int, text, int);
+drop function if exists public.get_quiz_questions(int, text, int, uuid[]);
 
-revoke all on function public.get_quiz_questions(int, text, int, uuid[]) from public, anon;
-grant execute on function public.get_quiz_questions(int, text, int, uuid[]) to authenticated;
+revoke all on function public.get_quiz_questions(int, text[], int[], uuid[]) from public, anon;
+grant execute on function public.get_quiz_questions(int, text[], int[], uuid[]) to authenticated;
 
 -- ─────────────────────────────────────────────────────────────
 -- 9. Permessi (le policy RLS restano il vero filtro)

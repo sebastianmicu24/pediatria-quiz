@@ -193,11 +193,11 @@ if (userId) {
       }
     }
 
-    // Estrazione casuale progressiva (RPC): base + filtri + esclusione
+    // Estrazione casuale progressiva (RPC): base + filtri multipli + esclusione
     const rpcQuiz = await userClient.rpc("get_quiz_questions", {
       p_count: 3,
-      p_topic: null,
-      p_difficulty: null,
+      p_topics: [],
+      p_difficulties: [],
       p_exclude: [],
     });
     if (rpcQuiz.error) {
@@ -217,36 +217,66 @@ if (userId) {
     } else {
       ok("RPC get_quiz_questions", "3 domande casuali estratte");
 
-      // I filtri devono valere davvero (bug: mostrava tutte le domande)
+      // I filtri multipli devono valere davvero
       const rpcFiltered = await userClient.rpc("get_quiz_questions", {
         p_count: 5,
-        p_topic: "Cardiologia",
-        p_difficulty: null,
+        p_topics: ["Cardiologia"],
+        p_difficulties: [1, 3],
         p_exclude: [],
       });
+      const wrongTopic =
+        Array.isArray(rpcFiltered.data) &&
+        rpcFiltered.data.some((row) => row.topic !== "Cardiologia");
+      const wrongDifficulty =
+        Array.isArray(rpcFiltered.data) &&
+        rpcFiltered.data.some((row) => ![1, 3].includes(row.difficulty));
       if (rpcFiltered.error) {
         fail("RPC get_quiz_questions (filtri)", rpcFiltered.error.message);
-      } else if (
-        !Array.isArray(rpcFiltered.data) ||
-        rpcFiltered.data.length === 0 ||
-        rpcFiltered.data.some((row) => row.topic !== "Cardiologia")
-      ) {
+      } else if (wrongTopic || wrongDifficulty) {
         fail(
           "RPC get_quiz_questions (filtri)",
-          "restituite domande di argomenti diversi da Cardiologia"
+          "restituite domande fuori dai filtri selezionati"
         );
       } else {
         ok(
           "RPC get_quiz_questions (filtri)",
-          `${rpcFiltered.data.length} domande solo di Cardiologia`
+          `${rpcFiltered.data.length} domande di Cardiologia, difficoltà 1 o 3`
         );
 
+        // Multi-argomento: Cardiologia + Neonatologia
+        const allowedTopics = ["Cardiologia", "Neonatologia"];
+        const rpcMulti = await userClient.rpc("get_quiz_questions", {
+          p_count: 10,
+          p_topics: allowedTopics,
+          p_difficulties: [],
+          p_exclude: [],
+        });
+        if (rpcMulti.error) {
+          fail(
+            "RPC get_quiz_questions (multi-argomento)",
+            rpcMulti.error.message
+          );
+        } else if (
+          Array.isArray(rpcMulti.data) &&
+          rpcMulti.data.some((row) => !allowedTopics.includes(row.topic))
+        ) {
+          fail(
+            "RPC get_quiz_questions (multi-argomento)",
+            "restituite domande di argomenti non selezionati"
+          );
+        } else {
+          ok(
+            "RPC get_quiz_questions (multi-argomento)",
+            `${rpcMulti.data.length} domande da Cardiologia + Neonatologia`
+          );
+        }
+
         // Le domande già mostrate non vanno riproposte (esercitazione progressiva)
-        const excludeId = rpcFiltered.data[0].id;
+        const excludeId = rpcFiltered.data[0]?.id ?? rpcQuiz.data[0].id;
         const rpcExclude = await userClient.rpc("get_quiz_questions", {
           p_count: 5,
-          p_topic: "Cardiologia",
-          p_difficulty: null,
+          p_topics: ["Cardiologia"],
+          p_difficulties: [],
           p_exclude: [excludeId],
         });
         if (rpcExclude.error) {

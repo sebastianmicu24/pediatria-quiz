@@ -1,24 +1,23 @@
 -- ============================================================
---  Migrazione: esercitazione progressiva + estrazione casuale
+--  Migrazione: esercitazione progressiva + filtri multipli
 --
---  1. get_quiz_questions: esegue ORDER BY random() direttamente
---     in Postgres (scala su migliaia di domande senza trasferire
---     l'intero archivio). Nuovo parametro p_exclude: le domande
---     già mostrate all'utente non vengono riproposte nei lotti
---     successivi dell'esercitazione.
+--  1. get_quiz_questions: estrazione casuale eseguita in Postgres
+--     (ORDER BY random()), scalabile su migliaia di domande.
+--     - p_topics / p_difficulties: filtri multipli (array)
+--     - p_exclude: id già visti, da non riproporre nei lotti
+--       successivi dell'esercitazione
 --
---  2. save_quiz_attempt: alza il limite di risposte per tentativo
---     da 500 a 2000 (l'esercitazione è a tempo indeterminato:
---     l'utente può terminare quando vuoi).
+--  2. save_quiz_attempt: limite risposte per tentativo 500 → 2000
+--     (l'esercitazione è a tempo indeterminato).
 --
 --  Esegui questo file nell'SQL Editor di Supabase. È idempotente.
 -- ============================================================
 
--- 1. Funzione di estrazione casuale (con esclusione)
+-- 1. Funzione di estrazione casuale (filtri multipli + esclusione)
 create or replace function public.get_quiz_questions(
   p_count int default 20,
-  p_topic text default null,
-  p_difficulty int default null,
+  p_topics text[] default '{}',
+  p_difficulties int[] default '{}',
   p_exclude uuid[] default '{}'
 )
 returns setof public.questions
@@ -29,19 +28,20 @@ set search_path = ''
 as $$
   select q.*
   from public.questions q
-  where (nullif(btrim(coalesce(p_topic, '')), '') is null or q.topic = btrim(p_topic))
-    and (p_difficulty is null or q.difficulty = p_difficulty)
-    and (cardinality(p_exclude) = 0 or not (q.id = any(p_exclude)))
+  where (coalesce(cardinality(p_topics), 0) = 0 or q.topic = any(p_topics))
+    and (coalesce(cardinality(p_difficulties), 0) = 0 or q.difficulty = any(p_difficulties))
+    and (coalesce(cardinality(p_exclude), 0) = 0 or not (q.id = any(p_exclude)))
   order by random()
   limit least(greatest(coalesce(p_count, 20), 1), 100);
 $$;
 
--- Rimuove l'eventuale versione precedente a 3 parametri
--- (firme diverse: senza drop resterebbero due overload).
+-- Rimuove eventuali versioni precedenti (firme diverse:
+-- senza drop resterebbero più overload della stessa funzione).
 drop function if exists public.get_quiz_questions(int, text, int);
+drop function if exists public.get_quiz_questions(int, text, int, uuid[]);
 
-revoke all on function public.get_quiz_questions(int, text, int, uuid[]) from public, anon;
-grant execute on function public.get_quiz_questions(int, text, int, uuid[]) to authenticated;
+revoke all on function public.get_quiz_questions(int, text[], int[], uuid[]) from public, anon;
+grant execute on function public.get_quiz_questions(int, text[], int[], uuid[]) to authenticated;
 
 -- 2. Limite risposte per tentativo: 500 → 2000
 create or replace function public.save_quiz_attempt(

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { safeNextPath } from "@/lib/utils";
+import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/input";
@@ -25,6 +26,13 @@ export function LoginForm() {
   const [resendState, setResendState] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
+
+  // Se l'utente torna indietro dopo l'accesso, il pulsante non deve
+  // restare bloccato in "Accesso in corso…".
+  useResetOnHide(() => {
+    setPending(false);
+    setResendState("idle");
+  });
 
   async function handleResend() {
     if (!notConfirmed) return;

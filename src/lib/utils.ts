@@ -82,8 +82,13 @@ export function stripHtml(html: string): string {
     .trim();
 }
 
-export function parseDifficulty(value: string | undefined): number | null {
-  const parsed = Number.parseInt(value ?? "", 10);
-  if (![1, 2, 3].includes(parsed)) return null;
-  return parsed;
+/** Interpreta i parametri ?difficulty= dell'URL (anche ripetuti). */
+export function parseDifficulties(
+  value: string | string[] | undefined
+): number[] {
+  const list = value === undefined ? [] : Array.isArray(value) ? value : [value];
+  const parsed = list
+    .map((item) => Number.parseInt(item, 10))
+    .filter((item) => [1, 2, 3].includes(item));
+  return [...new Set(parsed)];
 }

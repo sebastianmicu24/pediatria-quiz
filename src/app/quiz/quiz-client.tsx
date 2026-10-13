@@ -12,6 +12,7 @@ import {
 import type { Question } from "@/lib/types";
 import { cn, formatPercent, sanitizeHtml } from "@/lib/utils";
 import { EXERCISE_BATCH_SIZE, difficultyLabel } from "@/lib/constants";
+import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -41,7 +42,7 @@ export function QuizClient({
   meta,
 }: {
   initialQuestions: Question[];
-  meta: { topic: string | null; difficulty: number | null };
+  meta: { topics: string[]; difficulties: number[] };
 }) {
   const router = useRouter();
 
@@ -69,6 +70,14 @@ export function QuizClient({
     startedAtRef.current = Date.now();
   }, []);
 
+  // Se la pagina viene nascosta (navigazione) e poi ripristinata, il
+  // caricamento del prossimo lotto non deve restare bloccato.
+  useResetOnHide(() => {
+    loadingRef.current = false;
+    pendingAdvanceRef.current = false;
+    setLoadingMore(false);
+  });
+
   const question = questions[index];
   const correctCount = answers.filter((a) => a.isCorrect).length;
 
@@ -87,8 +96,9 @@ export function QuizClient({
       if (finalAnswers.length === 0) return;
       setSaveState("saving");
       saveQuizAttempt({
-        topic: meta.topic,
-        difficulty: meta.difficulty,
+        topic: meta.topics.length === 1 ? meta.topics[0] : null,
+        difficulty:
+          meta.difficulties.length === 1 ? meta.difficulties[0] : null,
         answers: finalAnswers.map((a) => ({
           questionId: a.questionId,
           selectedIndex: a.selectedIndex,
@@ -101,7 +111,7 @@ export function QuizClient({
           setSaveState("error");
         });
     },
-    [meta.topic, meta.difficulty]
+    [meta.topics, meta.difficulties]
   );
 
   const advance = useCallback(() => {
@@ -119,8 +129,8 @@ export function QuizClient({
     loadingRef.current = true;
     setLoadingMore(true);
     fetchQuizBatch({
-      topic: meta.topic,
-      difficulty: meta.difficulty,
+      topics: meta.topics,
+      difficulties: meta.difficulties,
       exclude: questions.map((q) => q.id),
       count: EXERCISE_BATCH_SIZE,
     })
@@ -157,7 +167,7 @@ export function QuizClient({
         loadingRef.current = false;
         setLoadingMore(false);
       });
-  }, [questions, index, meta.topic, meta.difficulty, exhausted, advance]);
+  }, [questions, index, meta.topics, meta.difficulties, exhausted, advance]);
 
   // Precarica il prossimo lotto quando il corrente è quasi finito.
   useEffect(() => {
