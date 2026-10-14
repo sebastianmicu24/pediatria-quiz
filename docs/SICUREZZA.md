@@ -36,7 +36,8 @@ Tutte le correzioni sono già incluse nel codice e in `supabase/migrations/2026-
 - ✅ Nessun IDOR: ogni risorsa è filtrata per utente autenticato (RLS + `requireUser`).
 
 ### Injection e XSS
-- ✅ **XSS**: l'unico HTML renderizzato passa da un sanitizzatore ad allowlist (solo `p`, `strong`, `em`, `ul`, `ol`, `li`, `br`; nessun attributo). Applicato **due volte**: al salvataggio (editor admin) e al render.
+- ✅ **XSS**: l'unico HTML renderizzato passa da un sanitizzatore ad allowlist (tag di formattazione: `p`, `strong`, `em`, `b`, `i`, `u`, `s`, `span`, `ul`, `ol`, `li`, `br`, `img`; su `<span>` solo stili sicuri — colore, sfondo, dimensione, font; niente script, link, SVG o data URL). Applicato **due volte**: al salvataggio (editor admin) e al render.
+- ✅ **Immagini dei quiz**: caricate solo dagli admin dal server (service role) nel bucket pubblico `quiz-images`; il sanitizzatore accetta esclusivamente URL di quel bucket (PNG/JPG/WebP fino a 5 MB, niente SVG). Upload validati per tipo, dimensione ed estensione generata dal server.
 - ✅ Tutti gli altri contenuti generati dall'utente (nome visualizzato, email) sono renderizzati come **testo** (React li scappa automaticamente).
 - ✅ **SQL injection**: nessuna query concatenata; accesso al database esclusivamente tramite `supabase-js` (query parametrizzate) e funzioni RPC tipizzate.
 

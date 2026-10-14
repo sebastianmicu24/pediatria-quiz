@@ -115,3 +115,88 @@ export async function deleteQuestion(
   }
   return { ok: true, message: "Domanda eliminata." };
 }
+
+// ─────────────────────────────────────────────────────────────
+//  Immagini delle domande (bucket Supabase Storage "quiz-images")
+// ─────────────────────────────────────────────────────────────
+
+const IMAGE_BUCKET = "quiz-images";
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Map([
+  ["image/png", "png"],
+  ["image/jpeg", "jpg"],
+  ["image/webp", "webp"],
+]);
+
+let imageBucketEnsured = false;
+
+/** Crea il bucket se non esiste (idempotente, serve solo la prima volta). */
+async function ensureImageBucket(
+  admin: ReturnType<typeof createAdminClient>
+): Promise<void> {
+  if (imageBucketEnsured) return;
+  const { error } = await admin.storage.createBucket(IMAGE_BUCKET, {
+    public: true,
+    fileSizeLimit: MAX_IMAGE_BYTES,
+    allowedMimeTypes: ["image/png", "image/jpeg", "image/webp"],
+  });
+  // Se esiste già va bene: l'upload funziona comunque.
+  if (error && !/already exists|duplicate/i.test(error.message)) {
+    return;
+  }
+  imageBucketEnsured = true;
+}
+
+export type UploadImageResult =
+  | { ok: true; url: string }
+  | { ok: false; message: string };
+
+/**
+ * Carica un'immagine nel bucket pubblico "quiz-images" e restituisce
+ * l'URL da inserire nel testo. Solo amministratori; PNG/JPG/WebP fino
+ * a 5 MB (niente SVG o data URL, che verrebbero comunque rimossi dal
+ * sanitizzatore).
+ */
+export async function uploadQuizImage(
+  formData: FormData
+): Promise<UploadImageResult> {
+  const user = await requireUser("/admin");
+  if (!isAdminEmail(user.email)) {
+    return { ok: false, message: "Non autorizzato." };
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return { ok: false, message: "Nessun file ricevuto." };
+  }
+
+  const extension = ALLOWED_IMAGE_TYPES.get(file.type);
+  if (!extension) {
+    return { ok: false, message: "Formato non supportato: usa PNG, JPG o WebP." };
+  }
+  if (file.size === 0) {
+    return { ok: false, message: "Il file è vuoto." };
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return { ok: false, message: "L'immagine supera il limite di 5 MB." };
+  }
+
+  const admin = createAdminClient();
+  await ensureImageBucket(admin);
+
+  const path = `questions/${crypto.randomUUID()}.${extension}`;
+  const { error } = await admin.storage.from(IMAGE_BUCKET).upload(path, file, {
+    contentType: file.type,
+    cacheControl: "31536000",
+  });
+  if (error) {
+    return { ok: false, message: "Caricamento non riuscito. Riprova." };
+  }
+
+  const { data } = admin.storage.from(IMAGE_BUCKET).getPublicUrl(path);
+  if (!data?.publicUrl) {
+    return { ok: false, message: "Impossibile ottenere l'URL dell'immagine." };
+  }
+
+  return { ok: true, url: data.publicUrl };
+}

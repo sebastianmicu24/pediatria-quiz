@@ -334,7 +334,7 @@ function QuestionEditor({
         label="Domanda"
         value={questionHtml}
         onChange={setQuestionHtml}
-        hint="Testo formattabile: grassetto, corsivo ed elenchi."
+        hint="Puoi formattare il testo (grassetto, corsivo, sottolineato, colori, dimensioni, elenchi) e inserire immagini tra i paragrafi. Incolla o trascina un'immagine per caricarla."
       />
 
       <fieldset className="space-y-3">
@@ -457,7 +457,7 @@ function QuestionEditor({
         label="Spiegazione"
         value={explanationHtml}
         onChange={setExplanationHtml}
-        hint="Compare dopo la risposta dell'utente. Grassetto, corsivo ed elenchi."
+        hint="Compare dopo la risposta dell'utente. Puoi formattare il testo e inserire immagini (PNG, JPG o WebP) tra i paragrafi."
       />
 
       <Alert variant="info">

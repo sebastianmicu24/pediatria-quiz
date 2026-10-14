@@ -511,3 +511,17 @@ begin
       check (difficulty is null or difficulty between 1 and 3) not valid;
   end if;
 end $$;
+
+-- ─────────────────────────────────────────────────────────────
+-- 11. Storage: immagini dei quiz
+--     Bucket pubblico "quiz-images" usato dall'editor admin.
+--     Lettura pubblica; upload riservato al server (service role).
+-- ─────────────────────────────────────────────────────────────
+insert into storage.buckets (id, name, public)
+values ('quiz-images', 'quiz-images', true)
+on conflict (id) do nothing;
+
+update storage.buckets
+set file_size_limit = 5242880,
+    allowed_mime_types = array['image/png', 'image/jpeg', 'image/webp']
+where id = 'quiz-images';

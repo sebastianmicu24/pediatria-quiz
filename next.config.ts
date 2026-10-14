@@ -17,6 +17,13 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      // Le immagini dei quiz possono pesare fino a 5 MB (più l'overhead
+      // multipart): alza il limite di default di 1 MB delle Server Action.
+      bodySizeLimit: "6mb",
+    },
+  },
   async headers() {
     return [
       {

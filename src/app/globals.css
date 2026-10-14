@@ -180,6 +180,22 @@ body {
   font-style: italic;
 }
 
+.rich-text u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rich-text s {
+  text-decoration: line-through;
+}
+
+.rich-text img {
+  max-width: 100%;
+  height: auto;
+  margin: 0.6em auto;
+  border-radius: 0.75rem;
+}
+
 /* ── Ottimizzazioni mobile ───────────────────────────────────── */
 @media (max-width: 640px) {
   /* Evita lo zoom automatico di iOS Safari sui campi di input */
