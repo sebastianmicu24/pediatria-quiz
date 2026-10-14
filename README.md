@@ -27,7 +27,7 @@
 
 ```
 ├─ data/
-│  └─ questions.json                 # Domande generate da train.jsonl (oltre 2.900 quiz)
+│  └─ questions.json                 # Domande generate da train.jsonl (oltre 7.200 quiz)
 ├─ docs/
 │  ├─ SETUP.md                       # Guida dettagliata: Supabase, Resend, Vercel
 │  ├─ SICUREZZA.md                   # Report di audit e raccomandazioni
@@ -61,7 +61,7 @@ copy .env.example .env.local     # macOS/Linux: cp .env.example .env.local
 # 3. Database: incolla supabase/schema.sql nell'SQL Editor di Supabase
 #    (per database esistenti: supabase/migrations/*.sql)
 
-# 4. Importa le domande (oltre 2.900)
+# 4. Importa le domande (oltre 7.200)
 npm run import:questions
 
 # 5. Avvia

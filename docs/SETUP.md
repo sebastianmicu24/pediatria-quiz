@@ -41,6 +41,8 @@ npm run import:questions
 
 Vedrai l'avanzamento in lotti da 100; al termine tutte le domande saranno in `public.questions` (migliaia di quiz, a seconda del dataset).
 
+> ⚠️ **Nota**: l'import aggiorna anche le domande già presenti (upsert su `source_id`): se hai modificato delle domande dal pannello admin, la versione del file JSON **sovrascriverà** quelle modifiche. Esporta o annota le modifiche prima di un re-import.
+
 **Alternativa senza script** (es. da un'altra macchina):
 
 ```bash
