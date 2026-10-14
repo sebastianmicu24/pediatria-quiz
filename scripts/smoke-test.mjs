@@ -525,6 +525,33 @@ console.log("\n[4b] Blocco login per utenti NON confermati");
         signIn.error?.message ?? "risultato inatteso"
       );
     }
+
+    // Conferma manuale da parte dell'admin (come dal pannello utenti):
+    // dopo la conferma il login deve riuscire.
+    const manualConfirm = await admin.auth.admin.updateUserById(
+      created.data.user.id,
+      { email_confirm: true }
+    );
+    if (manualConfirm.error) {
+      fail("Conferma email manuale (admin)", manualConfirm.error.message);
+    } else {
+      const retry = await anonClient.auth.signInWithPassword({
+        email: unconfirmedEmail,
+        password: unconfirmedPassword,
+      });
+      if (retry.error || !retry.data?.session) {
+        fail(
+          "Conferma email manuale (admin)",
+          retry.error?.message ?? "login ancora bloccato dopo la conferma"
+        );
+      } else {
+        ok(
+          "Conferma email manuale (admin)",
+          "dopo la conferma il login riesce"
+        );
+      }
+    }
+
     await admin.auth.admin.deleteUser(created.data.user.id);
   }
 }

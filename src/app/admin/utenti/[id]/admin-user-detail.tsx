@@ -21,7 +21,11 @@ import {
 import { formatDate, formatPercent } from "@/lib/utils";
 import { TopicPies, type TopicPieDatum } from "@/components/topic-pies";
 import { AdminTabs } from "@/components/admin/admin-tabs";
-import { UserTagEditor, VerifiedToggle } from "../user-tag-editor";
+import {
+  ConfirmEmailButton,
+  UserTagEditor,
+  VerifiedToggle,
+} from "../user-controls";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -260,7 +264,12 @@ export async function AdminUserDetail({
             ) : null}
           </div>
 
-          <VerifiedToggle userId={id} verified={verified} />
+          <div className="flex flex-wrap items-center gap-2">
+            {!authUser.email_confirmed_at ? (
+              <ConfirmEmailButton userId={id} size="md" />
+            ) : null}
+            <VerifiedToggle userId={id} verified={verified} />
+          </div>
         </div>
 
         <div className="mt-4 border-t border-slate-100 pt-4">

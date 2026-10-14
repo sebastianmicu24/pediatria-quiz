@@ -5,7 +5,7 @@ import Link from "next/link";
 import { BadgeCheck, Search } from "lucide-react";
 import { isVerifiedTag, statusLabel, yearLabel } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
-import { UserTagEditor } from "./user-tag-editor";
+import { ConfirmEmailButton, UserTagEditor } from "./user-controls";
 
 export type AdminUser = {
   id: string;
@@ -143,12 +143,17 @@ export function AdminUsersManager({
                     ) : null}
                   </div>
 
-                  <Link
-                    href={`/admin/utenti/${user.id}`}
-                    className="shrink-0 text-xs font-medium text-brand-700 underline underline-offset-2"
-                  >
-                    Apri scheda
-                  </Link>
+                  <div className="flex shrink-0 flex-wrap items-center gap-3">
+                    {!user.confirmed ? (
+                      <ConfirmEmailButton userId={user.id} />
+                    ) : null}
+                    <Link
+                      href={`/admin/utenti/${user.id}`}
+                      className="text-xs font-medium text-brand-700 underline underline-offset-2"
+                    >
+                      Apri scheda
+                    </Link>
+                  </div>
                 </div>
 
                 <div className="mt-3 border-t border-slate-100 pt-3">

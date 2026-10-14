@@ -2,8 +2,8 @@
 
 import { useId, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
-import { BadgeCheck, Tag, X } from "lucide-react";
-import { addUserTag, removeUserTag } from "./actions";
+import { BadgeCheck, MailCheck, Tag, X } from "lucide-react";
+import { addUserTag, confirmUserEmail, removeUserTag } from "./actions";
 import { VERIFIED_TAG } from "@/lib/constants";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -123,6 +123,49 @@ export function VerifiedToggle({
       >
         <BadgeCheck className="h-4 w-4" aria-hidden="true" />
         Segna come verificato
+      </SubmitButton>
+    </form>
+  );
+}
+
+/**
+ * Conferma manualmente l'email dell'utente (supporto): utile quando
+ * non riceve l'email di conferma. Chiede conferma prima di procedere.
+ */
+export function ConfirmEmailButton({
+  userId,
+  size = "sm",
+}: {
+  userId: string;
+  size?: "sm" | "md";
+}) {
+  return (
+    <form
+      action={confirmUserEmail}
+      onSubmit={(event) => {
+        if (
+          !window.confirm(
+            "Confermare manualmente l'email di questo utente? Potrà accedere senza cliccare il link di conferma."
+          )
+        ) {
+          event.preventDefault();
+        }
+      }}
+    >
+      <input type="hidden" name="user_id" value={userId} />
+      <SubmitButton
+        title="Conferma manualmente l'email (utile se l'utente non l'ha ricevuta)"
+        className={
+          size === "md"
+            ? "inline-flex h-10 items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 text-sm font-semibold text-amber-800 transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800 disabled:opacity-60"
+            : "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 text-xs font-semibold text-amber-800 transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800 disabled:opacity-60"
+        }
+      >
+        <MailCheck
+          className={size === "md" ? "h-4 w-4" : "h-3.5 w-3.5"}
+          aria-hidden="true"
+        />
+        Conferma email
       </SubmitButton>
     </form>
   );

@@ -62,3 +62,19 @@ export async function removeUserTag(formData: FormData): Promise<void> {
     current.filter((item) => item.toLowerCase() !== tag.toLowerCase())
   );
 }
+
+/**
+ * Conferma manualmente l'email di un utente (supporto): utile quando
+ * non riesce a ricevere l'email di conferma e contatta l'assistenza.
+ * Dopo la conferma l'utente può accedere senza cliccare il link.
+ */
+export async function confirmUserEmail(formData: FormData): Promise<void> {
+  await requireAdmin();
+
+  const userId = String(formData.get("user_id") ?? "").trim();
+  if (!UUID_REGEX.test(userId)) return;
+
+  const admin = createAdminClient();
+  await admin.auth.admin.updateUserById(userId, { email_confirm: true });
+  refresh();
+}
