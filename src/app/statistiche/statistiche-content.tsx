@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AdminTabs } from "@/components/admin/admin-tabs";
 import {
   Activity,
   BarChart3,
@@ -255,18 +255,14 @@ export async function StatisticheContent() {
             Dati aggregati e anonimi su utenti ed esiti dei quiz.
           </p>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <Link
-            href="/admin"
-            className="text-sm font-medium text-brand-700 underline underline-offset-2"
-          >
-            Gestione quiz
-          </Link>
-          <p className="text-xs text-slate-400">
-            Aggiornato: {formatDate(new Date(now).toISOString())}
-          </p>
-        </div>
+        <p className="text-xs text-slate-400">
+          Aggiornato: {formatDate(new Date(now).toISOString())}
+        </p>
       </header>
+
+      <div className="mt-6">
+        <AdminTabs active="statistiche" />
+      </div>
 
       {/* KPI */}
       <section className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">

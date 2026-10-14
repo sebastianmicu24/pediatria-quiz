@@ -3,11 +3,16 @@ import { cn } from "@/lib/utils";
 
 const TABS = [
   { key: "quiz", href: "/admin", label: "Gestione quiz" },
+  { key: "statistiche", href: "/statistiche", label: "Statistiche" },
   { key: "utenti", href: "/admin/utenti", label: "Utenti" },
 ] as const;
 
 /** Navigazione tra le sezioni del pannello di amministrazione. */
-export function AdminTabs({ active }: { active: "quiz" | "utenti" }) {
+export function AdminTabs({
+  active,
+}: {
+  active: "quiz" | "statistiche" | "utenti";
+}) {
   return (
     <nav aria-label="Sezioni amministrazione" className="flex flex-wrap gap-2">
       {TABS.map((tab) => (

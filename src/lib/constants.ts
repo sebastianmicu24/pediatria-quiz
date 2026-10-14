@@ -89,3 +89,15 @@ export type ReviewStatus = (typeof REVIEW_OPTIONS)[number]["value"];
 export function isReviewStatus(value: string | null | undefined): value is ReviewStatus {
   return REVIEW_OPTIONS.some((option) => option.value === value);
 }
+
+/**
+ * Tag convenzionale per gli utenti verificati manualmente dagli admin.
+ * In futuro abilità permessi particolari: usare sempre questa costante
+ * per controlli e assegnazione (il confronto è senza distinzione di
+ * maiuscole).
+ */
+export const VERIFIED_TAG = "verificato";
+
+export function isVerifiedTag(tag: string | null | undefined): boolean {
+  return (tag ?? "").trim().toLowerCase() === VERIFIED_TAG;
+}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { buttonStyles } from "@/components/ui/button";
 import { LogoutButton } from "@/components/logout-button";
+import { AdminMenu } from "@/components/admin/admin-menu";
 import { cn } from "@/lib/utils";
 
 const navLink =
@@ -38,19 +39,7 @@ export function NavActions({
             <Link href="/account" className={navLink}>
               Account
             </Link>
-            {isAdmin ? (
-              <>
-                <Link href="/statistiche" className={navLink}>
-                  Statistiche
-                </Link>
-                <Link href="/admin" className={navLink}>
-                  Gestione quiz
-                </Link>
-                <Link href="/admin/utenti" className={navLink}>
-                  Utenti
-                </Link>
-              </>
-            ) : null}
+            {isAdmin ? <AdminMenu /> : null}
             <LogoutButton />
           </>
         ) : (
@@ -106,16 +95,19 @@ export function NavActions({
                     Account
                   </Link>
                   {isAdmin ? (
-                    <>
+                    <div className="mt-1 border-t border-slate-100 pt-1">
+                      <p className="px-3 pt-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                        Amministrazione
+                      </p>
+                      <Link href="/admin" className={mobileLink} onClick={close}>
+                        Gestione quiz
+                      </Link>
                       <Link
                         href="/statistiche"
                         className={mobileLink}
                         onClick={close}
                       >
                         Statistiche
-                      </Link>
-                      <Link href="/admin" className={mobileLink} onClick={close}>
-                        Gestione quiz
                       </Link>
                       <Link
                         href="/admin/utenti"
@@ -124,7 +116,7 @@ export function NavActions({
                       >
                         Utenti
                       </Link>
-                    </>
+                    </div>
                   ) : null}
                   <div className="px-1 pt-1">
                     <LogoutButton className="h-11 w-full justify-start px-3" />

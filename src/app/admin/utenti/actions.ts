@@ -52,13 +52,13 @@ export async function addUserTag(formData: FormData): Promise<void> {
   });
 }
 
-/** Rimuove un tag da un utente. */
+/** Rimuove un tag da un utente (senza distinzione di maiuscole). */
 export async function removeUserTag(formData: FormData): Promise<void> {
   const userId = String(formData.get("user_id") ?? "").trim();
   const tag = String(formData.get("tag") ?? "").trim();
   if (!tag) return;
 
   await updateUserTags(userId, (current) =>
-    current.filter((item) => item !== tag)
+    current.filter((item) => item.toLowerCase() !== tag.toLowerCase())
   );
 }

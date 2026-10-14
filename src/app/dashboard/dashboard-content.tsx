@@ -7,7 +7,7 @@ import { Alert } from "@/components/ui/alert";
 import { StatCard } from "./stat-card";
 import { QuizSetup } from "./quiz-setup";
 import { RecentAttempts } from "./recent-attempts";
-import { TopicPies, type TopicPieDatum } from "./topic-pies";
+import { TopicPies, type TopicPieDatum } from "@/components/topic-pies";
 import type { AttemptSummary, TopicStat } from "@/lib/types";
 import { BarChart3, BookOpenCheck, Target } from "lucide-react";
 
