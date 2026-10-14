@@ -27,13 +27,13 @@
 
 ```
 ├─ data/
-│  └─ questions.json                 # Domande generate da train.jsonl (oltre 7.200 quiz)
+│  └─ questions.json                 # Domande generate dai file .jsonl del dataset (oltre 12.000 quiz)
 ├─ docs/
 │  ├─ SETUP.md                       # Guida dettagliata: Supabase, Resend, Vercel
 │  ├─ SICUREZZA.md                   # Report di audit e raccomandazioni
 │  └─ email-templates-it.md          # Template email italiani per Supabase Auth
 ├─ scripts/
-│  ├─ generate-data.mjs              # Converte train.jsonl → data/questions.json
+│  ├─ generate-data.mjs              # Unisce i file .jsonl (train/test/extra) → data/questions.json
 │  ├─ import-questions.mjs           # Importa/semeina le domande su Supabase
 │  └─ smoke-test.mjs                 # Verifica end-to-end della configurazione
 ├─ supabase/
@@ -61,7 +61,7 @@ copy .env.example .env.local     # macOS/Linux: cp .env.example .env.local
 # 3. Database: incolla supabase/schema.sql nell'SQL Editor di Supabase
 #    (per database esistenti: supabase/migrations/*.sql)
 
-# 4. Importa le domande (oltre 7.200)
+# 4. Importa le domande (oltre 12.000)
 npm run import:questions
 
 # 5. Avvia
@@ -77,7 +77,7 @@ Guida completa con i passaggi nei dashboard e la configurazione di email, domini
 | `npm run dev` | Avvia il server di sviluppo su http://localhost:3000 |
 | `npm run build` | Build di produzione |
 | `npm run lint` | Analisi ESLint |
-| `npm run generate:data` | Rigenera `data/questions.json` da `train.jsonl` |
+| `npm run generate:data` | Rigenera `data/questions.json` unendo i file `.jsonl` del dataset (train/test/extra) |
 | `npm run import:questions` | Importa le domande su Supabase (service key) |
 | `npm run smoke` | Verifica end-to-end la configurazione Supabase (crea ed elimina un utente di test) |
 | `node scripts/import-questions.mjs --print-sql > supabase/seed.sql` | Genera lo SQL di seed da incollare nell'SQL Editor |

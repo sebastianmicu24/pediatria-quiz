@@ -79,16 +79,10 @@ export async function fetchQuestionBatch(
     return (data as QuestionRow[]).map(toQuestion).filter(isValidQuestion);
   }
 
-  // Fallback (finché la migrazione non è applicata): filtri attivi.
-  const { rows } = await fetchAllRows<QuestionRow>(() => {
-    let query = supabase
-      .from("questions")
-      .select(QUESTION_COLUMNS)
-      .order("id", { ascending: true });
-    if (topics.length > 0) query = query.in("topic", topics);
-    if (difficulties.length > 0) query = query.in("difficulty", difficulties);
-    return query;
-  });
+  // Fallback (finché la migrazione non è applicata al database).
+  // Per non scaricare l'intero archivio (migliaia di domande) a ogni
+  // richiesta si legge una finestra casuale di righe filtrate.
+  const seen = new Set(exclude);
 
   // Stato di ripasso: dall'ultima risposta salvata in question_progress.
   let statusFilter: Map<string, boolean> | null = null;
@@ -109,18 +103,51 @@ export async function fetchQuestionBatch(
     // il filtro viene ignorato: meglio mostrare più domande che nessuna.
   }
 
-  const seen = new Set(exclude);
-  return shuffle(rows)
-    .filter((row) => {
-      if (seen.has(row.id)) return false;
-      if (!statusFilter) return true;
-      const answeredCorrectly = statusFilter.get(row.id);
-      if (answeredCorrectly === undefined) return statuses.includes("new");
-      return answeredCorrectly
-        ? statuses.includes("correct")
-        : statuses.includes("wrong");
-    })
-    .slice(0, count)
-    .map(toQuestion)
-    .filter(isValidQuestion);
+  const matchesPool = (row: QuestionRow): boolean => {
+    if (seen.has(row.id)) return false;
+    if (!statusFilter) return true;
+    const answeredCorrectly = statusFilter.get(row.id);
+    if (answeredCorrectly === undefined) return statuses.includes("new");
+    return answeredCorrectly
+      ? statuses.includes("correct")
+      : statuses.includes("wrong");
+  };
+
+  // Numero totale di domande che rispettano argomento/difficoltà.
+  let countQuery = supabase
+    .from("questions")
+    .select("*", { count: "exact", head: true });
+  if (topics.length > 0) countQuery = countQuery.in("topic", topics);
+  if (difficulties.length > 0) countQuery = countQuery.in("difficulty", difficulties);
+  const { count: poolCount, error: countError } = await countQuery;
+  if (countError || !poolCount) return [];
+
+  const windowSize = Math.min(poolCount, 800);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const maxOffset = Math.max(0, poolCount - windowSize);
+    const offset = Math.floor(Math.random() * (maxOffset + 1));
+
+    let windowQuery = supabase
+      .from("questions")
+      .select(QUESTION_COLUMNS)
+      .order("id", { ascending: true })
+      .range(offset, offset + windowSize - 1);
+    if (topics.length > 0) windowQuery = windowQuery.in("topic", topics);
+    if (difficulties.length > 0) {
+      windowQuery = windowQuery.in("difficulty", difficulties);
+    }
+
+    const { data, error } = await windowQuery;
+    if (error) return [];
+
+    const usable = ((data as QuestionRow[]) ?? []).filter(matchesPool);
+    if (usable.length > 0) {
+      return shuffle(usable)
+        .slice(0, count)
+        .map(toQuestion)
+        .filter(isValidQuestion);
+    }
+    // Finestra interamente esclusa (ripasso/esclusione): nuovo tentativo.
+  }
+  return [];
 }

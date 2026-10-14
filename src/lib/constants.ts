@@ -5,7 +5,7 @@ export const SITE_DESCRIPTION =
 
 /** Statistiche del dataset (aggiornate da scripts/generate-data.mjs). */
 export const QUIZ_STATS = {
-  questions: 7279,
+  questions: 12323,
   topics: 19,
 };
 

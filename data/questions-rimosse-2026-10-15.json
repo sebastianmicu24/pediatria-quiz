@@ -1,0 +1,2399 @@
+[
+  {
+    "id": "52f1d4a6-b427-4d4e-aea2-9590763af929",
+    "source_id": "00060739-5079-4662-a007-48b613ce8180",
+    "question": "Nel marasma, il deperimento è dovuto a:",
+    "options": [
+      "Carenza dietetica prolungata di proteine",
+      "Carenza dietetica prolungata di calorie",
+      "Eccessivo catabolismo di grasso e massa muscolare per fornire energia",
+      "Tutte le precedenti",
+      "Eccessiva ritenzione idrica con edema generalizzato"
+    ],
+    "answer_index": 3,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>Il marasma deriva da una carenza calorico-proteica prolungata; per compensare, l'organismo catabolizza grasso e massa muscolare, causando deperimento. La risposta D riassume quindi i meccanismi implicati.</p>",
+    "created_at": "2026-10-14T19:51:08.25918+00:00"
+  },
+  {
+    "id": "09f5c3d3-799a-4905-a3f9-93366abe959b",
+    "source_id": "01a7a455-74c9-46dd-bd10-3ca2145cd222",
+    "question": "La pubertà precoce si osserva in tutte le seguenti condizioni tranne:",
+    "options": [
+      "Tumore dell'ipotalamo",
+      "Nessuna delle precedenti",
+      "Tumore della ghiandola surrenale",
+      "Sindrome di McCune-Albright",
+      "Tumore ovarico"
+    ],
+    "answer_index": 1,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>La pubertà precoce è la comparsa di caratteri sessuali secondari prima degli 8 anni nelle femmine e dei 9 anni nei maschi. Tumori dell'ipotalamo, ovarici e surrenalici possono tutti causarla, quindi nessuna delle opzioni A-C è un'eccezione. Anche la sindrome di McCune-Albright è una causa, non un'eccezione.</p>",
+    "created_at": "2026-10-14T19:51:10.123411+00:00"
+  },
+  {
+    "id": "8ae649f7-2259-4c42-8a05-af205052217c",
+    "source_id": "047b6cdb-7e45-49fc-abd0-c410aea2e7cb",
+    "question": "La trombocitopenia in un neonato può essere causata da:",
+    "options": [
+      "Trombocitopenia isoimmune",
+      "Deficit di vitamina K",
+      "Tutte queste",
+      "Trombocitopenia autoimmune",
+      "Lupus eritematoso sistemico (LES)"
+    ],
+    "answer_index": 2,
+    "topic": "Neonatologia",
+    "difficulty": 2,
+    "explanation": "<p>La trombocitopenia neonatale può derivare da cause isoimmuni, autoimmuni (es. ITP materna) o da anticorpi antifosfolipidi in LES materno. Anche infezioni intrauterine e sepsi batterica neonatale possono ridurre le piastrine. Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-11T17:14:12.908814+00:00"
+  },
+  {
+    "id": "a55fc70b-db82-4d08-9ccb-bf1d80ffc511",
+    "source_id": "04e621b2-3fb0-4f7c-a403-4c42b2361f79",
+    "question": "Una ragazza albina sposa un ragazzo normale. Qual è la probabilità che abbiano un figlio affetto e quale che i loro figli siano portatori?",
+    "options": [
+      "Nessun affetto, tutti portatori",
+      "50% portatori",
+      "Tutti normali",
+      "50% affetti, 50% portatori",
+      "Nessun affetto, 50% portatori"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 1,
+    "explanation": "<p>L'albinismo è una malattia autosomica recessiva. La donna albina è omozigote per l'allele mutato (aa); se il partner è normale omozigote (AA), tutti i figli saranno portatori sani (Aa) e nessuno sarà affetto. La risposta A presuppone genotipo AA del partner.</p>",
+    "created_at": "2026-10-11T17:14:15.308422+00:00"
+  },
+  {
+    "id": "6ee17632-6dcb-4eca-b339-304aecdd9232",
+    "source_id": "0571ed99-b1fd-4109-a842-216efc3864ac",
+    "question": "Un dotto arterioso pervio (PDA) di grandi dimensioni può causare:",
+    "options": [
+      "Scompenso cardiaco congestizio",
+      "Sindrome di Eisenmenger",
+      "Endocardite",
+      "Shunt destro-sinistro già alla nascita",
+      "Tutte le precedenti"
+    ],
+    "answer_index": 4,
+    "topic": "Cardiologia",
+    "difficulty": 1,
+    "explanation": "<p>Un PDA di grandi dimensioni non trattato causa iperafflusso polmonare con ipertensione polmonare, scompenso cardiaco congestizio ed endocardite. Se l'ipertensione polmonare diventa irreversibile, si instaura la sindrome di Eisenmenger con shunt destro-sinistro. Perciò tutte le opzioni A-C sono complicanze possibili.</p>",
+    "created_at": "2026-10-14T19:51:08.713118+00:00"
+  },
+  {
+    "id": "42d1d9ec-d5a7-49c0-ad45-c299b54babfb",
+    "source_id": "06a3a194-b11d-4cf0-aabc-f3faa1ab9dbd",
+    "question": "Lo pseudoermafroditismo maschile si osserva in:",
+    "options": [
+      "Deficit di 5-α reduttasi",
+      "Tutte le precedenti",
+      "Disgenesia gonadica",
+      "Deficit di 17-idrossilasi",
+      "Deficit di 21-idrossilasi"
+    ],
+    "answer_index": 1,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>Lo pseudoermafroditismo maschile è una condizione 46,XY con genitali esterni femminili o ambigui. Può derivare da difetti della differenziazione testicolare (disgenesia gonadica), della sintesi ormonale (es. deficit di 17-idrossilasi) o dell'azione androgenica (deficit di 5-α reduttasi). Pertanto tutte le opzioni A-C sono cause.</p>",
+    "created_at": "2026-10-14T19:51:07.742619+00:00"
+  },
+  {
+    "id": "7d24241b-5fbb-4759-8cba-18277650befa",
+    "source_id": "07648026-767b-41a6-8d15-82a43b76a5b7",
+    "question": "A 7 mesi di età, i lattanti sono in grado di fare tutte le seguenti azioni tranne:",
+    "options": [
+      "Trasferire un oggetto da una mano all'altra",
+      "Saltare attivamente",
+      "Camminare tenendosi ai mobili",
+      "Rotolare",
+      "Afferrare piccoli oggetti con presa a pinza matura"
+    ],
+    "answer_index": 2,
+    "topic": "Pediatria sociale e sviluppo",
+    "difficulty": 1,
+    "explanation": "<p>A 7 mesi il lattante rotola, trasferisce oggetti tra le mani e saltella attivamente; la deambulazione tenendosi ai mobili compare intorno ai 10 mesi. Quindi l'opzione C non è attesa a 7 mesi.</p>",
+    "created_at": "2026-10-14T19:51:07.231605+00:00"
+  },
+  {
+    "id": "ac7f2b8d-1075-44af-9d5c-352d1e04339c",
+    "source_id": "087dae2d-1633-4909-9c2c-b99e0b8394a5",
+    "question": "Quale delle seguenti affermazioni è vera riguardo all'enterocolite necrotizzante neonatale?",
+    "options": [
+      "Tutte le precedenti",
+      "Distensione addominale",
+      "Pneumoperitoneo",
+      "Iperperistalsi con suoni intestinali aumentati",
+      "Riduzione dei rumori intestinali"
+    ],
+    "answer_index": 0,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>L'enterocolite necrotizzante è un'emergenza gastrointestinale neonatale, tipica del pretermine o del neonato di basso peso. Si manifesta con distensione addominale e riduzione dei rumori intestinali; il pneumoperitoneo indica perforazione ed è segno di stadio avanzato. Pertanto tutte le opzioni A-C sono vere.</p>",
+    "created_at": "2026-10-11T17:14:15.797812+00:00"
+  },
+  {
+    "id": "b3ff567b-6b7c-483d-a08e-c6c3d14318ab",
+    "source_id": "0c4b32e5-843e-45ce-b058-8ce92f333adb",
+    "question": "Qual è il genotipo di un maschio con sindrome di Down?",
+    "options": [
+      "47,XXY",
+      "47,XY,+18",
+      "45,XY",
+      "47,XY,+21",
+      "46,XY"
+    ],
+    "answer_index": 3,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 1,
+    "explanation": "<p>La sindrome di Down è causata nella maggior parte dei casi (95%) da trisomia libera del cromosoma 21; in un maschio il cariotipo è quindi <strong>47,XY,+21</strong>. Circa il 4% presenta traslocazione robertsoniana e l'1% mosaicismo. L'opzione A è il cariotipo maschile normale.</p>",
+    "created_at": "2026-10-14T19:51:07.656174+00:00"
+  },
+  {
+    "id": "9f8532df-4483-4976-a288-47a3a57ffb12",
+    "source_id": "0d90e80d-7616-4800-9b30-f6ac9cdc27a5",
+    "question": "Tutte le seguenti affermazioni sullo scorbuto sono vere tranne:",
+    "options": [
+      "Ipercalcemia",
+      "Separazione dell'epifisi",
+      "Sanguinamento gengivale",
+      "Aumento della fosfatasi alcalina sierica",
+      "Ematoma subperiostale con dolorabilità"
+    ],
+    "answer_index": 3,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>La risposta corretta è la <strong>C</strong>. Lo scorbuto è causato da carenza di vitamina C, necessaria per la sintesi del collagene e per l'idrossilazione di lisina e prolina. Nello scorbuto la fosfatasi alcalina sierica è tipicamente <em>diminuita</em>, non aumentata, quindi l'opzione C è falsa.</p>",
+    "created_at": "2026-10-11T17:14:15.893958+00:00"
+  },
+  {
+    "id": "c998ce26-70ea-4794-9856-b6e65a599a8a",
+    "source_id": "131496bf-5fcc-4357-b651-efa27b45c4e2",
+    "question": "Quale affermazione sul kernittero è falsa?",
+    "options": [
+      "Opistotono",
+      "Non ha effetti a lungo termine",
+      "Deposizione nei gangli della base",
+      "Può causare sordità neurosensoriale",
+      "Si verifica con bilirubina superiore a 25 mg%"
+    ],
+    "answer_index": 1,
+    "topic": "Neonatologia",
+    "difficulty": 2,
+    "explanation": "<p>Il kernittero è una encefalopatia da deposizione di <strong>bilirubina non coniugata</strong> nei gangli della base. Non è privo di effetti a lungo termine: può causare sequele neurologiche permanenti, sordità e opistotono. La risposta A è quindi falsa.</p>",
+    "created_at": "2026-10-11T17:14:14.478497+00:00"
+  },
+  {
+    "id": "5a56ef45-f9cf-4129-9afc-0700e38cbee4",
+    "source_id": "18f2e4c3-2caf-4b93-9dfb-88972fda25c6",
+    "question": "Un ampio PDA (dotto arterioso pervio) causa –",
+    "options": [
+      "Tutte le precedenti",
+      "Scompenso cardiaco congestizio (CHF)",
+      "Valvolite endocardica",
+      "Sindrome di Eisenmenger",
+      "Stenosi valvolare aortica congenita"
+    ],
+    "answer_index": 0,
+    "topic": "Cardiologia",
+    "difficulty": 2,
+    "explanation": "<p>Un ampio PDA può causare scompenso cardiaco congestizio, sindrome di Eisenmenger e valvolite endocardica infettiva. Perciò le opzioni A, B e C sono tutte complicanze possibili.</p>",
+    "created_at": "2026-10-14T19:51:07.4277+00:00"
+  },
+  {
+    "id": "4c6fb4a2-6779-4b6d-a7e6-fdbec069f056",
+    "source_id": "1c945ffb-3574-4313-9f26-076ad7488f3e",
+    "question": "Quali sono le cellule trifasiche osservate nel tumore di Wilms?",
+    "options": [
+      "Cellule stromali, cellule epiteliali, cellule embrionali",
+      "Cellule stromali, cellule blastemali, cellule epiteliali",
+      "Cellule mesenchimali, cellule stromali, cellule embrionali",
+      "Cellule blastemali, cellule embrionali, cellule epiteliali",
+      "Cellule blastemali, cellule epiteliali, cellule neuroendocrine"
+    ],
+    "answer_index": 1,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>Il tumore di Wilms è una neoplasia embrionale trifasica: presenta componente <strong>blastemale</strong>, <strong>stromale</strong> ed <strong>epiteliale</strong>. L'opzione D elenca correttamente queste tre componenti.</p>",
+    "created_at": "2026-10-14T19:51:10.328057+00:00"
+  },
+  {
+    "id": "22790399-95f8-44a6-a418-b9a042662ff0",
+    "source_id": "1e8c2fca-a8f7-4695-ad60-d66ccd922cfb",
+    "question": "Riguardo al complesso primario nei bambini, tutte le seguenti sono vere tranne:",
+    "options": [
+      "Si osserva versamento",
+      "Consolidamento presente",
+      "Fibrosi",
+      "Nessuna delle precedenti",
+      "Include adenopatia ilare regionale"
+    ],
+    "answer_index": 3,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>Nel complesso primario tubercolare pediatrico possono verificarsi versamento pleurico, consolidamento polmonare e fibrosi/calcificazione. Inoltre è tipicamente presente l'adenopatia ilare regionale. Pertanto nessuna delle opzioni A-C è falsa e la risposta è D.</p>",
+    "created_at": "2026-10-14T19:51:10.847205+00:00"
+  },
+  {
+    "id": "4f078464-d984-414f-8d4b-817581f4687c",
+    "source_id": "1f2436d7-8bff-45ae-b515-6d49f98df465",
+    "question": "Una multigravida di 32 settimane di gravidanza presenta un test di tolleranza al glucosio alterato e riceve diagnosi di diabete gestazionale. Tutte le seguenti possono essere complicanze in questo neonato, TRANNE:",
+    "options": [
+      "Ipocalcemia",
+      "Sindrome da distress respiratorio",
+      "Ipomagnesemia",
+      "Iperglicemia",
+      "Iperbilirubinemia"
+    ],
+    "answer_index": 3,
+    "topic": "Neonatologia",
+    "difficulty": 2,
+    "explanation": "<p>Nel diabete gestazionale, i neonati sono a rischio di ipoglicemia, iperbilirubinemia, ipocalcemia e sindrome da distress respiratorio. L'iperglicemia non è tipica; al contrario, l'ipoglicemia è comune a causa dell'iperinsulinismo fetale. Pertanto, l'opzione B è l'eccezione.</p>",
+    "created_at": "2026-10-14T19:51:11.315712+00:00"
+  },
+  {
+    "id": "fc136cb6-a36c-4287-bc27-107513cdc9b0",
+    "source_id": "20ea85cc-bb7f-4dab-9150-410d79c89c34",
+    "question": "La sindrome di Kartagener è caratterizzata da:",
+    "options": [
+      "Situs inversus",
+      "Tutte le precedenti",
+      "Discinesia ciliare",
+      "Dextrocardia isolata",
+      "Infertilità"
+    ],
+    "answer_index": 1,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Kartagener è una forma di discinesia ciliare primaria a trasmissione autosomica recessiva. È caratterizzata da bronchiectasie, sinusiti, situs inversus e infertilità maschile per immobilità degli spermatozoi. La discinesia ciliare è il difetto di base; pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:07.325795+00:00"
+  },
+  {
+    "id": "6c2b67cd-136e-474c-8c6d-68d62c0a2d53",
+    "source_id": "272d0fea-b1c3-4b3a-9518-dc60b967baec",
+    "question": "Quali farmaci sono usati per prevenire la trasmissione dell'HIV da madre a figlio?",
+    "options": [
+      "Zidovudina alla madre",
+      "Nevirapina alla madre",
+      "Solo immunoglobuline anti-HIV alla madre",
+      "Tutte queste",
+      "Zidovudina al neonato"
+    ],
+    "answer_index": 3,
+    "topic": "Malattie infettive",
+    "difficulty": 1,
+    "explanation": "<p>La prevenzione della trasmissione verticale dell'HIV include la zidovudina alla madre e al neonato e la nevirapina alla madre, spesso in schemi combinati. Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-11T17:14:14.0959+00:00"
+  },
+  {
+    "id": "2ab0a6b9-6695-4229-b60f-c6f8859fc55f",
+    "source_id": "2ac358b0-a1f8-48a7-b599-e32a15802051",
+    "question": "Quale dei seguenti fattori è associato a prognosi sfavorevole nella leucemia linfoblastica acuta (LLA)?",
+    "options": [
+      "Bambino di età inferiore a 1 anno",
+      "Bassa conta leucocitaria nella fase iniziale",
+      "Iperdiploidia",
+      "Traslocazione 12;21",
+      "Età compresa tra 1 e 9 anni"
+    ],
+    "answer_index": 0,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>Nella LLA pediatrica, l'età <1 anno è un fattore prognostico <strong>sfavorevole</strong>. Al contrario, bassa conta leucocitaria iniziale, iperdiploidia e t(12;21) sono associati a prognosi favorevole. L'opzione E (età 1-9 anni) è anch'essa favorevole.</p>",
+    "created_at": "2026-10-14T19:51:09.126403+00:00"
+  },
+  {
+    "id": "007547cf-5c91-4cbc-97f1-7f32fcd72c5f",
+    "source_id": "2bbcd248-93ae-4368-a2aa-bbb0e2e47b06",
+    "question": "Nel tratto beta-talassemico, quale delle seguenti affermazioni è vera?",
+    "options": [
+      "Aumento di HbF",
+      "Aumento di HbA2",
+      "Microcitosi",
+      "Tutte le precedenti",
+      "Aumento di HbA"
+    ],
+    "answer_index": 3,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 1,
+    "explanation": "<p>Nel tratto beta-talassemico si osservano microcitosi, aumento di HbA2 e possibile aumento di HbF. Per questo le opzioni A, B e C sono considerate vere.</p>",
+    "created_at": "2026-10-14T19:51:08.608211+00:00"
+  },
+  {
+    "id": "cfbfa65e-0f88-4ec5-a76d-48e3382638d5",
+    "source_id": "2c928c30-a5a0-49a7-937a-e191c4c93b25",
+    "question": "Il neonato comunemente presenta quanto segue, tranne:",
+    "options": [
+      "Perle di Epstein",
+      "Eritema tossico neonatale",
+      "Macchie mongoliche",
+      "Nessuna delle precedenti",
+      "Milia"
+    ],
+    "answer_index": 3,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>Milia, macchie mongoliche e perle di Epstein sono reperti neonatali benigni comuni che regrediscono spontaneamente. Pertanto nessuna delle opzioni A-C rappresenta un'eccezione. Anche l'eritema tossico neonatale è comune e non richiede trattamento.</p>",
+    "created_at": "2026-10-14T19:51:07.325795+00:00"
+  },
+  {
+    "id": "2ec5b466-5fdf-402e-bf27-982f3786f7fa",
+    "source_id": "2de06a89-639f-43ca-83f3-4b0d2b71553c",
+    "question": "Anemia di Fanconi: quale affermazione è falsa?",
+    "options": [
+      "Tutte le precedenti sono vere",
+      "Autosomica recessiva",
+      "Pancitopenia",
+      "Trasmissione X-linked recessiva",
+      "Tipo I A"
+    ],
+    "answer_index": 4,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>L'anemia di Fanconi è autosomica recessiva e si manifesta con pancitopenia. La dicitura 'Tipo I A' non la descrive, ma indica un tipo di acidosi tubulare renale distale. Pertanto l'affermazione falsa è la C.</p>",
+    "created_at": "2026-10-14T19:51:08.369429+00:00"
+  },
+  {
+    "id": "cbd62cb8-013e-4d29-b126-68fc4e4f965d",
+    "source_id": "3066bba2-40d7-4b4a-8c56-ee0f5bce2378",
+    "question": "Quale delle seguenti è una causa di linfadenite mesenterica?",
+    "options": [
+      "Staphylococcus aureus",
+      "Yersinia pseudotuberculosis",
+      "Campylobacter",
+      "Tutte le precedenti",
+      "Adenovirus"
+    ],
+    "answer_index": 3,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>Tutte le opzioni A-C sono state associate a linfadenite mesenterica: Yersinia pseudotuberculosis è la causa classica, Campylobacter può causare ileocolite e linfadenite, e Adenovirus può determinare adenite mesenterica. La linfadenite mesenterica va distinta dall'appendicite acuta.</p>",
+    "created_at": "2026-10-14T19:51:11.545274+00:00"
+  },
+  {
+    "id": "798c65be-09a9-4a6d-bd8c-ccf29c8251a6",
+    "source_id": "328070ff-5cb0-4db1-86a9-b35941468a51",
+    "question": "Quale delle seguenti combinazioni è vera riguardo all'epilessia mioclonica giovanile? a) Crisi focali; b) Crisi generalizzate; c) Mioclono; d) Risposta a sodium valproate; e) Spike and waves all'EEG.",
+    "options": [
+      "ace",
+      "acd",
+      "ac",
+      "bcd",
+      "abc"
+    ],
+    "answer_index": 3,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>L'epilessia mioclonica giovanile è una epilessia generalizzata caratterizzata da mioclono e crisi tonico-cloniche generalizzate. La risposta a <strong>sodium valproate</strong> è tipicamente buona. Le crisi focali non sono una caratteristica.</p>",
+    "created_at": "2026-10-14T19:51:09.229282+00:00"
+  },
+  {
+    "id": "027180b4-d916-4711-a945-76dd8d47c2e5",
+    "source_id": "32e71d58-67df-427b-ad36-950bf6850b8b",
+    "question": "La sindrome di Prader-Willi è associata a ciascuna delle seguenti condizioni tranne",
+    "options": [
+      "Ipogonadismo ipogonadotropo",
+      "Iperfagia - obesità",
+      "Ipotonia muscolare cronica",
+      "Diabete mellito a esordio adulto",
+      "Macrocefalia progressiva"
+    ],
+    "answer_index": 2,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Prader-Willi è caratterizzata da ipotonia neonatale, ipogonadismo, iperfagia con obesità, diabete a esordio adulto, ritardo dello sviluppo e disturbi comportamentali. L'ipotonia è tipica dell'infanzia e non cronica, quindi la risposta C è l'eccezione.</p>",
+    "created_at": "2026-10-11T17:14:13.582531+00:00"
+  },
+  {
+    "id": "20991085-527f-4a3e-aab6-2b6818dc4817",
+    "source_id": "34e84e6f-eec4-4be0-9f71-ca57a9828df2",
+    "question": "La fontanella anteriore corrisponde a tutte le seguenti strutture TRANNE:",
+    "options": [
+      "Ossa frontali",
+      "Sutura lambdoidea",
+      "Sutura coronale",
+      "Sutura squamosa",
+      "Sutura sagittale"
+    ],
+    "answer_index": 1,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>La fontanella anteriore si trova all'incrocio tra le ossa frontali, la sutura coronale e la sutura sagittale. La sutura lambdoidea corrisponde invece alla fontanella posteriore. Pertanto l'opzione C è l'unica non associata.</p>",
+    "created_at": "2026-10-11T17:14:14.0959+00:00"
+  },
+  {
+    "id": "9bea9830-447d-470a-b994-079cd727b6f6",
+    "source_id": "365b39b1-0642-476d-9949-8fba26137df6",
+    "question": "Manifestazioni cliniche della carenza di zinco",
+    "options": [
+      "Ipogonadismo",
+      "Scarsa guarigione delle ferite",
+      "Acrodermatite enteropatica",
+      "Tutte le precedenti",
+      "Ipercheratosi follicolare"
+    ],
+    "answer_index": 3,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 2,
+    "explanation": "<p>La carenza di zinco causa <strong>acrodermatite enteropatica</strong>, scarsa guarigione delle ferite e ipogonadismo, oltre a ritardo di crescita, anemia e diarrea. Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:09.470946+00:00"
+  },
+  {
+    "id": "ce7420f8-5b8f-4848-ae45-696056f35c37",
+    "source_id": "3993a3d7-1d62-4f8a-8be3-ca66a050a388",
+    "question": "Quale delle seguenti affermazioni sul croup è falsa?",
+    "options": [
+      "La malattia comprende laringite, laringotracheite e laringotracheobronchite.",
+      "È spesso causato da virus parainfluenzali.",
+      "La tosse abbaiante è il sintomo principale.",
+      "Può essere trattato con corticosteroidi.",
+      "Causa ostruzione delle basse vie aeree."
+    ],
+    "answer_index": 4,
+    "topic": "Pneumologia",
+    "difficulty": 1,
+    "explanation": "<p>Il croup è una sindrome caratterizzata da ostruzione delle <strong>alte</strong> vie aeree, con tosse abbaiante e stridore. Le opzioni A, B, D ed E sono corrette. La C è falsa perché l'ostruzione è tipicamente a livello laringeo/subglottico, non delle basse vie aeree.</p>",
+    "created_at": "2026-10-11T17:14:13.582531+00:00"
+  },
+  {
+    "id": "c40fda61-62d8-47f5-8280-92cfb81506f3",
+    "source_id": "39b98cf1-db6b-4557-8764-5daf720af4b9",
+    "question": "Nell'endocardite infettiva, quale delle seguenti manifestazioni NON è immuno-mediata?",
+    "options": [
+      "Glomerulonefrite",
+      "Nessuna delle precedenti",
+      "Vasculite da immunocomplessi",
+      "Macchie di Roth",
+      "Noduli di Osler"
+    ],
+    "answer_index": 1,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>La risposta corretta è <strong>Nessuna delle precedenti</strong>. In corso di endocardite infettiva, macchie di Roth, noduli di Osler e glomerulonefrite sono tutte manifestazioni immuno-mediate da immunocomplessi. Pertanto nessuna delle opzioni A-C è non immuno-mediata.</p>",
+    "created_at": "2026-10-11T17:14:13.319397+00:00"
+  },
+  {
+    "id": "b67aaf16-4d4c-4d80-b539-4229e5848de1",
+    "source_id": "3be3c701-e2e6-4f01-8c19-e2f4d562ccac",
+    "question": "Le caratteristiche istologiche della celiachia includono tutte le seguenti TRANNE:",
+    "options": [
+      "Aumento dello spessore della mucosa",
+      "Aumento dei linfociti intraepiteliali",
+      "Aumento delle cellule infiammatorie nella lamina propria",
+      "Iperplasia delle cripte",
+      "Atrofia dei villi"
+    ],
+    "answer_index": 0,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 2,
+    "explanation": "<p>Nella celiachia la biopsia mostra atrofia dei villi, iperplasia delle cripte, aumento dei linfociti intraepiteliali e cellule infiammatorie nella lamina propria. Lo spessore complessivo della mucosa non aumenta, quindi l'opzione B è l'eccezione.</p>",
+    "created_at": "2026-10-14T19:51:08.608211+00:00"
+  },
+  {
+    "id": "fa3fd351-0d9b-4006-8982-f0a9c4fd9469",
+    "source_id": "3f6e2e06-91a2-4241-92e1-7b18db0f9d02",
+    "question": "La sindrome di Laurence-Moon-Biedl è associata a",
+    "options": [
+      "Tutte le precedenti",
+      "Ipotiroidismo congenito",
+      "Ritardo mentale",
+      "Retinite pigmentosa",
+      "Polidattilia"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Laurence-Moon-Biedl è una ciliopatia caratterizzata da <strong>obesità</strong>, <strong>polidattilia</strong>, <strong>ritardo mentale</strong>, <strong>ipogonadismo ipogonadotropo</strong> e <strong>retinite pigmentosa</strong>. Pertanto la risposta D è corretta.</p>",
+    "created_at": "2026-10-14T19:51:08.484158+00:00"
+  },
+  {
+    "id": "e10a474b-f823-4ee5-b54d-b431cab3f6e2",
+    "source_id": "3fcc398c-121d-46ab-9478-c905ede051c9",
+    "question": "Quali dei seguenti sono segni di sindrome da distress respiratorio neonatale?",
+    "options": [
+      "pH < 7.2",
+      "Rientro intercostale",
+      "Tutte queste",
+      "FR > 60/min",
+      "Ipertensione arteriosa sistemica"
+    ],
+    "answer_index": 2,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>La sindrome da distress respiratorio neonatale si manifesta con tachipnea (FR superiore a 60/min), rientri intercostali e acidosi (pH inferiore a 7,2). Pertanto tutte le opzioni A-C sono segni tipici.</p>",
+    "created_at": "2026-10-14T19:51:07.555676+00:00"
+  },
+  {
+    "id": "a33a5f21-77af-4702-9cb6-e92769f3b078",
+    "source_id": "40b6f4f1-c7c2-4716-b854-8e7a4f71ea28",
+    "question": "Tutte le seguenti affermazioni sono vere nella sindrome di Down, tranne:",
+    "options": [
+      "Atresia duodenale",
+      "Piega palmare unica",
+      "Trisomia 21",
+      "Ipoplasia della falange media del 5° dito",
+      "Ipoplasia della falange media del 1° dito"
+    ],
+    "answer_index": 4,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 1,
+    "explanation": "<p>Nella sindrome di Down si osserva <strong>ipoplasia della falange media del 5° dito</strong>, non del 1°. Sono invece tipiche l'atresia duodenale, la trisomia 21 e la piega palmare unica. La risposta D è quindi l'unica errata.</p>",
+    "created_at": "2026-10-11T17:14:15.308422+00:00"
+  },
+  {
+    "id": "b83d802a-67ee-416a-89f5-7a2139eb7635",
+    "source_id": "4423c872-8ef8-4d1b-9fd4-cb85253ef6df",
+    "question": "Quale delle seguenti NON è una caratteristica della sindrome dell'X fragile?",
+    "options": [
+      "Orecchie a impianto basso",
+      "Gonadi grandi",
+      "Ereditarietà dominante legata all'X",
+      "Viso allungato",
+      "Disabilità intellettiva"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome dell'X fragile segue un'ereditarietà dominante legata all'X. Le caratteristiche tipiche comprendono viso allungato, macroorchidismo, disabilità intellettiva e orecchie grandi; le orecchie a impianto basso non sono tipiche. Pertanto l'opzione A è quella non compatibile.</p>",
+    "created_at": "2026-10-14T19:51:10.003875+00:00"
+  },
+  {
+    "id": "d90d1f21-3ea1-46b6-b392-43882f571b78",
+    "source_id": "449ac258-7dbf-4b6e-8896-6a69ba8825b8",
+    "question": "Cyclosporine, nella sindrome nefrosica, agisce mediante:",
+    "options": [
+      "Inibizione della calcineurina",
+      "Antibiotico",
+      "Agisce come agente alchilante",
+      "Inibizione dell'IMPDH",
+      "Inibizione di mTOR"
+    ],
+    "answer_index": 0,
+    "topic": "Nefrologia",
+    "difficulty": 2,
+    "explanation": "<p>La <strong>Cyclosporine</strong> è un inibitore della calcineurina; inibisce l'attivazione dei linfociti T e riduce la proteinuria nella sindrome nefrosica. È usata, insieme ai corticosteroidi, nelle forme steroido-dipendenti o resistenti. L'opzione A è quindi corretta.</p>",
+    "created_at": "2026-10-11T17:14:15.681387+00:00"
+  },
+  {
+    "id": "71ae3e0e-5d9a-4feb-96c8-19e6cb726912",
+    "source_id": "4509c397-dd49-4476-a163-d808b939b6de",
+    "question": "La sindrome da rosolia congenita è associata a",
+    "options": [
+      "Tutte le precedenti",
+      "Cataratta",
+      "Ipoacusia neurosensoriale",
+      "Solo ipotiroidismo congenito",
+      "Cardiopatia congenita"
+    ],
+    "answer_index": 0,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome da rosolia congenita, se l'infezione avviene nel primo trimestre, causa la classica triade: cataratta e altre anomalie oculari, ipoacusia neurosensoriale e cardiopatia congenita (es. dotto arterioso pervio). Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-11T17:14:15.893958+00:00"
+  },
+  {
+    "id": "ab60a1df-e3eb-47c8-8c9b-a3de8107a0f8",
+    "source_id": "4668b82e-cf1c-4e8a-bec8-715548dff32b",
+    "question": "L'ittero in un neonato osservato dopo 48 ore dalla nascita, con bilirubina non superiore a 5 mg%, è:",
+    "options": [
+      "Ittero da allattamento al seno",
+      "Sindrome da epatite neonatale",
+      "Malattia emolitica del neonato",
+      "Ittero fisiologico",
+      "Incompatibilità ABO"
+    ],
+    "answer_index": 3,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>L'ittero fisiologico compare dopo le prime 24-48 ore di vita e in genere la bilirubina non supera 5 mg% in questa fase. Le altre condizioni causano ittero più precoce o valori più elevati. <strong>Risposta: D</strong>.</p>",
+    "created_at": "2026-10-14T19:51:10.946418+00:00"
+  },
+  {
+    "id": "3c40d0ed-a2b7-40d5-8c5b-6b64f7c968e7",
+    "source_id": "46e06dca-114d-4f39-a1f0-1bb10dbda4d7",
+    "question": "La malattia emorragica tardiva del neonato è caratterizzata da tutte le seguenti caratteristiche tranne?",
+    "options": [
+      "Può verificarsi emorragia intracranica",
+      "Di solito si verifica in neonati allattati con latte vaccino",
+      "È più comune nei neonati allattati al seno",
+      "Esordio tra 4 e 12 settimane di età",
+      "La profilassi intramuscolare con vitamina K alla nascita ha un ruolo protettivo"
+    ],
+    "answer_index": 1,
+    "topic": "Neonatologia",
+    "difficulty": 2,
+    "explanation": "<p>La malattia emorragica tardiva del neonato è più frequente nei lattanti allattati al seno, perché il latte materno è povero di vitamina K. Insorge tipicamente tra 4 e 12 settimane, può causare emorragia intracranica ed è prevenuta dalla profilassi intramuscolare con vitamina K. Pertanto l'opzione A è errata.</p>",
+    "created_at": "2026-10-14T19:51:08.90031+00:00"
+  },
+  {
+    "id": "0d6e36b8-31e4-4dfd-b814-4319623becd0",
+    "source_id": "481c7205-eb9e-483b-b29f-c7b6695c749a",
+    "question": "Una madre indigente affetta da tubercolosi attiva partorisce un neonato. Quale dei seguenti consigli sarebbe più appropriato nel suo caso:",
+    "options": [
+      "Sospendere l'allattamento e somministrazione di isoniazid",
+      "Allattamento al seno e somministrazione di isoniazid",
+      "Allattamento al seno e immunizzazione con BCG",
+      "Latte materno spremuto e immunizzazione con BCG",
+      "Allattamento artificiale e somministrazione di isoniazid"
+    ],
+    "answer_index": 1,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>La risposta corretta è <strong>B</strong>: l'allattamento al seno è consentito e va associata chemioprofilassi con isoniazid. La vaccinazione BCG è raccomandata nel neonato, ma non rende errata l'opzione B.</p>",
+    "created_at": "2026-10-14T19:51:10.123411+00:00"
+  },
+  {
+    "id": "b0e2b0cb-8b29-496e-a8a9-d829d2d9d823",
+    "source_id": "482be3ac-b994-4bc0-a5f3-1015598a5330",
+    "question": "Quale affermazione sulle convulsioni febbrili acute è falsa?",
+    "options": [
+      "Sono di natura focale",
+      "L'EEG è normale dopo 2 settimane",
+      "Di solito si verificano sotto i 6 anni di età",
+      "Tutte le precedenti",
+      "Richiedono sempre profilassi antiepilettica a lungo termine"
+    ],
+    "answer_index": 0,
+    "topic": "Neurologia",
+    "difficulty": 1,
+    "explanation": "<p>Le convulsioni febbrili acute sono tipicamente <strong>generalizzate</strong>, non focali. L'EEG è di solito normale dopo 2 settimane e l'età tipica è 6 mesi-5 anni. Pertanto l'affermazione falsa è la A.</p>",
+    "created_at": "2026-10-14T19:51:09.229282+00:00"
+  },
+  {
+    "id": "a1cbaecd-1975-4ebf-8cad-1bd044c04535",
+    "source_id": "48fc55e2-47b2-4246-b101-09e7d7f7dc3f",
+    "question": "Percentuale di bambini con recidiva di convulsioni febbrili –",
+    "options": [
+      "20–25%",
+      "5–10%",
+      "25–50%",
+      "10–20%",
+      "50–75%"
+    ],
+    "answer_index": 2,
+    "topic": "Neurologia",
+    "difficulty": 1,
+    "explanation": "<p>Le convulsioni febbrili recidivano nel 30–50% dei casi. La risposta D (25–50%) è quella che meglio approssima questo intervallo.</p>",
+    "created_at": "2026-10-11T17:14:14.478497+00:00"
+  },
+  {
+    "id": "ba9c46eb-e2d2-4ad6-bc43-8ba8da2e2ec2",
+    "source_id": "4904ef94-6757-4f54-840c-e7c78334ddc8",
+    "question": "Il disturbo da deficit di attenzione/iperattività (ADHD) è caratterizzato da:",
+    "options": [
+      "Impulsività",
+      "Disabilità intellettiva",
+      "Iperattività",
+      "Tutte le precedenti",
+      "Disattenzione"
+    ],
+    "answer_index": 3,
+    "topic": "Pediatria sociale e sviluppo",
+    "difficulty": 1,
+    "explanation": "<p>Il disturbo da deficit di attenzione/iperattività (ADHD) è caratterizzato dalla triade di <strong>iperattività</strong>, <strong>impulsività</strong> e <strong>disattenzione</strong>. È più comune nei maschi e i sintomi devono essere inappropriati per l'età e presenti da almeno 6 mesi. La risposta D è corretta perché include tutte e tre le caratteristiche.</p>",
+    "created_at": "2026-10-14T19:51:08.369429+00:00"
+  },
+  {
+    "id": "4ee54d49-0b9d-4036-b3e5-3403bcbc97b7",
+    "source_id": "4f4c3a43-5103-4432-b517-dd07b1965558",
+    "question": "La cornea opaca è una caratteristica di:",
+    "options": [
+      "Tutte le precedenti",
+      "Malattia di Morquio",
+      "Malattia di Maroteaux-Lamy",
+      "Malattia di Hurler",
+      "Malattia di Fabry"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>La cornea opaca è tipica delle mucopolisaccaridosi come la malattia di Hurler (MPS I), Morquio (MPS IV) e Maroteaux-Lamy (MPS VI). Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:09.470946+00:00"
+  },
+  {
+    "id": "9e0f2f32-5d66-4ffa-8a86-b20eb69438b1",
+    "source_id": "52fcb8b4-ac0e-4856-8c3d-df6c35d2005c",
+    "question": "Quali caratteristiche cliniche presenta l'iperplasia surrenalica congenita?",
+    "options": [
+      "Squilibrio elettrolitico",
+      "Pseudoermafroditismo femminile (pseudoermafroditismo)",
+      "Ipertensione",
+      "Tutte le precedenti",
+      "Ipoglicemia iperinsulinemica refrattaria"
+    ],
+    "answer_index": 3,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>La forma classica da deficit di 21-idrossilasi causa virilizzazione dei genitali esterni nella femmina (pseudoermafroditismo), mentre le forme con perdita di sale presentano iperpotassiemia, iponatriemia e disidratazione; alcune forme con deficit di 11β-idrossilasi possono associare ipertensione. Pertanto l'opzione D è corretta.</p>",
+    "created_at": "2026-10-14T19:51:10.601786+00:00"
+  },
+  {
+    "id": "7400736c-2c83-4753-baf3-8612b7ce1123",
+    "source_id": "56842976-2cc5-4d3e-b46b-15a4ec48227c",
+    "question": "Quale delle seguenti affermazioni sulla conservazione del latte materno spremuto (EBM) è vera?",
+    "options": [
+      "Il latte materno spremuto può essere conservato a temperatura ambiente per circa 6 ore e in frigorifero per 24 ore",
+      "Il latte materno spremuto può essere conservato a temperatura ambiente per circa 24 ore e in frigorifero per 6 giorni",
+      "Il latte materno spremuto può essere conservato a temperatura ambiente per circa 18 ore e in frigorifero per 1 mese",
+      "Il latte materno spremuto può essere conservato a temperatura ambiente per circa 6 ore e in frigorifero per 6 giorni",
+      "Il latte materno spremuto può essere conservato a temperatura ambiente per circa 8 ore e in frigorifero per 48 ore"
+    ],
+    "answer_index": 0,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>Secondo le linee guida, il latte materno spremuto si conserva a temperatura ambiente per circa 6-8 ore e in frigorifero per 24 ore. Il congelamento profondo a -20°C ne consente la conservazione per circa 3 mesi. Pertanto la risposta A è corretta.</p>",
+    "created_at": "2026-10-14T19:51:07.838183+00:00"
+  },
+  {
+    "id": "4f42444b-5c86-429f-bff3-ea951d6668ed",
+    "source_id": "57dd158d-d3ac-4082-9875-70971696ff78",
+    "question": "Criteri OMS per il ricovero ospedaliero nella polmonite?",
+    "options": [
+      "Febbre alta",
+      "Saturazione di ossigeno > 95% in aria ambiente",
+      "Difficoltà respiratoria",
+      "Alitamento delle pinne nasali",
+      "Tutte le precedenti"
+    ],
+    "answer_index": 4,
+    "topic": "Pneumologia",
+    "difficulty": 2,
+    "explanation": "<p>Nei criteri OMS per il ricovero nella polmonite, la presenza di febbre elevata, alitamento delle pinne nasali e difficoltà respiratoria è considerata indicazione a valutazione ospedaliera. La risposta D racchiude quindi le opzioni corrette.</p>",
+    "created_at": "2026-10-14T19:51:10.441628+00:00"
+  },
+  {
+    "id": "0dbb9c38-2614-48b4-8761-71a8c5307022",
+    "source_id": "59bf6216-151b-4e33-b1e2-1b29748e9fd9",
+    "question": "Quale delle seguenti non è un esempio di pseudopubertà?",
+    "options": [
+      "Tumore della ghiandola surrenale",
+      "Sindrome di McCune-Albright",
+      "Tutte le precedenti",
+      "Tumore ovarico",
+      "Tumore dell'ipotalamo"
+    ],
+    "answer_index": 2,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>La risposta indicata è <strong>D</strong>, cioè <em>tutte le precedenti</em>. Secondo la chiave fornita, nessuna delle opzioni A-C è considerata esempio di pseudopubertà.</p>",
+    "created_at": "2026-10-11T17:14:12.48209+00:00"
+  },
+  {
+    "id": "58dc4f26-3eb7-4701-ac73-3cac48c5a732",
+    "source_id": "5a02c875-a1f6-44d3-a347-8c1d35e918ca",
+    "question": "Quale affermazione è vera nella sindrome di Reye?",
+    "options": [
+      "Infiltrazione grassa microvescicolare",
+      "Iperglicemia con glicogenosi epatica",
+      "Ipoglicemia",
+      "Edema cerebrale",
+      "Encefalopatia epatica"
+    ],
+    "answer_index": 0,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Reye è caratterizzata da <strong>steatosi epatica microvescicolare</strong>, disfunzione epatica e coagulopatia. Il reperto istologico tipico è l'infiltrazione grassa microvescicolare, quindi la risposta A è corretta.</p>",
+    "created_at": "2026-10-14T19:51:09.342949+00:00"
+  },
+  {
+    "id": "83c432ab-c306-460e-add3-bd46331a78a0",
+    "source_id": "5a9479fc-9380-4c8e-a893-cc938715ddb9",
+    "question": "Quale delle seguenti affermazioni sul deficit di 21-idrossilasi è falsa?",
+    "options": [
+      "È la causa più comune di iperplasia surrenale congenita (CAH) nei bambini",
+      "Il trattamento prevede glucocorticoidi e, se necessario, mineralcorticoidi",
+      "I maschi affetti presentano pubertà precoce",
+      "Si osserva alcalosi ipokaliemica",
+      "Le femmine affette presentano genitali ambigui"
+    ],
+    "answer_index": 3,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>Il deficit di 21-idrossilasi causa deficit di aldosterone con <strong>iperkaliemia</strong>, iponatriemia e perdita di sale. L'alcalosi ipokaliemica non è tipica; pertanto l'affermazione falsa è la D.</p>",
+    "created_at": "2026-10-11T17:14:14.606055+00:00"
+  },
+  {
+    "id": "a9cad355-a1d4-403a-ad49-f30c0bd5e17a",
+    "source_id": "5c39ab91-bcbf-4831-acf2-dfcce1b3c236",
+    "question": "Quale dei seguenti metodi può essere utilizzato per diagnosticare l'infezione da rosolia nei bambini?",
+    "options": [
+      "Conta delle cellule T4",
+      "Anticorpi IgM nel sangue fetale",
+      "Emoglobina fetale",
+      "Anticorpi IgG nel sangue fetale",
+      "Anticorpi IgA nel sangue fetale"
+    ],
+    "answer_index": 1,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>La diagnosi di infezione da rosolia congenita si basa sull'isolamento virale, sulla PCR e soprattutto sulla presenza di IgM specifiche nel sangue del neonato/feto, perché le IgM non attraversano la placenta. Le IgG materne possono invece passare e persistere per mesi, quindi non sono diagnostiche. L'opzione C è quella corretta.</p>",
+    "created_at": "2026-10-07T19:07:35.853211+00:00"
+  },
+  {
+    "id": "2816eb19-3875-49bf-9617-573143e0a3f4",
+    "source_id": "5f28a057-9075-4c8b-9cd0-8da4edce0b2f",
+    "question": "Dose di zinco in lattanti di 8 mesi",
+    "options": [
+      "10 mg x 10 giorni",
+      "20 mg x 14 giorni",
+      "20 mg x 7 giorni",
+      "20 mg x 10 giorni",
+      "10 mg x 14 giorni"
+    ],
+    "answer_index": 1,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>Nei lattanti di età superiore a 6 mesi, la supplementazione di zinco per la diarrea è di <strong>20 mg al giorno</strong> per 10-14 giorni. La risposta D (20 mg x 14 giorni) è quindi corretta.</p>",
+    "created_at": "2026-10-14T19:51:09.028035+00:00"
+  },
+  {
+    "id": "e93ad51d-f74a-4530-a575-05cba0a2d095",
+    "source_id": "60070840-753e-4662-9bbf-ee4017349398",
+    "question": "Nella fenilchetonuria, il test al cloruro ferrico (FeCl3) sulle urine dà un colore ..............",
+    "options": [
+      "Verde",
+      "Blu",
+      "Rosso",
+      "Viola",
+      "Giallo"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 1,
+    "explanation": "<p>Nel test al cloruro ferrico per la fenilchetonuria si aggiunge una goccia di FeCl3 alle urine. I fenoli urinari formano un complesso con Fe(III) che dà un colore <strong>verde</strong> transitorio. Perciò la risposta corretta è la A.</p>",
+    "created_at": "2026-10-14T19:51:08.03637+00:00"
+  },
+  {
+    "id": "38ea6d3c-4962-48d9-89a5-c14843e1eec4",
+    "source_id": "60239a96-ef60-4854-8364-399f12e8a060",
+    "question": "Tutte le seguenti sono caratteristiche riconosciute della malattia di Wilson tranne –",
+    "options": [
+      "Anelli di Kayser-Fleischer corneali",
+      "Caratteristiche istopatologiche di epatite cronica attiva",
+      "Livelli aumentati di ceruloplasmina",
+      "Disturbi psicologici",
+      "Aumentato contenuto di rame nel fegato"
+    ],
+    "answer_index": 2,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>La malattia di Wilson è caratterizzata da riduzione della ceruloplasmina sierica, non da aumento. L'aumento del rame epatico, le alterazioni psicologiche e l'epatite cronica attiva sono invece riscontri tipici. Pertanto l'opzione B è errata.</p>",
+    "created_at": "2026-10-14T19:51:10.123411+00:00"
+  },
+  {
+    "id": "1cfd32f8-250f-4856-8372-2a5d2351e6de",
+    "source_id": "61d09cd7-9beb-4ef6-b962-1eb185862a20",
+    "question": "Quale delle seguenti affermazioni sulla coartazione aortica è vera?",
+    "options": [
+      "La sede più comune è distale rispetto all'origine dell'arteria succlavia sinistra.",
+      "L'età più comune di presentazione è tra i 15 e i 20 anni.",
+      "Ipertrofia ventricolare destra.",
+      "L'incisura costale superiore è dovuta all'erosione da parte dei vasi collaterali dilatati.",
+      "La coartazione aortica è sempre associata a valvola aortica bicuspide."
+    ],
+    "answer_index": 0,
+    "topic": "Cardiologia",
+    "difficulty": 2,
+    "explanation": "<p>La coartazione aortica si localizza più comunemente distalmente all'origine della succlavia sinistra, cioè a livello dell'istmo aortico. Dopo la nascita l'ostruzione causa sovraccarico di pressione del ventricolo sinistro e ipertensione agli arti superiori. Pertanto la risposta A è corretta.</p>",
+    "created_at": "2026-10-14T19:51:07.94232+00:00"
+  },
+  {
+    "id": "8ee7b5e7-3441-4312-a862-d9b745950df8",
+    "source_id": "63017298-7e84-4afa-b5e7-82912dffc2e8",
+    "question": "Quale dei seguenti rappresenta un indicatore di mancata risposta durante il trattamento della malnutrizione?",
+    "options": [
+      "Mancato aumento di almeno 5 g/kg/die entro il giorno 10",
+      "Presenza di edema al giorno 10",
+      "Tutte queste",
+      "Mancato aumento di almeno 5 g/kg/die per 3 giorni consecutivi durante la fase di riabilitazione",
+      "Aumento ponderale >10 g/kg/die per 3 giorni consecutivi"
+    ],
+    "answer_index": 2,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 3,
+    "explanation": "<p>Secondo le linee guida per la gestione ospedaliera del bambino con grave malnutrizione, la mancata risposta primaria include edema al giorno 10 e mancato aumento di almeno 5 g/kg/die entro il giorno 10; la mancata risposta secondaria è il mancato aumento di almeno 5 g/kg/die per 3 giorni consecutivi in riabilitazione. Pertanto tutte le opzioni A-C sono indicatori di scarsa risposta.</p>",
+    "created_at": "2026-10-14T19:51:07.4277+00:00"
+  },
+  {
+    "id": "5b734248-5fd3-4c21-a886-989f9d8909f9",
+    "source_id": "63a98f23-b2f4-4af0-bbc0-885eac91b4f2",
+    "question": "Quale delle seguenti è da considerarsi anormale?",
+    "options": [
+      "Frequenza respiratoria >40/min in un bambino di età compresa tra 2 e 12 mesi",
+      "Frequenza respiratoria >50/min in un bambino di età compresa tra 2 e 12 mesi",
+      "Frequenza respiratoria >30/min in un bambino di età compresa tra 1 e 5 anni",
+      "Frequenza respiratoria >50/min in un bambino di età inferiore a 2 mesi",
+      "Frequenza respiratoria >30/min in un bambino di età inferiore a 2 mesi"
+    ],
+    "answer_index": 1,
+    "topic": "Pneumologia",
+    "difficulty": 1,
+    "explanation": "<p>La tachipnea è definita da soglie variabili con l'età: ≥60/min sotto i 2 mesi, ≥50/min tra 2 e 12 mesi, ≥40/min tra 12 e 60 mesi. Solo l'opzione B supera la soglia per l'età indicata.</p>",
+    "created_at": "2026-10-14T19:51:10.847205+00:00"
+  },
+  {
+    "id": "738aab79-d973-429f-b972-2768dbb247a2",
+    "source_id": "6457b921-9548-4c71-b72a-b03c4c545fb6",
+    "question": "Quale delle seguenti non è una caratteristica della colica infantile?",
+    "options": [
+      "Dolore addominale",
+      "Sintomi parossistici",
+      "Pianto continuo e intenso",
+      "Vomito",
+      "Distensione addominale"
+    ],
+    "answer_index": 3,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>Il vomito non è una manifestazione tipica della colica infantile; questa si presenta con pianto parossistico, dolore addominale, distensione addominale, emissione di gas e postura con gambe flesse. La risposta A è quindi corretta.</p>",
+    "created_at": "2026-10-14T19:51:09.904388+00:00"
+  },
+  {
+    "id": "9c07bdd2-095e-4478-9ae7-f98b669bdb2d",
+    "source_id": "6779b8fb-46cb-4039-81d6-d19496baf060",
+    "question": "La dentizione ritardata si osserva in:",
+    "options": [
+      "Pubertà precoce",
+      "Ipotiroidismo congenito",
+      "Tutte le precedenti",
+      "Sindrome di Down",
+      "Rachitismo"
+    ],
+    "answer_index": 2,
+    "topic": "Pediatria sociale e sviluppo",
+    "difficulty": 1,
+    "explanation": "<p>La dentizione ritardata è associata a sindrome di Down, ipotiroidismo congenito e rachitismo, oltre a cause endocrine, genetiche e idiopatiche. Perciò tutte le opzioni A-C sono corrette; la pubertà precoce causa invece dentizione avanzata.</p>",
+    "created_at": "2026-10-14T19:51:08.484158+00:00"
+  },
+  {
+    "id": "0c058057-f887-4394-b159-ba5daacfd66e",
+    "source_id": "68fe81a2-3476-455e-81da-d3c2d8af188d",
+    "question": "Le cause di ipocalcemia in un bambino sono:",
+    "options": [
+      "Sindrome di DiGeorge",
+      "Ipoparatiroidismo",
+      "Deficit di magnesio",
+      "Tutte le precedenti",
+      "Iperparatiroidismo primario"
+    ],
+    "answer_index": 3,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 1,
+    "explanation": "<p>Le cause di ipocalcemia includono ipoparatiroidismo, sindrome di DiGeorge, difetti del recettore del PTH (pseudoipoparatiroidismo), deficit di magnesio, eccesso esogeno di fosfato organico e carenza di vitamina D. Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:07.231605+00:00"
+  },
+  {
+    "id": "1e81f994-a9c7-4f7f-a8c7-bcef2756fe9c",
+    "source_id": "6a6859cf-3b6c-4f9f-b6cd-fe5590815c46",
+    "question": "Un bambino di 5 anni presenta deposizione perivascolare di IgA e raccolta di neutrofili. È presente un rash eritematoso agli arti inferiori e porpora non sbiancante. La diagnosi probabile è –",
+    "options": [
+      "Porpora di Henoch-Schönlein",
+      "Porpora trombocitopenica immune",
+      "Malattia di Kawasaki",
+      "Vasculite",
+      "Granulomatosi di Wegener"
+    ],
+    "answer_index": 0,
+    "topic": "Reumatologia",
+    "difficulty": 2,
+    "explanation": "<p>La <strong>porpora di Henoch-Schönlein</strong> (vasculite IgA) è una vasculite leucocitoclastica con deposizione perivascolare di IgA e infiltrato neutrofilo; tipicamente causa porpora palpabile non sbiancante agli arti inferiori. La risposta A è corretta.</p>",
+    "created_at": "2026-10-11T17:14:14.221514+00:00"
+  },
+  {
+    "id": "27d7bef7-a4bc-41ca-ae68-6feffd906966",
+    "source_id": "6e06cc1f-ad2a-4ad9-9c7d-00f35ce1aeb9",
+    "question": "Le caratteristiche della sindrome di Laurence-Moon-Biedl includono:",
+    "options": [
+      "Ipogonadismo",
+      "Obesità",
+      "Polidattilia",
+      "Tutte le precedenti",
+      "Ipercolesterolemia familiare"
+    ],
+    "answer_index": 3,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Laurence-Moon-Biedl è un disturbo autosomico recessivo caratterizzato da ipogonadismo ipogonadotropo, obesità, polidattilia, retinite pigmentosa e ritardo mentale. Pertanto tutte le opzioni A-D sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:07.555676+00:00"
+  },
+  {
+    "id": "14bfbf76-d88b-49fb-b729-2a4c0857396b",
+    "source_id": "70077503-dfc2-4f34-9f83-ff8cd1f7d526",
+    "question": "Qual è la dose di betamethasone nelle donne in gravidanza per prevenire lo sviluppo della sindrome da distress respiratorio?",
+    "options": [
+      "6 mg",
+      "12 mg ogni 24 ore per 2 dosi",
+      "12 mg ogni 12 ore per 2 dosi",
+      "4 mg subito",
+      "6 mg ogni 12 ore per 4 dosi"
+    ],
+    "answer_index": 1,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>La somministrazione di steroidi antenatali alle madri in travaglio pretermine (<35 settimane) riduce la sindrome da distress respiratorio, l'emorragia intraventricolare e la mortalità neonatale. Il betamethasone si somministra 12 mg per via intramuscolare ogni 24 ore per 2 dosi. La risposta B è corretta.</p>",
+    "created_at": "2026-10-14T19:51:07.742619+00:00"
+  },
+  {
+    "id": "4a4a0aec-eabb-4176-94bc-baf671e7b625",
+    "source_id": "77413bc7-a69b-49b4-9e14-9bf8053f547b",
+    "question": "Tutte le seguenti affermazioni sulla LMC giovanile sono vere tranne:",
+    "options": [
+      "È associata a neurofibromatosi-1",
+      "Il cromosoma Philadelphia è assente",
+      "Si presenta con anemia, HbF bassa, leucocitosi",
+      "È più comune in età inferiore a 2 anni",
+      "Si associa a monocitosi nel sangue periferico"
+    ],
+    "answer_index": 2,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 3,
+    "explanation": "<p>La LMC giovanile (LMMC) si presenta tipicamente con anemia, trombocitopenia, HbF elevata e leucocitosi; il cromosoma Philadelphia è assente ed è associata a neurofibromatosi-1. L'opzione C è falsa perché indica HbF bassa.</p>",
+    "created_at": "2026-10-11T17:14:12.746112+00:00"
+  },
+  {
+    "id": "7310389a-95f7-405d-9c5a-b48e11f771d4",
+    "source_id": "7a37bbea-615b-4e38-946e-536c110b451d",
+    "question": "Le manifestazioni cliniche della corea di Sydenham includono tutte le seguenti, tranne:",
+    "options": [
+      "Movimenti coreiformi",
+      "Ipotonia generalizzata",
+      "Riflessi pendolari (hung-up)",
+      "Tremori",
+      "Labilità emotiva"
+    ],
+    "answer_index": 3,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>La corea di Sydenham si manifesta con movimenti coreiformi, ipotonia, disartria, labilità emotiva e riflessi pendolari. Il tremore non è tipico; sono descritti fascicolazioni linguali e segno del latte. Pertanto l'opzione C è l'eccezione.</p>",
+    "created_at": "2026-10-14T19:51:08.152328+00:00"
+  },
+  {
+    "id": "0ddd67bd-7c96-4aba-97c2-a95a213a299b",
+    "source_id": "807db8d7-a8ff-4b70-9030-4d3ef236f604",
+    "question": "Un bambino di 4 mesi con febbre e tosse da 3 giorni. All'esame obiettivo presenta ronchi; FR 48/min. Nessun rientramento toracico. Quale delle seguenti affermazioni è falsa?",
+    "options": [
+      "La frequenza respiratoria è nei limiti per l'età",
+      "Gli antibiotici non dovrebbero essere somministrati",
+      "Trattamento per il respiro sibilante",
+      "Il bambino ha una polmonite",
+      "La febbre dovrebbe essere trattata"
+    ],
+    "answer_index": 3,
+    "topic": "Pneumologia",
+    "difficulty": 1,
+    "explanation": "<p>Risposta C. L'affermazione falsa è che il bambino ha una polmonite. La difficoltà respiratoria è un segno di polmonite: fino a 2 mesi FR >60/min, tra 2-12 mesi FR >50/min. A 4 mesi, FR 48/min non indica difficoltà respiratoria né polmonite.</p>",
+    "created_at": "2026-10-11T17:14:12.613613+00:00"
+  },
+  {
+    "id": "7d805209-d76e-4b22-8d9e-446a2e374c17",
+    "source_id": "8564971a-c923-4000-a4c8-4671ef8ba3fc",
+    "question": "L'apnea postoperatoria nei neonati è dovuta a",
+    "options": [
+      "Sovradosaggio di miorilassanti",
+      "Antibiotici aminoglicosidici concomitanti",
+      "Sovradosaggio con agente inalatorio",
+      "Ipertermia neonatale",
+      "Tutte le precedenti (A, B e C)"
+    ],
+    "answer_index": 4,
+    "topic": "Neonatologia",
+    "difficulty": 3,
+    "explanation": "<p>L'apnea postoperatoria nel neonato è multifattoriale: immaturità, ipotermia, sovradosaggio di miorilassanti o agenti inalatori, potenziamento dei curari da volatili, aminoglicosidi e oppioidi. Pertanto tutte le opzioni A, B e C sono corrette. La risposta è <strong>D</strong>.</p>",
+    "created_at": "2026-10-14T19:51:07.656174+00:00"
+  },
+  {
+    "id": "cd273a87-e9f4-4953-a5ee-6bd4a91f1abc",
+    "source_id": "85cfcb4b-a621-491a-a182-ba3362f65d12",
+    "question": "La stenosi ipertrofica congenita del piloro si manifesta di solito:",
+    "options": [
+      "Intorno a 2 mesi dalla nascita",
+      "Intorno a 3 mesi dalla nascita",
+      "Intorno a 2 settimane dalla nascita",
+      "Intorno a 1 settimana dalla nascita",
+      "Entro 2 giorni dalla nascita"
+    ],
+    "answer_index": 2,
+    "topic": "Chirurgia pediatrica",
+    "difficulty": 1,
+    "explanation": "<p>La stenosi ipertrofica congenita del piloro si presenta tipicamente intorno alle 2-4 settimane di vita. Il vomito inizia di solito dopo le 3 settimane, ma può manifestarsi già dalla prima settimana fino ai 5 mesi. Pertanto l'opzione C è quella corretta.</p>",
+    "created_at": "2026-10-11T17:14:14.221514+00:00"
+  },
+  {
+    "id": "3128789d-3df7-4169-9b44-12591cf9d330",
+    "source_id": "860346c6-a7f6-44da-b938-c8043bb515d6",
+    "question": "La carenza di 17-idrossilasi causa un aumento della produzione di:",
+    "options": [
+      "Cortisolo",
+      "Tutte le precedenti",
+      "Testosterone",
+      "Androstenedione",
+      "Aldosterone"
+    ],
+    "answer_index": 4,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 3,
+    "explanation": "<p>La carenza di 17α-idrossilasi blocca le vie del cortisolo e degli androgeni; i precursori vengono deviati verso la via mineralcorticoide, con aumento di aldosterone. La risposta A è corretta.</p>",
+    "created_at": "2026-10-14T19:51:09.342949+00:00"
+  },
+  {
+    "id": "ef656ba8-9a41-4e02-995d-74ab5babb510",
+    "source_id": "87b89619-e764-4b5d-b6f8-09174fd16035",
+    "question": "Quale delle seguenti manifestazioni si osserva nella sindrome di Marfan?",
+    "options": [
+      "Cataratta congenita bilaterale",
+      "Si verifica aneurisma aortico",
+      "È causata da mutazione del gene della fibrillina-1",
+      "Tutte le precedenti",
+      "Cornea piatta"
+    ],
+    "answer_index": 3,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Marfan è causata da mutazioni del gene <strong>fibrillina-1</strong> e presenta manifestazioni scheletriche, oculari e cardiovascolari. Si osservano cornea piatta, aneurisma aortico, prolasso mitralico, lussazione supero-temporale del cristallino, aracnodattilia e aumento dell'apertura delle braccia. Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:07.838183+00:00"
+  },
+  {
+    "id": "a74ede2a-5800-4268-88ac-24e2375b44eb",
+    "source_id": "880b7dc4-938c-4952-9e6b-c69457028dd9",
+    "question": "Il trattamento della LLA comprende l'uso di:",
+    "options": [
+      "Vincristine",
+      "Tutte le precedenti",
+      "Prednisolone",
+      "L-asparaginase",
+      "Idrossiurea"
+    ],
+    "answer_index": 1,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>Il trattamento della LLA comprende induzione (4-6 settimane) con <strong>Vincristine</strong>, antracicline, <strong>Prednisolone</strong> e <strong>L-asparaginase</strong>, poi profilassi del SNC, intensificazione e mantenimento. Quindi le opzioni A, B e C sono tutte corrette.</p>",
+    "created_at": "2026-10-14T19:51:07.555676+00:00"
+  },
+  {
+    "id": "4386cf8d-e7f0-4f7a-985b-5d7bd04d454e",
+    "source_id": "8b04f3a0-90de-46a3-b4a4-f581077fea93",
+    "question": "Sindrome di Eisenmenger: tutte le seguenti sono vere tranne:",
+    "options": [
+      "I ventricoli destro e sinistro tornano a dimensioni normali",
+      "Pruning periferico delle arterie polmonari",
+      "Ipertrofia ventricolare destra",
+      "Dilatazione dell'arteria polmonare centrale",
+      "Le vene polmonari non sono distese"
+    ],
+    "answer_index": 0,
+    "topic": "Cardiologia",
+    "difficulty": 3,
+    "explanation": "<p>La risposta B è errata: nella sindrome di Eisenmenger non c'è regressione a dimensioni normali di entrambi i ventricoli; si osserva ipertrofia ventricolare destra. Le altre opzioni sono tipiche: vene polmonari non distese, dilatazione dell'arteria polmonare centrale e <em>pruning</em> periferico.</p>",
+    "created_at": "2026-10-14T19:51:10.223094+00:00"
+  },
+  {
+    "id": "dfce65df-d900-4a64-adea-03d530ed9745",
+    "source_id": "8d9e1af6-9e8c-4c23-a03f-d1635495e3c6",
+    "question": "Quale dei seguenti parametri NON è incluso nel triple test?",
+    "options": [
+      "AFP",
+      "hCG",
+      "Inibina",
+      "beta-hCG",
+      "Estriolo"
+    ],
+    "answer_index": 2,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 1,
+    "explanation": "<p>Il triple test comprende AFP, hCG ed estriolo non coniugato. L'inibina è inclusa solo nel quadruplo test, insieme agli altri tre marker. Pertanto, l'opzione C è l'unica non inclusa.</p>",
+    "created_at": "2026-10-14T19:51:09.470946+00:00"
+  },
+  {
+    "id": "9171b9e3-c417-4609-b4fd-3f6e99d510dd",
+    "source_id": "8e3b5309-7b30-4083-816b-c20bc268fd57",
+    "question": "La pubertà precoce nelle femmine è definita dalla comparsa dei caratteri sessuali secondari prima dell'età di",
+    "options": [
+      "5 anni",
+      "7 anni",
+      "8 anni",
+      "9 anni",
+      "10 anni"
+    ],
+    "answer_index": 2,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 1,
+    "explanation": "<p>La pubertà precoce nelle femmine è definita dalla comparsa dei caratteri sessuali secondari prima degli <strong>8 anni</strong>; nei maschi prima dei 9 anni. L'opzione C è quindi corretta.</p>",
+    "created_at": "2026-10-14T19:51:11.757737+00:00"
+  },
+  {
+    "id": "424fab41-0ebc-4191-960a-ce1803096d18",
+    "source_id": "8e89feb1-d5ec-4c5f-9679-d3e7407adca1",
+    "question": "Un dotto arterioso pervio (PDA) di grandi dimensioni può portare a:",
+    "options": [
+      "Endocardite valvolare",
+      "Sindrome di Eisenmenger",
+      "Tutte le precedenti",
+      "Scompenso cardiaco congestizio (CHF)",
+      "Riduzione del flusso polmonare"
+    ],
+    "answer_index": 2,
+    "topic": "Cardiologia",
+    "difficulty": 2,
+    "explanation": "<p>Un PDA di grandi dimensioni non trattato può causare ipertensione polmonare per shunt sinistro-destro, scompenso cardiaco, endocardite e aritmie. L'ipertensione polmonare persistente può evolvere in sindrome di Eisenmenger con shunt destro-sinistro. Pertanto tutte le opzioni A-C sono complicanze possibili.</p>",
+    "created_at": "2026-10-14T19:51:08.152328+00:00"
+  },
+  {
+    "id": "dc72950f-ae11-4cf1-8af8-dbafc0331e71",
+    "source_id": "9187ee54-9e08-4110-89b1-d504f6a036ec",
+    "question": "I difetti cardiaci più comuni osservati nella sindrome da rosolia congenita sono",
+    "options": [
+      "Stenosi dell'arteria polmonare e coartazione dell'aorta",
+      "Difetto del setto ventricolare (VSD) e dotto arterioso pervio (PDA)",
+      "VSD e stenosi dell'arteria polmonare",
+      "Stenosi dell'arteria polmonare e PDA",
+      "Difetto del setto atriale (ASD) e coartazione dell'aorta"
+    ],
+    "answer_index": 3,
+    "topic": "Cardiologia",
+    "difficulty": 1,
+    "explanation": "<p>Nella sindrome da rosolia congenita i difetti cardiaci più comuni sono il dotto arterioso pervio (PDA) e la stenosi dell'arteria polmonare. Pertanto la risposta corretta è la D.</p>",
+    "created_at": "2026-10-11T17:14:15.057886+00:00"
+  },
+  {
+    "id": "95164e92-5ecf-4708-a954-ecc1240a3d45",
+    "source_id": "922b60b5-2ba8-4595-bc0c-db3d601afa8a",
+    "question": "Quali dei seguenti sono farmaci antitubercolari di prima linea nei bambini?",
+    "options": [
+      "Ethambutol",
+      "Cycloserine",
+      "Pyrazinamide",
+      "Tutte le precedenti",
+      "Streptomycin"
+    ],
+    "answer_index": 3,
+    "topic": "Malattie infettive",
+    "difficulty": 1,
+    "explanation": "<p>I farmaci antitubercolari di prima linea nei bambini includono Isoniazid, Rifampicin, Ethambutol, Streptomycin e Pyrazinamide. Cycloserine è un farmaco di seconda linea, quindi l'opzione E è errata.</p>",
+    "created_at": "2026-10-11T17:14:13.841385+00:00"
+  },
+  {
+    "id": "dd2aac04-cb63-4f50-881b-d302df6a69ce",
+    "source_id": "93108c19-60db-4cbe-b705-08f265da0854",
+    "question": "Quale tra le seguenti è una manifestazione del deficit di LCHAD?",
+    "options": [
+      "Iperglicemia neonatale persistente",
+      "Sindrome HELLP",
+      "Insufficienza epatica",
+      "Tutte le precedenti",
+      "Fegato grasso della gravidanza"
+    ],
+    "answer_index": 3,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>Il deficit di LCHAD è un difetto ereditario dell'ossidazione degli acidi grassi. Può causare insufficienza epatica nel paziente e, nella madre eterozigote con feto affetto, fegato grasso acuto della gravidanza e sindrome HELLP. Pertanto tutte le opzioni A-C sono manifestazioni associate.</p>",
+    "created_at": "2026-10-14T19:51:08.90031+00:00"
+  },
+  {
+    "id": "d30bdbab-da99-495a-96a7-a6f8557d674a",
+    "source_id": "956d4197-3da2-4c51-a6b6-d51ebb92e9ff",
+    "question": "Le linee guida per l'immunizzazione contro le malattie infettive includono tutte le seguenti affermazioni, tranne:",
+    "options": [
+      "I vaccini inattivati non devono essere somministrati se si è verificata una reazione significativa alla dose precedente",
+      "I vaccini vivi non devono essere somministrati entro 3 mesi dalla somministrazione di immunoglobuline umane",
+      "I vaccini vivi sono controindicati nei soggetti con immunodeficienza combinata grave (SCID)",
+      "La febbre da fieno, l'anemia falciforme e la tubercolosi sono controindicazioni alla vaccinazione",
+      "I vaccini vivi sono controindicati nelle donne in gravidanza"
+    ],
+    "answer_index": 3,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>La risposta D è l'eccezione: febbre da fieno, anemia falciforme e tubercolosi non sono controindicazioni alla vaccinazione. Le vere controindicazioni includono reazione allergica grave a un componente o a una dose precedente, encefalopatia entro 7 giorni dal vaccino pertussis e immunodeficienza combinata grave per il vaccino rotavirus.</p>",
+    "created_at": "2026-10-14T19:51:09.904388+00:00"
+  },
+  {
+    "id": "3dd7725c-b3da-4717-b091-b83743ca1d16",
+    "source_id": "958808b0-2d13-41b3-bfff-0b2dcbd2facc",
+    "question": "Il campione di sangue per lo screening neonatale della tiroide viene prelevato:",
+    "options": [
+      "Sangue cordonale",
+      "24 ore dopo la nascita",
+      "48 ore dopo la nascita",
+      "72 ore dopo la nascita",
+      "12 ore dopo la nascita"
+    ],
+    "answer_index": 0,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>Lo screening neonatale della tiroide si esegue idealmente su sangue cordonale, oppure dopo 5-7 giorni; nei campioni tra 24 e 72 ore i risultati sono difficili da interpretare. La risposta A è quindi corretta.</p>",
+    "created_at": "2026-10-14T19:51:08.25918+00:00"
+  },
+  {
+    "id": "212f750e-2649-404d-a890-de3886a2d39f",
+    "source_id": "984363a3-32ff-4fa1-b3cf-75effa1d0638",
+    "question": "Tutte le seguenti affermazioni sono vere nella sindrome di Gilbert tranne?",
+    "options": [
+      "Iperbilirubinemia coniugata lieve",
+      "Trasmissione autosomica dominante",
+      "Può causare kernicterus neonatale",
+      "Test di funzionalità epatica quasi normali",
+      "Istologia epatica normale"
+    ],
+    "answer_index": 0,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>La sindrome di Gilbert è una <strong>iperbilirubinemia non coniugata</strong> lieve congenita, con istologia epatica normale e test di funzionalità epatica normali. L'opzione A è quindi falsa perché parla di iperbilirubinemia coniugata. Il difetto è la ridotta attività di UDP-glucuronosiltransferasi.</p>",
+    "created_at": "2026-10-14T19:51:08.484158+00:00"
+  },
+  {
+    "id": "4a625be8-6145-4ce6-8ead-8b581a7b8ce5",
+    "source_id": "99beb3e3-ae3e-4ec0-a837-740519aae03d",
+    "question": "Tutte le seguenti affermazioni riguardanti l'apnea secondaria nel neonato sono vere TRANNE:",
+    "options": [
+      "Il neonato può rispondere alla stimolazione tattile",
+      "Può essere presente anche alla nascita",
+      "Il neonato non riprende spontaneamente a respirare senza ventilazione a pressione positiva",
+      "La frequenza cardiaca può diventare < 100/min",
+      "Il neonato non respira"
+    ],
+    "answer_index": 0,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>L'<strong>apnea secondaria</strong> è caratterizzata dall'assenza di respiro e da bradicardia (<100/min); il neonato non risponde alla stimolazione tattile e non riprende spontaneamente a respirare, richiedendo ventilazione a pressione positiva. La risposta D è quindi falsa, perché la risposta alla stimolazione tattile è tipica dell'<strong>apnea primaria</strong>.</p>",
+    "created_at": "2026-10-14T19:51:09.904388+00:00"
+  },
+  {
+    "id": "570b5ca4-5958-4e09-af06-110a7c8f17b4",
+    "source_id": "9ae8bc99-cd13-44b6-9f0f-5a3e88a2aeaf",
+    "question": "Tutte le seguenti sono caratteristiche delle crisi di assenza, tranne:",
+    "options": [
+      "Si osservano solitamente nell'infanzia",
+      "Precipitazione da iperventilazione",
+      "Perdita del controllo posturale con caduta",
+      "Complesso punta-onda a 3 Hz all'EEG",
+      "Confusione postcritica"
+    ],
+    "answer_index": 4,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>Le crisi di assenza sono brevi perdite di coscienza senza perdita del controllo posturale; la coscienza ritorna bruscamente e <strong>non</strong> c'è confusione postcritica. L'EEG mostra tipico complesso punta-onda generalizzato a 3 Hz, spesso provocato da iperventilazione. La risposta C è quindi l'eccezione.</p>",
+    "created_at": "2026-10-11T17:14:14.606055+00:00"
+  },
+  {
+    "id": "ad95d761-3fd6-461a-bb83-3d5b20f35f90",
+    "source_id": "9f35639d-a74f-4fa4-a554-e8d463984087",
+    "question": "Tutte le seguenti affermazioni sono vere nella β-talassemia major, tranne:",
+    "options": [
+      "Aumento dell'emoglobina F",
+      "Cellule a bersaglio nello striscio periferico",
+      "Splenomegalia",
+      "Anemia microcitica ipocromica",
+      "Aumentata fragilità osmotica"
+    ],
+    "answer_index": 4,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>Nella β-talassemia major si osservano splenomegalia marcata, anemia microcitica ipocromica e cellule a bersaglio nello striscio periferico. La fragilità osmotica è ridotta, non aumentata. Pertanto l'affermazione falsa è la D.</p>",
+    "created_at": "2026-10-11T17:14:14.0959+00:00"
+  },
+  {
+    "id": "ab8285a2-0f74-41d0-b646-f57ba875abcc",
+    "source_id": "a0710394-833d-42ed-8514-1ec150284071",
+    "question": "La sindrome di Eisenmenger è caratterizzata da tutte le seguenti condizioni, tranne:",
+    "options": [
+      "Ritorno del ventricolo sinistro e del ventricolo destro a dimensioni normali",
+      "Pruning (assottigliamento) delle arterie polmonari periferiche",
+      "Vene polmonari non distese",
+      "Dilatazione delle arterie polmonari centrali",
+      "Ipertrofia ventricolare destra con ipertensione arteriosa polmonare"
+    ],
+    "answer_index": 0,
+    "topic": "Cardiologia",
+    "difficulty": 3,
+    "explanation": "<p>La sindrome di Eisenmenger causa ipertensione arteriosa polmonare severa e ipertrofia ventricolare destra; il ventricolo destro non torna a dimensioni normali. Alla radiografia del torace si osservano arterie centrali dilatate e pruning periferico, con oligoemia periferica. Le opzioni B, C e D sono caratteristiche tipiche.</p>",
+    "created_at": "2026-10-11T17:14:13.967439+00:00"
+  },
+  {
+    "id": "b89feb56-f881-4878-8391-4b8606be8dc9",
+    "source_id": "a0ea3064-70fe-458f-89fd-94d152772a67",
+    "question": "Tutte le seguenti affermazioni sugli astrocitomi cerebellari in età pediatrica sono vere, TRANNE:",
+    "options": [
+      "Sono spesso associati a neurofibromatosi tipo 2",
+      "Questi tumori hanno una buona prognosi",
+      "Si osservano più comunemente nella 1ª e 2ª decade",
+      "Questi tumori sono più comuni nelle femmine",
+      "Di solito sono tumori di basso grado"
+    ],
+    "answer_index": 3,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 1,
+    "explanation": "<p>L'affermazione falsa è la D: gli astrocitomi cerebellari non sono più comuni nelle femmine, ma hanno uguale distribuzione tra i sessi. Sono tumori di basso grado (WHO I), a buona prognosi, tipici delle prime due decadi.</p>",
+    "created_at": "2026-10-11T17:14:12.746112+00:00"
+  },
+  {
+    "id": "bfce2140-db85-4059-b1a9-24afca5f8093",
+    "source_id": "a1ca45b7-ad82-40c5-9891-c722fbc0b4b3",
+    "question": "Qual è il trattamento di scelta nella bronchiolite?",
+    "options": [
+      "Ribavirin",
+      "Amantadine",
+      "Vidarabine",
+      "Zidovudine",
+      "Oseltamivir"
+    ],
+    "answer_index": 0,
+    "topic": "Pneumologia",
+    "difficulty": 1,
+    "explanation": "<p>La risposta corretta è <strong>Ribavirin</strong> (opzione A). Sebbene il trattamento della bronchiolite sia essenzialmente sintomatico, la ribavirina è l'unico antivirale approvato per l'infezione da RSV in casi selezionati.</p>",
+    "created_at": "2026-10-14T19:51:10.601786+00:00"
+  },
+  {
+    "id": "bdc8633d-243f-4082-be29-f627d76c3fce",
+    "source_id": "a4776268-c244-42ed-89a9-79952eea5daa",
+    "question": "Il kernicterus è associato a:",
+    "options": [
+      "Alterazioni uditive",
+      "Cataratta congenita",
+      "Paresi dello sguardo verso l'alto",
+      "Tutte le precedenti",
+      "Paralisi cerebrale coreoatetoide"
+    ],
+    "answer_index": 3,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>Il kernicterus è associato a sequele neurologiche croniche da encefalopatia bilirubinica: coreoatetosi/paralisi cerebrale coreoatetoide, alterazioni uditive (ipoacusia neurosensoriale ad alta frequenza) e paresi dello sguardo verso l'alto. Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:09.801621+00:00"
+  },
+  {
+    "id": "aa0b0a85-37a4-419e-9389-3b5c796d4a9e",
+    "source_id": "a55ca1b8-cc03-4a51-a78d-49c8a52f1797",
+    "question": "Secondo la classificazione IAP della malnutrizione di grado IV, il peso per età rispetto allo standard (%) è _________",
+    "options": [
+      "71-80",
+      "61-70",
+      "51-60",
+      "< 50",
+      "41-50"
+    ],
+    "answer_index": 3,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>La classificazione IAP definisce la malnutrizione di grado IV come peso per età <50% dello standard. I gradi I, II e III corrispondono a 71-80%, 61-70% e 51-60%. Pertanto l'opzione D è corretta.</p>",
+    "created_at": "2026-10-14T19:51:11.659364+00:00"
+  },
+  {
+    "id": "2c79d565-65e3-4213-bd71-0d9ff518270f",
+    "source_id": "a7d33b13-6406-4bb9-9e2e-fa12bd1bddff",
+    "question": "Tutte le seguenti affermazioni sono vere nella sindrome di Reye, tranne:",
+    "options": [
+      "Spesso complica infezioni virali",
+      "Il tempo di protrombina è prolungato",
+      "La malattia può essere precipitata da salicilati",
+      "È presente ittero profondo",
+      "L'ittero è generalmente assente o lieve"
+    ],
+    "answer_index": 3,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>Nella sindrome di Reye l'ittero è generalmente assente o lieve; la risposta D è quindi l'eccezione. La sindrome segue spesso infezioni virali, può essere precipitata da salicilati e si associa a prolungamento del tempo di protrombina.</p>",
+    "created_at": "2026-10-11T17:14:13.841385+00:00"
+  },
+  {
+    "id": "e8adfcf1-24d6-4c9f-86f2-7c4916a1cd8b",
+    "source_id": "a80b83bd-dec6-4e49-a988-d85a7bd2ae33",
+    "question": "Tutte le seguenti sono caratteristiche del cefaloematoma TRANNE:",
+    "options": [
+      "Può associarsi a frattura cranica lineare",
+      "Predispone a ittero neonatale",
+      "Non attraversa le suture",
+      "Scompare in 5-7 giorni",
+      "Si rende completamente evidente in 24-48 ore"
+    ],
+    "answer_index": 3,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>Il cefaloematoma è un'emorragia subperiostea che non supera le suture, compare completamente in 24-48 ore e si risolve in 5-7 settimane, non in giorni. La risposta B è quindi errata. Può inoltre predisporre a ittero neonatale per riassorbimento del sangue.</p>",
+    "created_at": "2026-10-11T17:14:14.934137+00:00"
+  },
+  {
+    "id": "7891f271-6c68-44fd-ae8b-a6b59ef89a02",
+    "source_id": "a8ddbe5e-3bb3-43ad-aeb3-e0ef354964a3",
+    "question": "Tutte le seguenti sono suggestive di anemia da carenza di ferro, tranne:",
+    "options": [
+      "Microcitosi",
+      "Riduzione della ferritina sierica",
+      "Aumento dei globuli rossi",
+      "Aumento dell'ampiezza di distribuzione eritrocitaria (RDW)",
+      "Ipocromia"
+    ],
+    "answer_index": 2,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 1,
+    "explanation": "<p>Risposta C. L'aumento dei globuli rossi non è tipico della carenza di ferro, che presenta ridotto numero di globuli rossi. L'aumento del numero di globuli rossi è invece una caratteristica della talassemia, che rientra nella diagnosi differenziale delle anemie microcitiche ipocromiche.</p>",
+    "created_at": "2026-10-11T17:14:13.449463+00:00"
+  },
+  {
+    "id": "7bb5a519-7ddb-483e-9704-a786e8b4a541",
+    "source_id": "ac749055-17a2-41c9-a472-56a3f68085cd",
+    "question": "A che età un bambino sa andare in triciclo, copiare un cerchio e conosce la propria età e il proprio sesso?",
+    "options": [
+      "36 mesi",
+      "24 mesi",
+      "48 mesi",
+      "42 mesi",
+      "30 mesi"
+    ],
+    "answer_index": 0,
+    "topic": "Pediatria sociale e sviluppo",
+    "difficulty": 1,
+    "explanation": "<p>La risposta corretta è la C, cioè 36 mesi. A questa età il bambino è in grado di pedalare su un triciclo, copiare un cerchio e conoscere la propria età e sesso, tappe tipiche dello sviluppo psicomotorio.</p>",
+    "created_at": "2026-10-11T17:14:15.432501+00:00"
+  },
+  {
+    "id": "ec6408bf-b7fc-4eda-9443-2f8dbc2c430f",
+    "source_id": "ade1f143-ad15-4c35-8105-3edaab41698c",
+    "question": "Quale delle seguenti non è una causa di ipocalcemia nel bambino?",
+    "options": [
+      "Tutte le precedenti",
+      "Ipoparatiroidismo",
+      "Deficit di magnesio",
+      "Deficit di vitamina D",
+      "Sindrome di DiGeorge"
+    ],
+    "answer_index": 0,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 1,
+    "explanation": "<p>La risposta corretta è <strong>D</strong>. Le opzioni A, B, C ed E sono tutte cause di ipocalcemia nel bambino (ipoparatiroidismo, sindrome di DiGeorge, deficit di magnesio, carenza di vitamina D). L'opzione D, 'Tutte le precedenti', non è una causa ma un'opzione di sintesi.</p>",
+    "created_at": "2026-10-14T19:51:11.84911+00:00"
+  },
+  {
+    "id": "c6832c0a-d85b-403a-99ee-350beedd0370",
+    "source_id": "b0fe12ce-45d9-4616-b838-c566faf1a1a0",
+    "question": "Un bambino di 10 anni con scarso accrescimento, inappetenza, infezioni respiratorie ricorrenti e steatorrea presenta verosimilmente ____________ .",
+    "options": [
+      "Diabete mellito",
+      "Positività degli anticorpi anti-transglutaminasi tissutale",
+      "Allergia cutanea ricorrente",
+      "Ritardo mentale",
+      "Elevati livelli di sodio e cloruro nel sudore"
+    ],
+    "answer_index": 4,
+    "topic": "Pneumologia",
+    "difficulty": 2,
+    "explanation": "<p>Il quadro è tipico della fibrosi cistica: steatorrea, malassorbimento, scarso accrescimento e infezioni respiratorie ricorrenti. Il test del sudore è diagnostico: cloruri >60 mEq/L sono suggestivi. <strong>La risposta A è corretta.</strong></p>",
+    "created_at": "2026-10-14T19:51:11.196925+00:00"
+  },
+  {
+    "id": "d411f706-15e8-42e1-930f-ffdd1532e62f",
+    "source_id": "b113837b-c2b3-4cbc-b616-eaf81c5ad66c",
+    "question": "La sindrome del croup è solitamente causata da: a) Rhinovirus, b) Virus Coxsackie A, c) Virus Coxsackie B, d) Parainfluenza.",
+    "options": [
+      "b",
+      "c",
+      "ad",
+      "ac",
+      "bc"
+    ],
+    "answer_index": 2,
+    "topic": "Malattie infettive",
+    "difficulty": 1,
+    "explanation": "<p>Il croup (laringotracheobronchite) è un'infezione virale delle vie respiratorie superiori, tipica dei bambini tra 1 e 5 anni. È causato prevalentemente da virus parainfluenzali, soprattutto tipo 1, ma anche da RSV, influenza, adenovirus e rhinovirus. La risposta D è corretta perché include la parainfluenza, agente eziologico più comune.</p>",
+    "created_at": "2026-10-11T17:14:13.319397+00:00"
+  },
+  {
+    "id": "87ac4f42-78ba-4479-b060-1989cd63ad4f",
+    "source_id": "b133bc3a-52ef-4650-859c-0be14c6db429",
+    "question": "Una crisi febbrile tipica è caratterizzata da tutte le seguenti tranne",
+    "options": [
+      "I maschi sono più predisposti",
+      "Si manifesta con crisi generalizzate",
+      "Si verifica tipicamente tra 6 mesi e 5 anni di età",
+      "Il fenobarbital previene ulteriori attacchi",
+      "Insorge con un rapido aumento della temperatura"
+    ],
+    "answer_index": 1,
+    "topic": "Neurologia",
+    "difficulty": 1,
+    "explanation": "<p>La classificazione delle crisi febbrili comprende la forma semplice (generalizzata, durata inferiore a 15 minuti, una in 24 ore) e la complessa (focale o prolungata). Secondo la traccia, l'opzione C è l'eccezione.</p>",
+    "created_at": "2026-10-14T19:51:10.847205+00:00"
+  },
+  {
+    "id": "f23437bc-2712-4914-891c-09e9ad7e758b",
+    "source_id": "b24f8374-a01e-4f7e-97a9-c680bae10231",
+    "question": "L'agente eziologico della roseola infantum è – a) Human herpes virus 7 b) Human herpes virus 6 c) EBV d) CMV",
+    "options": [
+      "ab",
+      "ac",
+      "a",
+      "bc",
+      "ad"
+    ],
+    "answer_index": 0,
+    "topic": "Malattie infettive",
+    "difficulty": 1,
+    "explanation": "<p>La roseola infantum è causata principalmente da <strong>Human herpes virus 6</strong> e, meno frequentemente, da <strong>Human herpes virus 7</strong>. La risposta D (ab) indica correttamente entrambi gli agenti eziologici.</p>",
+    "created_at": "2026-10-14T19:51:10.441628+00:00"
+  },
+  {
+    "id": "5eb95fd1-b693-4e40-ace2-adb859f2efab",
+    "source_id": "b33472f7-5e59-4cd2-b38c-ab935f6bb775",
+    "question": "Quali delle seguenti caratteristiche sono VERE o FALSE nell'osteopetrosi in un bambino? 1. Ritardo di crescita 2. Ritardo mentale 3. Fratture multiple 4. Cataratta 5. Epatosplenomegalia",
+    "options": [
+      "2, 3 false e 1, 4, 5 vere",
+      "1, 3, 4 vere e 2, 5 false",
+      "1, 3, 5 vere e 2, 4 false",
+      "1, 4, 5 vere e 2, 3 false",
+      "1, 3, 4 vere e 5, 2 false"
+    ],
+    "answer_index": 2,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 3,
+    "explanation": "<p>L'osteopetrosi è un disordine genetico della rimodellazione ossea con ridotto riassorbimento osteoclastico. Le manifestazioni tipiche includono ritardo di crescita, fratture multiple ed epatosplenomegalia; ritardo mentale e cataratta non sono caratteristici. La risposta A indica correttamente <strong>1, 3, 5</strong> come vere e 2, 4 come false.</p>",
+    "created_at": "2026-10-11T17:14:14.0959+00:00"
+  },
+  {
+    "id": "18dc498e-6365-4882-a43e-13cae32fecce",
+    "source_id": "b4215ef7-5522-470c-a294-4baa0fa85a20",
+    "question": "Quale delle seguenti affermazioni è vera nella sindrome di Reye?",
+    "options": [
+      "Encefalopatia epatica",
+      "Tutte le precedenti",
+      "Edema cerebrale",
+      "Infiltrazione grassa macrovescicolare",
+      "Infiltrazione grassa microvescicolare"
+    ],
+    "answer_index": 1,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Reye è caratterizzata da <strong>infiltrazione grassa microvescicolare</strong> del fegato, <strong>encefalopatia epatica</strong> e <strong>edema cerebrale</strong>. Pertanto tutte le opzioni A, B e C sono corrette.</p>",
+    "created_at": "2026-10-11T17:14:13.706635+00:00"
+  },
+  {
+    "id": "6c268a25-9204-47e4-9151-061d6461ee97",
+    "source_id": "b5952bc4-0b57-419c-8cdd-1cac37aa3278",
+    "question": "Quale delle seguenti affermazioni sui criteri di Jones modificati NON è vera?",
+    "options": [
+      "La cardite clinica e subclinica è inclusa tra i criteri maggiori",
+      "I criteri minori per la popolazione ad alto rischio includono la monoartralgia",
+      "Popolazione con incidenza di cardiopatia reumatica nei bambini in età scolare >2/1,00,000 è considerata ad alto rischio",
+      "Popolazione con prevalenza di cardiopatia reumatica >2/1.000 è considerata ad alto rischio",
+      "L'intervallo PR prolungato è incluso come criterio minore sia per la popolazione ad alto rischio sia per quella a basso rischio"
+    ],
+    "answer_index": 3,
+    "topic": "Cardiologia",
+    "difficulty": 3,
+    "explanation": "<p>Secondo i criteri di Jones modificati (2015), la soglia di prevalenza per una popolazione ad alto rischio è >1/1.000, non >2/1.000. Pertanto l'opzione B è falsa.</p>",
+    "created_at": "2026-10-14T19:51:07.94232+00:00"
+  },
+  {
+    "id": "0f9344e9-e5c8-4bd5-a2c8-c45a1ccefc8a",
+    "source_id": "ba18a5b2-0102-4bfc-99c5-79e618e78315",
+    "question": "Secondo la stratificazione del rischio perinatale dei neonati pretermine e gli esiti dello sviluppo, quale delle seguenti costituisce una categoria di rischio moderato?",
+    "options": [
+      "Età gestazionale 30-32 settimane, peso alla nascita 1251-1500 gm, ipoglicemia superiore a 5 giorni",
+      "Età gestazionale < 28 settimane, peso alla nascita <1250 gm, ipoglicemia di 1-4 giorni",
+      "Età gestazionale 30-32 settimane, peso alla nascita 1000-1500 gm, ipoglicemia di 1-3 giorni",
+      "Età gestazionale 33-34 settimane, peso alla nascita 1500-2500 gm, ipoglicemia transitoria di 1 giorno",
+      "Età gestazionale < 28 settimane, peso alla nascita 1251-1500 gm, ipoglicemia di 1-4 giorni"
+    ],
+    "answer_index": 2,
+    "topic": "Neonatologia",
+    "difficulty": 3,
+    "explanation": "<p>Secondo le raccomandazioni NNF 2011, il rischio moderato include peso alla nascita 1000-1500 gm e/o età gestazionale <33 settimane, oltre a ipoglicemia. L'opzione A combina età gestazionale 30-32 settimane, peso 1000-1500 gm e ipoglicemia di 1-3 giorni, rientrando nel rischio moderato.</p>",
+    "created_at": "2026-10-11T17:14:14.221514+00:00"
+  },
+  {
+    "id": "fafa0e1a-90d9-4e5e-a0c4-d5f81ee3fa45",
+    "source_id": "baaedc98-f5ae-4a4c-aa72-f1cd78d80b89",
+    "question": "L'enuresi notturna può essere considerata normale fino a:",
+    "options": [
+      "4 anni",
+      "5 anni",
+      "3 anni",
+      "6 anni",
+      "7 anni"
+    ],
+    "answer_index": 3,
+    "topic": "Nefrologia",
+    "difficulty": 1,
+    "explanation": "<p>Risposta D: 6 anni. L'enuresi notturna è considerata normale fino ai 6 anni, mentre quella diurna è normale fino ai 4 anni.</p>",
+    "created_at": "2026-10-14T19:51:10.73408+00:00"
+  },
+  {
+    "id": "c4bf5b5a-9814-4f1b-b6ff-e6a33fd3bbc3",
+    "source_id": "bafd0a22-593a-4de4-9f60-aad4becbaa90",
+    "question": "Quale di queste sindromi è associata a microcefalia?",
+    "options": [
+      "Sindrome di Down",
+      "Sindrome di Klinefelter",
+      "Tutte queste",
+      "Sindrome del cri-du-chat",
+      "Sindrome di Edwards"
+    ],
+    "answer_index": 2,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 1,
+    "explanation": "<p><strong>Risposta: D.</strong> Tutte queste. La microcefalia può essere primaria o secondaria; la primaria spesso ha eredità mendeliana o si associa a sindromi. Sindrome di Down (trisomia 21), di Edwards (trisomia 18), del cri-du-chat (5p-) e di Cornelia de Lange sono associate a microcefalia.</p>",
+    "created_at": "2026-10-14T19:51:10.946418+00:00"
+  },
+  {
+    "id": "c66a2674-2f03-44dd-9890-21b72c3ead87",
+    "source_id": "bba235aa-a003-4acf-9c42-14cfd1e094bc",
+    "question": "Una bambina di 3 anni presenta problemi nella scrittura e nell'ortografia. Per il resto l'intelligenza è normale.",
+    "options": [
+      "Dislessia",
+      "Discalculia",
+      "Disturbo specifico della scrittura",
+      "Disfonia",
+      "Ritardo mentale"
+    ],
+    "answer_index": 0,
+    "topic": "Neurologia",
+    "difficulty": 1,
+    "explanation": "<p>La dislessia è il disturbo specifico dell'apprendimento più comune e comporta difficoltà di lettura, ortografia ed espressione scritta con intelligenza normale. Nel bambino in età scolare si osservano ritardo del linguaggio, errori di rima, inversioni di lettere e lettura lenta e laboriosa.</p>",
+    "created_at": "2026-10-14T19:51:08.03637+00:00"
+  },
+  {
+    "id": "7af8b56d-5a5c-4a98-8d1e-25cef718acfb",
+    "source_id": "bc2515e5-566d-4482-b47c-f5dfc8fae90e",
+    "question": "Nell'anemia di Fanconi, quale delle seguenti affermazioni è falsa?",
+    "options": [
+      "Assenza di predisposizione a neoplasie ematologiche",
+      "Pancitopenia",
+      "Acidosi tubulare renale tipo I",
+      "Tutte le precedenti sono vere",
+      "Trasmissione autosomica recessiva"
+    ],
+    "answer_index": 2,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>L'anemia di Fanconi è a trasmissione autosomica recessiva e causa pancitopenia; può associarsi a iperpigmentazione, bassa statura e anomalie renali. Il difetto tubulare tipico è un'acidosi tubulare renale prossimale (tipo II), non distale (tipo I). Quindi l'affermazione falsa è la C.</p>",
+    "created_at": "2026-10-11T17:14:15.681387+00:00"
+  },
+  {
+    "id": "1d680179-ae67-4ea5-8f50-47b1e35abfba",
+    "source_id": "bc2e3728-5add-4058-bc12-6c59d93c88fb",
+    "question": "Il triple test per lo screening della sindrome di Down include tutti i seguenti parametri tranne:",
+    "options": [
+      "Inibina A",
+      "Estriolo sierico",
+      "Beta hCG",
+      "Alfa-fetoproteina",
+      "PAPP-A"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>Il triple test comprende <strong>alfa-fetoproteina</strong>, <strong>beta-hCG</strong> ed <strong>estriolo</strong>; l'<strong>inibina A</strong> è invece inclusa nel quadruple test. Il test combinato di primo trimestre usa PAPP-A, beta-hCG e translucenza nucale. La risposta C è quindi l'unico parametro non incluso.</p>",
+    "created_at": "2026-10-14T19:51:10.441628+00:00"
+  },
+  {
+    "id": "7d5eec69-60ef-405a-b60b-21d9dccc02c2",
+    "source_id": "bd6ba966-ff84-4219-8e39-22070cbc2df9",
+    "question": "I benefici del latte materno sono:",
+    "options": [
+      "Nutrizione migliore",
+      "Meno infezioni",
+      "Meno allergie",
+      "Tutte queste",
+      "Aumentato rischio di infezioni gastrointestinali"
+    ],
+    "answer_index": 3,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>Il latte materno offre una nutrizione superiore, riduce il rischio di infezioni e di allergie grazie a fattori anti-infettivi e IgA secretorie. Pertanto tutte le opzioni A, B e C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:08.03637+00:00"
+  },
+  {
+    "id": "84dee4eb-886a-4d51-8180-d097045abc4f",
+    "source_id": "c5e1a910-affd-4f1a-80e9-dcdfe7383797",
+    "question": "Qual è la composizione dell'ORS dell'OMS (mmol)?",
+    "options": [
+      "K+ - 80",
+      "Nessuna delle precedenti",
+      "Cloro - 80",
+      "Na+ - 20",
+      "Glucosio - 111"
+    ],
+    "answer_index": 1,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>L'ORS dell'OMS a bassa osmolarità contiene glucosio 75 mmol/L, potassio 20 mmol/L e sodio 75 mmol/L. Le opzioni A, B e C riportano valori errati. Pertanto la risposta corretta è D.</p>",
+    "created_at": "2026-10-11T17:14:15.308422+00:00"
+  },
+  {
+    "id": "81fe21f3-4690-4cab-9404-ce206682fd97",
+    "source_id": "c65c9f5f-cbe3-496f-b791-18edf6e8ab79",
+    "question": "Un neonato con punteggio Apgar di 2 a 1 minuto e 6 a 5 minuti presenta distress respiratorio e spostamento del mediastino. Qual è la diagnosi?",
+    "options": [
+      "Malformazione adenomatoide cistica congenita del polmone",
+      "Pneumotorace",
+      "Ernia diaframmatica",
+      "Malattia delle membrane ialine",
+      "Tutte le precedenti"
+    ],
+    "answer_index": 4,
+    "topic": "Neonatologia",
+    "difficulty": 2,
+    "explanation": "<p>Nel neonato con distress respiratorio e spostamento del mediastino, le cause principali sono pneumotorace, ernia diaframmatica e malformazione adenomatoide cistica congenita del polmone. Poiché tutte le opzioni A-C sono corrette, la risposta è D.</p>",
+    "created_at": "2026-10-11T17:14:14.0959+00:00"
+  },
+  {
+    "id": "7368afa5-e117-4b27-88c2-53ef04f34554",
+    "source_id": "c95c6c28-c1a6-4351-a39f-1703e2469d72",
+    "question": "Il kwashiorkor viene diagnosticato in bambini con ritardo di crescita in presenza di:",
+    "options": [
+      "Edema e alterazioni mentali",
+      "Ipopigmentazione e anemia",
+      "Edema e ipopigmentazione",
+      "Epatomegalia e anemia",
+      "Diarrea cronica e disidratazione"
+    ],
+    "answer_index": 0,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>Il <strong>kwashiorkor</strong> è una malnutrizione proteico-energetica con scarso appetito, <em>edema</em> e alterazioni mentali (apatia, letargia). Altri segni sono dermatosi a pittura sfaldata e segno della bandiera. La risposta A è corretta perché associa edema e alterazioni mentali.</p>",
+    "created_at": "2026-10-14T19:51:10.847205+00:00"
+  },
+  {
+    "id": "34675880-4f16-45a4-bf9e-2377eecfd058",
+    "source_id": "cb4cf554-673e-4a9b-90c6-73e46d285c1e",
+    "question": "Tutte le seguenti sono vere nell'ipotiroidismo tranne:",
+    "options": [
+      "Tutte sono vere",
+      "Esophthalmos",
+      "Addome disteso",
+      "Dentizione ritardata",
+      "Fontanella allargata"
+    ],
+    "answer_index": 0,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>Nell'ipotiroidismo non trattato si osservano dentizione ritardata, fontanella allargata e addome disteso. L'opzione D 'Tutte sono vere' non è una caratteristica clinica, quindi è l'eccezione.</p>",
+    "created_at": "2026-10-14T19:51:08.484158+00:00"
+  },
+  {
+    "id": "a67207f3-ccb5-4b9f-93d2-06f9136cbdff",
+    "source_id": "cdfb5cfe-6762-467a-a144-5fc4967f7f69",
+    "question": "Quale di questi farmaci può essere causa di rabdomiolisi?",
+    "options": [
+      "Statine",
+      "Salicilati",
+      "Antidepressivi",
+      "Tutte queste",
+      "Beta-bloccanti"
+    ],
+    "answer_index": 3,
+    "topic": "Altro",
+    "difficulty": 1,
+    "explanation": "<p>Risposta D. Molti farmaci possono causare rabdomiolisi, sia a dosi terapeutiche sia a dosi tossiche. Tra questi figurano antidepressivi, antipsicotici, statine, corticosteroidi, salicilati, molti chemioterapici e alcuni anestetici.</p>",
+    "created_at": "2026-10-14T19:51:11.659364+00:00"
+  },
+  {
+    "id": "16888c24-03c3-4307-8041-8b2165bfd8ef",
+    "source_id": "d3a18297-9f93-47de-883d-1d696a238c6d",
+    "question": "Bambina di 7 anni, peso 25 kg. Qual è la dose di fluidi per via endovenosa per il mantenimento?",
+    "options": [
+      "1500 mL",
+      "1800 mL",
+      "1400 mL",
+      "1600 mL",
+      "1700 mL"
+    ],
+    "answer_index": 3,
+    "topic": "Nefrologia",
+    "difficulty": 1,
+    "explanation": "<p>Secondo la regola di Holliday-Segar: 100 mL/kg per i primi 10 kg, 50 mL/kg per i successivi 10 kg e 20 mL/kg per il resto. Per 25 kg: 1000 + 500 + 100 = <strong>1600 mL/die</strong>. Quindi la risposta corretta è la C.</p>",
+    "created_at": "2026-10-11T17:14:14.934137+00:00"
+  },
+  {
+    "id": "621c57d9-948c-4deb-b116-d3f3864feccb",
+    "source_id": "d3d2bde1-3f9b-475c-accf-62d11e2ee91d",
+    "question": "Tutte le seguenti affermazioni sul kernicterus sono vere TRANNE:",
+    "options": [
+      "Non è associato ad aumentata morbilità.",
+      "Si osserva una colorazione giallastra dei gangli della base.",
+      "La prematurità è un fattore di rischio.",
+      "È causato da iperbilirubinemia coniugata.",
+      "Il kernicterus è dovuto a iperbilirubinemia non coniugata."
+    ],
+    "answer_index": 0,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>Il kernicterus è dovuto a iperbilirubinemia indiretta non coniugata con deposizione nei gangli della base. La prematurità e altri fattori aumentano il rischio. È associato a mortalità e grave morbilità neurologica, quindi l'opzione D è falsa.</p>",
+    "created_at": "2026-10-14T19:51:10.223094+00:00"
+  },
+  {
+    "id": "c8391d2e-2047-4d39-959e-745e61f9c0b7",
+    "source_id": "d420d959-c370-41db-9f75-cd9159774054",
+    "question": "Le seguenti sono tutte indicazioni alla puntura lombare nel bambino con convulsioni febbrili, tranne:",
+    "options": [
+      "Lattanti di 6-12 mesi con stato vaccinale per Hib e pneumococco sconosciuto",
+      "Bambini di 6-12 mesi non vaccinati per Hib e pneumococco",
+      "Lattanti gravemente malati con segni e sintomi clinici",
+      "Lattanti già trattati con antibiotici",
+      "Tutti i lattanti di età inferiore a 6 mesi"
+    ],
+    "answer_index": 3,
+    "topic": "Neurologia",
+    "difficulty": 2,
+    "explanation": "<p>Tutte le opzioni sono indicazioni alla puntura lombare, ma la meno utile è la D. Se il lattante è già stato trattato con <strong>antibiotici</strong>, l'esame del liquor può risultare alterato o normalizzato e non riflettere la reale presenza di infezione del SNC.</p>",
+    "created_at": "2026-10-11T17:14:13.582531+00:00"
+  },
+  {
+    "id": "428fc426-6dd8-44bd-9208-c03df1b822fe",
+    "source_id": "d5e8ce20-b437-4dd4-b3ba-50c6dedd5545",
+    "question": "Tutte le seguenti affermazioni sono vere nella sindrome da ipoplasia cartilagine-capelli, tranne:",
+    "options": [
+      "Linfociti T non funzionanti",
+      "Neutropenia",
+      "Nessuna delle precedenti",
+      "Ipergammaglobulinemia",
+      "Capelli depigmentati"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>Nella sindrome da ipoplasia cartilagine-capelli si osservano nanismo a arti corti, capelli fini e chiari, neutropenia e immunodeficienza con riduzione del numero di linfociti T. Non è descritta una mancata funzionalità dei linfociti T, ma solo una loro riduzione numerica. Pertanto la risposta C è l'eccezione.</p>",
+    "created_at": "2026-10-14T19:51:10.003875+00:00"
+  },
+  {
+    "id": "9ed94eb9-5062-45f0-8206-a60d6794c192",
+    "source_id": "d8835118-afdc-4699-9753-100e2e9ba68a",
+    "question": "La causa più comune di bassa statura è –",
+    "options": [
+      "Costituzionale",
+      "Sindrome di Turner",
+      "Ipotiroidismo",
+      "Deficit di ormone della crescita",
+      "Malattie sistemiche"
+    ],
+    "answer_index": 0,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 1,
+    "explanation": "<p>La risposta A è corretta: il ritardo costituzionale della crescita è una causa frequente di bassa statura a metà infanzia, con peso e lunghezza alla nascita normali e altezza finale normale. L'età ossea è inferiore a quella cronologica; non serve trattamento, solo rassicurazione.</p>",
+    "created_at": "2026-10-11T17:14:12.613613+00:00"
+  },
+  {
+    "id": "4b6e2f25-c0b8-4a5f-ab7f-e6aac3c3afb0",
+    "source_id": "dd43d72c-1a78-4d51-b8c5-d376182cc99a",
+    "question": "Criteri diagnostici dell'artrite reumatoide giovanile (JRA)",
+    "options": [
+      "Malattia persistente per 6 settimane o più",
+      "Artrite che coinvolge più di 5 articolazioni",
+      "Esordio prima dei 16 anni",
+      "Nell'artrite reumatoide giovanile poliarticolare l'ANA è positivo",
+      "Presenza di rigidità mattutina per almeno 30 minuti"
+    ],
+    "answer_index": 0,
+    "topic": "Reumatologia",
+    "difficulty": 2,
+    "explanation": "<p>È definita come artrite di una o più articolazioni con esordio sotto i 16 anni e persistenza per almeno 6 settimane. La risposta A corrisponde al criterio di durata. Rif. Ghai Pediatrics, 8ª ed., pag. 625.</p>",
+    "created_at": "2026-10-11T17:14:12.613613+00:00"
+  },
+  {
+    "id": "0278ee8e-29ac-4f13-a4d8-0d02d92e4b8a",
+    "source_id": "de44c8c1-d3c1-4827-8cd3-8cceae14506c",
+    "question": "La malattia di Leigh è dovuta all'accumulo di:",
+    "options": [
+      "Sfingomielina",
+      "Nessuna delle precedenti",
+      "Glicogeno",
+      "Piridossina",
+      "Acido fitanico"
+    ],
+    "answer_index": 1,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 3,
+    "explanation": "<p>La malattia di Leigh è una encefalomiopatia necrotizzante subacuta, tipicamente dovuta a difetti mitocondriali della fosforilazione ossidativa, non a un accumulo di una singola sostanza. Le opzioni A-C corrispondono ad altre malattie da accumulo. Pertanto la risposta è <strong>Nessuna delle precedenti</strong>.</p>",
+    "created_at": "2026-10-14T19:51:07.656174+00:00"
+  },
+  {
+    "id": "923c5cc1-bfbf-4ea8-b409-6ccfa031dc55",
+    "source_id": "df364358-5ed5-420d-89d7-efe52e6cdde9",
+    "question": "Tutte le seguenti condizioni si osservano nella thalassemia major, tranne:",
+    "options": [
+      "Nessuna delle precedenti",
+      "Epatosplenomegalia",
+      "Aumento dell'emoglobina F",
+      "Basso contenuto di ferro nel sangue",
+      "Anemia microcitica ipocromica"
+    ],
+    "answer_index": 3,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>Nella thalassemia major il ferro sierico è <strong>aumentato</strong>, non ridotto, per aumentato assorbimento e trasfusioni. Si osservano anemia microcitica ipocromica ed epatosplenomegalia. Pertanto l'opzione C è l'eccezione.</p>",
+    "created_at": "2026-10-11T17:14:13.967439+00:00"
+  },
+  {
+    "id": "d01e3030-85eb-404f-8366-df8db6c5c20e",
+    "source_id": "df911270-bf24-4d83-9fe0-cb15ec227146",
+    "question": "Un neonato con punteggio APGAR di 2 a 1 minuto e 6 a 5 minuti presenta distress respiratorio e spostamento del mediastino; la diagnosi è:",
+    "options": [
+      "Malattia adenomatoide congenita del polmone",
+      "Pneumotorace",
+      "Ernia diaframmatica",
+      "Tutte le precedenti",
+      "Malattia delle membrane ialine"
+    ],
+    "answer_index": 3,
+    "topic": "Neonatologia",
+    "difficulty": 2,
+    "explanation": "<p>Nel neonato, il distress respiratorio con spostamento del mediastino può essere causato da ernia diaframmatica, pneumotorace e malformazione adenomatoide cistica congenita. Pertanto tutte le opzioni A-C sono corrette, mentre la malattia delle membrane ialine non sposta tipicamente il mediastino.</p>",
+    "created_at": "2026-10-14T19:51:08.608211+00:00"
+  },
+  {
+    "id": "3109b4bc-4c61-47d1-827c-a33f457032b7",
+    "source_id": "df96db51-b0bd-457f-ab91-81b876360bd9",
+    "question": "Un lattante segue un oggetto con lo sguardo per 180°, tiene il capo eretto, riesce a stare seduto con sostegno ma non senza sostegno. L'età del bambino è: a) 1 mese b) 3 mesi c) 5 mesi d) 6 mesi e) 9 mesi",
+    "options": [
+      "c) 5 mesi e e) 9 mesi",
+      "a) 1 mese e c) 5 mesi",
+      "b) 3 mesi e c) 5 mesi",
+      "c) 5 mesi e d) 6 mesi",
+      "b) 3 mesi e d) 6 mesi"
+    ],
+    "answer_index": 3,
+    "topic": "Pediatria sociale e sviluppo",
+    "difficulty": 1,
+    "explanation": "<p>Il controllo del capo e l'inseguimento visivo fino a 180° compaiono a 3 mesi. La seduta con sostegno è acquisita a 5 mesi, mentre quella senza sostegno a 8 mesi. Pertanto l'età è compresa tra 5 e 8 mesi, quindi 5 o 6 mesi (opzioni c e d).</p>",
+    "created_at": "2026-10-11T17:14:12.746112+00:00"
+  },
+  {
+    "id": "a23cdd40-4902-42b6-ba45-088326236ddb",
+    "source_id": "dfe60a0f-78d0-4add-adf0-db60d64eaf97",
+    "question": "L'ittero in un neonato alla nascita o nelle prime 24 ore è comunemente dovuto a:",
+    "options": [
+      "Eritroblastosi",
+      "Sepsi",
+      "Incompatibilità Rh",
+      "Tutte queste",
+      "Ittero fisiologico"
+    ],
+    "answer_index": 3,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>L'ittero che compare alla nascita o entro le prime 24 ore è sempre patologico. Le cause principali includono malattia emolitica (eritroblastosi, incompatibilità Rh) e sepsi. Pertanto, tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-11T17:14:14.723919+00:00"
+  },
+  {
+    "id": "82b6bdac-732b-4695-82ee-4756a44316a0",
+    "source_id": "e154bbf5-d4a9-4fb7-9a46-c7d7ac76c8ed",
+    "question": "Quale delle seguenti NON è una caratteristica della parotite?",
+    "options": [
+      "Il periodo di contagiosità inizia solo dopo la comparsa della tumefazione parotidea",
+      "L'orchite è una complicanza negli adulti",
+      "La meningite asettica è una complicanza",
+      "Il periodo di incubazione è inferiore a 2 settimane",
+      "È causata da un paramyxovirus"
+    ],
+    "answer_index": 3,
+    "topic": "Malattie infettive",
+    "difficulty": 2,
+    "explanation": "<p>La parotite è una malattia virale acuta causata da un <strong>paramyxovirus</strong> RNA. Il periodo di incubazione è di <strong>2-4 settimane</strong>, non inferiore a 2 settimane, perciò l'opzione D è errata. Le complicanze includono orchite/epididimite e meningite asettica.</p>",
+    "created_at": "2026-10-07T19:07:35.853211+00:00"
+  },
+  {
+    "id": "7fede20f-3464-40bf-a39a-c1cc4721b848",
+    "source_id": "e317d12e-739c-4897-8f0d-e42565f32edd",
+    "question": "Quale delle seguenti affermazioni è vera nel cretinismo?",
+    "options": [
+      "Ritardo dello sviluppo scheletrico",
+      "Tutte le precedenti",
+      "Iperattività e irritabilità con tremore",
+      "Presenza di ittero fisiologico prolungato",
+      "Comune nelle aree endemiche con carenza di iodio"
+    ],
+    "answer_index": 1,
+    "topic": "Endocrinologia e diabetologia",
+    "difficulty": 2,
+    "explanation": "<p>Nel cretinismo (ipotiroidismo congenito) l'ittero fisiologico è prolungato per ritardo della maturazione della coniugazione del glucuronide; è frequente nelle aree con carenza iodica e causa ritardo dello sviluppo scheletrico. Pertanto tutte le opzioni A-C sono vere.</p>",
+    "created_at": "2026-10-14T19:51:09.582597+00:00"
+  },
+  {
+    "id": "12ae25c4-1941-4292-bcdd-753e81e53a7c",
+    "source_id": "e48b1270-7bc7-47dd-98ad-9d57515e7a2d",
+    "question": "Il periodo perinatale corrisponde a:",
+    "options": [
+      "Dal concepimento alla 28ª settimana.",
+      "Dalla 28ª settimana di gestazione ai 7 giorni dopo la nascita.",
+      "Dalla 24ª settimana di gestazione alla nascita.",
+      "Dalla 20ª settimana di gestazione alla nascita.",
+      "Dalla nascita ai 28 giorni di vita."
+    ],
+    "answer_index": 1,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p><strong>Risposta A.</strong> Il periodo perinatale va dalla 28ª settimana di gestazione ai 7 giorni dopo la nascita. Il periodo neonatale è dalla nascita ai 28 giorni, mentre quello neonatale precoce va dalla nascita al 7° giorno.</p>",
+    "created_at": "2026-10-14T19:51:08.369429+00:00"
+  },
+  {
+    "id": "4a37d5f6-e812-496a-926c-995dd32a3ed8",
+    "source_id": "e9334b85-4837-46c5-91c3-4cb488068ca2",
+    "question": "In un bambino di 10 anni con scarsa crescita, scarso appetito, infezioni toraciche ricorrenti e steatorrea, quale delle seguenti è più probabile?",
+    "options": [
+      "Allergia cutanea ricorrente",
+      "Ritardo mentale",
+      "Celiachia con malassorbimento",
+      "Elevate concentrazioni di sodio e cloruro nel sudore",
+      "Diabete mellito"
+    ],
+    "answer_index": 3,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 2,
+    "explanation": "<p>Il quadro è tipico di <strong>fibrosi cistica</strong>, malattia genetica autosomica recessiva. Il test del sudore mostra elevate concentrazioni di sodio e cloruro, confermando la risposta A. Le altre opzioni non spiegano l'insieme dei sintomi.</p>",
+    "created_at": "2026-10-14T19:51:09.801621+00:00"
+  },
+  {
+    "id": "0a3621b2-a791-481d-90f1-084930f8b4ac",
+    "source_id": "ebf7f302-6bcc-43c3-9448-35da0ac922cb",
+    "question": "Quale delle seguenti affermazioni sulla composizione delle soluzioni reidratanti orali (ORS) a bassa osmolarità è corretta?",
+    "options": [
+      "Sodio 65 mmol/L, Glucosio 75 mmol/L",
+      "Sodio 75 mmol/L, Potassio 20 mmol/L",
+      "Sodio 65 mmol/L, Citrato 20 mmol/L",
+      "Sodio 90 mmol/L, Potassio 20 mmol/L",
+      "Cloruro 65 mmol/L, Potassio 10 mmol/L"
+    ],
+    "answer_index": 1,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>La soluzione ORS a bassa osmolarità secondo WHO contiene sodio 75 mmol/L, glucosio 75 mmol/L, potassio 20 mmol/L, citrato 10 mmol/L e cloruro 65 mmol/L, con osmolarità totale 245 mOsm/L. L'opzione B riporta correttamente sodio e potassio.</p>",
+    "created_at": "2026-10-14T19:51:09.904388+00:00"
+  },
+  {
+    "id": "8e55614f-dcb6-48f8-908d-719b9df125ae",
+    "source_id": "ee5388d8-adc4-4881-ab6b-a7ebc88418e1",
+    "question": "Quale delle seguenti caratterizza l'ittero patologico?",
+    "options": [
+      "Ittero che scompare entro 48 ore",
+      "Ittero al 3° giorno",
+      "Urine intensamente colorate",
+      "Ittero accompagnato da feci gialle",
+      "Ittero fino al tronco"
+    ],
+    "answer_index": 2,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>L'ittero patologico può comparire nelle prime 24 ore, colorare palme e piante, associarsi a urine intensamente colorate e feci color argilla, e persistere oltre 3 settimane. L'opzione C è quindi corretta.</p>",
+    "created_at": "2026-10-14T19:51:11.066455+00:00"
+  },
+  {
+    "id": "7d0215ac-79b0-4597-92ce-a16e78c4017d",
+    "source_id": "ee5bda95-7302-4e50-8e22-a484bfde4fc1",
+    "question": "A quale tipo di cancro predispone la sindrome di Down?",
+    "options": [
+      "Leucemia mieloide acuta (LAM)",
+      "Leucemia mieloide cronica (LMC)",
+      "Leucemia linfoblastica acuta (LLA)",
+      "Tutte le precedenti",
+      "Nessuna delle precedenti"
+    ],
+    "answer_index": 3,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>La sindrome di Down predispone a leucemia mieloide acuta (LAM), leucemia linfoblastica acuta (LLA) e leucemia mieloide cronica giovanile, oltre a disordini mieloproliferativi transitori e mielodisplasia. Pertanto tutte le opzioni A-C sono corrette.</p>",
+    "created_at": "2026-10-14T19:51:07.656174+00:00"
+  },
+  {
+    "id": "9b7c1449-515d-40cc-bb84-812d26c858bc",
+    "source_id": "f0b7c118-8e79-4397-9a62-27f92bad617e",
+    "question": "Qual è l'osmolarità delle soluzioni ORS standard?",
+    "options": [
+      "245",
+      "311",
+      "330",
+      "210",
+      "280"
+    ],
+    "answer_index": 1,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>La soluzione ORS standard dell'OMS ha osmolarità di <strong>311 mmol/L</strong>. La formulazione a osmolarità ridotta, invece, ha circa <strong>245 mmol/L</strong> e contiene meno sodio e glucosio. Pertanto la risposta corretta è la B.</p>",
+    "created_at": "2026-10-14T19:51:09.342949+00:00"
+  },
+  {
+    "id": "2247c70a-2fc8-4ecd-806f-421a754bdd17",
+    "source_id": "f2d72664-5266-4b80-b9f3-4494cc920aa6",
+    "question": "Nell'anemia emolitica cosa accade alle ossa del cranio?",
+    "options": [
+      "Restringimento dello spazio diploico",
+      "Ispessimento della tavola interna",
+      "Nessuna delle precedenti",
+      "Ispessimento della tavola esterna",
+      "Ampliamento dello spazio diploico"
+    ],
+    "answer_index": 4,
+    "topic": "Ematologia e oncologia",
+    "difficulty": 2,
+    "explanation": "<p>Nell'anemia emolitica (es. talassemia), lo spazio diploico si amplia, con assottigliamento della tavola esterna e tipico aspetto a 'hair-on-end'. Pertanto l'opzione C è corretta.</p>",
+    "created_at": "2026-10-14T19:51:08.90031+00:00"
+  },
+  {
+    "id": "d30895e3-75fb-4424-9d91-fd64931b4a5f",
+    "source_id": "f4718d2c-2890-411f-84cc-96bc72f2c4c6",
+    "question": "Tutte le seguenti affermazioni sull'ittero patologico sono vere tranne",
+    "options": [
+      "Può colorare palme e piante se la bilirubina supera 15 mg%",
+      "Può persistere oltre 3 settimane",
+      "Può comparire nelle prime 24 ore",
+      "Incremento massimo della bilirubina > 5 mg/24 ore",
+      "Aumento della sola bilirubina non coniugata"
+    ],
+    "answer_index": 4,
+    "topic": "Neonatologia",
+    "difficulty": 1,
+    "explanation": "<p>Nell'ittero patologico si ha aumento sia della bilirubina non coniugata sia di quella coniugata, quindi l'opzione A è falsa. Le altre affermazioni sono tipiche dell'ittero patologico: comparsa nelle prime 24 ore, persistenza oltre 3 settimane e incremento >5 mg/24 ore.</p>",
+    "created_at": "2026-10-14T19:51:10.601786+00:00"
+  },
+  {
+    "id": "18e02ac4-02e9-4235-8256-fcd5d98ef933",
+    "source_id": "f486c6fd-f8f8-4302-947f-7c159d5c6a5b",
+    "question": "Un bambino di 1 anno e mezzo (18 mesi) è in grado di:",
+    "options": [
+      "Costruire una torre di 6 cubi",
+      "Pronunciare 10-25 parole con significato",
+      "Copiare una croce",
+      "Scarabocchiare",
+      "Indicare 3-4 parti del corpo"
+    ],
+    "answer_index": 3,
+    "topic": "Pediatria sociale e sviluppo",
+    "difficulty": 1,
+    "explanation": "<p>A 18 mesi il bambino <strong>scarabocchia</strong> e costruisce torri di 3 cubi. La torre di 6 cubi compare intorno ai 2 anni e la copia della croce ai 4 anni; quindi la risposta corretta è la C.</p>",
+    "created_at": "2026-10-14T19:51:10.123411+00:00"
+  },
+  {
+    "id": "debb3289-817c-4b9d-980e-cbb7d8e38c06",
+    "source_id": "f48f50dc-8c17-4f78-9530-e3524747d56c",
+    "question": "La causa più comune di dolore addominale nei bambini è:",
+    "options": [
+      "Avvelenamento da piombo",
+      "Porfiria",
+      "Appendicite",
+      "Colica da vermi",
+      "Infezione delle vie urinarie"
+    ],
+    "answer_index": 2,
+    "topic": "Chirurgia pediatrica",
+    "difficulty": 1,
+    "explanation": "<p>Risposta: D) <strong>Appendicite</strong>. La causa medica più comune di dolore addominale acuto nei bambini è la gastroenterite, mentre la causa chirurgica più comune è l'appendicite.</p>",
+    "created_at": "2026-10-11T17:14:13.706635+00:00"
+  },
+  {
+    "id": "bb1b7ca6-807f-47c7-9bf1-7d2a18f30827",
+    "source_id": "f4f0dbec-955b-47ae-b9d6-2abfc76e9dbf",
+    "question": "Quale dei seguenti non è un segno di dotto arterioso pervio (PDA) in un neonato pretermine?",
+    "options": [
+      "Pressione differenziale ridotta",
+      "Tachicardia",
+      "Apnea",
+      "Enterocolite necrotizzante",
+      "Pulsazioni femorali deboli"
+    ],
+    "answer_index": 0,
+    "topic": "Cardiologia",
+    "difficulty": 2,
+    "explanation": "<p>Nel PDA il flusso aorta-polmone determina <strong>pressione differenziale ampia</strong>, non ridotta. Nei pretermine può causare apnea, tachicardia, scompenso e enterocolite necrotizzante. La risposta D è quindi l'unica non compatibile.</p>",
+    "created_at": "2026-10-14T19:51:11.315712+00:00"
+  },
+  {
+    "id": "79e16bd5-49de-4761-b925-72c7276004b7",
+    "source_id": "fb71ea73-e6f9-4ebd-985b-b29a6a1a3d2b",
+    "question": "Il miglior parametro per monitorare la risposta alla somministrazione di un bolo di fluidi in un bambino disidratato è",
+    "options": [
+      "Differenza tra temperatura centrale e superficiale",
+      "Peso corporeo",
+      "Stato della cute",
+      "Tempo di riempimento capillare",
+      "Polso radiale"
+    ],
+    "answer_index": 4,
+    "topic": "Nefrologia",
+    "difficulty": 1,
+    "explanation": "<p>Il <strong>polso radiale</strong> è il parametro più immediato per valutare la perfusione centrale e la risposta a un bolo di fluidi nel bambino disidratato. Un polso prima debole o filiforme che diventa valido e facilmente palpabile indica un miglioramento del volume intravascolare. Cute, gradiente termico e tempo di riempimento capillare sono utili ma meno specifici.</p>",
+    "created_at": "2026-10-11T17:14:12.613613+00:00"
+  },
+  {
+    "id": "f0270e81-d0ce-4edc-b09a-ae5e413e9b1e",
+    "source_id": "fbd98660-aa2e-49f5-88e3-a5b5ef8102b8",
+    "question": "Quali delle seguenti sono le caratteristiche di un alimento con semaforo verde secondo il piano alimentare a semaforo per i bambini?",
+    "options": [
+      "Nutriente denso, ma con più calorie e grassi",
+      "Poche calorie, ricco di fibre, povero di grassi. Nutriente denso",
+      "Ricco di calorie, zuccheri e grassi",
+      "Nessuna delle precedenti",
+      "Alto contenuto di fibre, ma anche ricco di grassi saturi e zuccheri"
+    ],
+    "answer_index": 1,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 1,
+    "explanation": "<p>La dieta \"semaforo\" classifica gli alimenti in rosso, giallo e verde. Il <strong>verde</strong> indica cibi a basso contenuto calorico, ricchi di fibre, poveri di grassi e nutrienti, da consumare senza limitazioni. La risposta B corrisponde a queste caratteristiche.</p>",
+    "created_at": "2026-10-14T19:51:09.904388+00:00"
+  },
+  {
+    "id": "65605531-9f2d-4f93-b25b-cc2e069a3775",
+    "source_id": "fd65908f-c027-470f-a5c8-27a721f38d9e",
+    "question": "Una causa riconosciuta di stridore nel neonato –",
+    "options": [
+      "Tutte le opzioni A-C sono vere",
+      "Laringomalacia",
+      "Un anello vascolare",
+      "Igroma cistico",
+      "Atresia coanale"
+    ],
+    "answer_index": 0,
+    "topic": "Pneumologia",
+    "difficulty": 1,
+    "explanation": "<p>Lo stridore è un respiro rumoroso da ostruzione delle vie aeree. Nel neonato può essere causato da laringomalacia, anelli vascolari e igroma cistico se interessa la laringe. Pertanto le opzioni A-C sono tutte cause riconosciute.</p>",
+    "created_at": "2026-10-14T19:51:10.847205+00:00"
+  },
+  {
+    "id": "aca41312-ed12-4e82-b0a3-e0a7860b32e3",
+    "source_id": "fd924a76-6432-482a-86f9-1ea2dcdfc505",
+    "question": "Segno radiografico definitivo di scorbuto:",
+    "options": [
+      "Reazione periostale a buccia di cipolla",
+      "Aspetto a vetro smerigliato",
+      "Linea bianca in metafisi",
+      "Corticale sottile",
+      "Epifisi ad anello"
+    ],
+    "answer_index": 4,
+    "topic": "Gastroenterologia e nutrizione",
+    "difficulty": 2,
+    "explanation": "<p>L'epifisi ad anello (segno di Wimberger) è un anello bianco che circonda i centri di ossificazione epifisari. È relativamente specifico per lo scorbuto. La linea bianca metafisaria (segno di Fränkel) può osservarsi in scorbuto, rachitismo in guarigione, saturnismo, malnutrizione proteico-energetica grave, sifilide congenita e leucemia acuta. Le opzioni B e D non sono specifiche per lo scorbuto.</p>",
+    "created_at": "2026-10-14T19:51:07.742619+00:00"
+  },
+  {
+    "id": "ffdaed29-fa87-4819-b036-fc64ea778219",
+    "source_id": "fe5664f2-b770-4ecc-8401-f633ad9b132c",
+    "question": "A quale delle seguenti condizioni è associata la sindrome di Laurence-Moon-Biedl?",
+    "options": [
+      "Tutte le precedenti",
+      "Ritardo mentale",
+      "Anemia emolitica cronica",
+      "Retinite pigmentosa",
+      "Polidattilia"
+    ],
+    "answer_index": 0,
+    "topic": "Genetica e malattie metaboliche",
+    "difficulty": 1,
+    "explanation": "<p>La sindrome di Laurence-Moon-Biedl è caratterizzata da obesità, polidattilia, ritardo mentale, ipogonadismo ipogonadotropo e retinite pigmentosa. Quindi le opzioni A, B e C sono tutte associate.</p>",
+    "created_at": "2026-10-14T19:51:08.812438+00:00"
+  },
+  {
+    "id": "f2b8fb68-35be-4028-976b-6ccf2b265f02",
+    "source_id": "fee5a803-559b-4db3-b1e4-65e24831b08d",
+    "question": "Qual è la caratteristica EEG del piccolo male (crisi di assenza)?",
+    "options": [
+      "Onde a una frequenza di 10/sec",
+      "Punte continue di grande ampiezza",
+      "Punta e cupola (spike and dome)",
+      "Punte continue smussate",
+      "Attività ritmica focale a 6 Hz"
+    ],
+    "answer_index": 2,
+    "topic": "Neurologia",
+    "difficulty": 1,
+    "explanation": "<p>La crisi di assenza tipica (piccolo male) ha come segno EEG distintivo scariche generalizzate, simmetriche e sincrone di complessi punta-onda a 3 Hz. Le opzioni B-D non descrivono questo pattern; la E è focale e non tipica.</p>",
+    "created_at": "2026-10-14T19:51:10.328057+00:00"
+  }
+]
