@@ -190,9 +190,11 @@ body {
 }
 
 .rich-text img {
+  display: inline-block;
+  vertical-align: middle;
   max-width: 100%;
   height: auto;
-  margin: 0.6em auto;
+  margin: 0.3em 0.15em;
   border-radius: 0.75rem;
 }
 

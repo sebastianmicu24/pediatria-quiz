@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useEditor, EditorContent, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Underline } from "@tiptap/extension-underline";
 import {
   BackgroundColor,
   Color,
@@ -12,7 +11,12 @@ import {
   TextStyle,
 } from "@tiptap/extension-text-style";
 import { Image as ImageExtension } from "@tiptap/extension-image";
+import { TextAlign } from "@tiptap/extension-text-align";
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
   Bold,
   Eraser,
   Highlighter,
@@ -92,14 +96,21 @@ export function RichTextEditor({
         codeBlock: false,
         code: false,
         horizontalRule: false,
+        // Il sanitizzatore non ammette link: meglio disattivarli anche
+        // nell'editor (evita auto-link su incolla che verrebbero rimossi).
+        link: false,
       }),
-      Underline,
+      // Nota: StarterKit include già sottolineato, grassetto, corsivo,
+      // barrato ed elenchi (niente link o heading in questa configurazione).
       TextStyle,
       Color,
       BackgroundColor,
       FontFamily,
       FontSize,
-      ImageExtension.configure({ allowBase64: false }),
+      TextAlign.configure({ types: ["paragraph"] }),
+      // Immagini inline: si inseriscono nel paragrafo e seguono
+      // l'allineamento scelto (sinistra/centro/destra/giustificato).
+      ImageExtension.configure({ allowBase64: false, inline: true }),
     ],
     content: value,
     editorProps: {
@@ -147,6 +158,10 @@ export function RichTextEditor({
       strike: instance ? instance.isActive("strike") : false,
       bulletList: instance ? instance.isActive("bulletList") : false,
       orderedList: instance ? instance.isActive("orderedList") : false,
+      alignLeft: instance ? instance.isActive({ textAlign: "left" }) : false,
+      alignCenter: instance ? instance.isActive({ textAlign: "center" }) : false,
+      alignRight: instance ? instance.isActive({ textAlign: "right" }) : false,
+      alignJustify: instance ? instance.isActive({ textAlign: "justify" }) : false,
       color: (instance?.getAttributes("textStyle").color as string | null) ?? null,
       background:
         (instance?.getAttributes("textStyle").backgroundColor as string | null) ??
@@ -245,6 +260,41 @@ export function RichTextEditor({
             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
           >
             <ListOrdered className="h-4 w-4" aria-hidden="true" />
+          </ToolbarButton>
+
+          <ToolbarDivider />
+
+          <ToolbarButton
+            label="Allinea a sinistra"
+            active={state?.alignLeft ?? false}
+            disabled={!editor}
+            onClick={() => editor?.chain().focus().setTextAlign("left").run()}
+          >
+            <AlignLeft className="h-4 w-4" aria-hidden="true" />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Allinea al centro (testo e immagini)"
+            active={state?.alignCenter ?? false}
+            disabled={!editor}
+            onClick={() => editor?.chain().focus().setTextAlign("center").run()}
+          >
+            <AlignCenter className="h-4 w-4" aria-hidden="true" />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Allinea a destra"
+            active={state?.alignRight ?? false}
+            disabled={!editor}
+            onClick={() => editor?.chain().focus().setTextAlign("right").run()}
+          >
+            <AlignRight className="h-4 w-4" aria-hidden="true" />
+          </ToolbarButton>
+          <ToolbarButton
+            label="Giustificato (senza margini ai lati)"
+            active={state?.alignJustify ?? false}
+            disabled={!editor}
+            onClick={() => editor?.chain().focus().setTextAlign("justify").run()}
+          >
+            <AlignJustify className="h-4 w-4" aria-hidden="true" />
           </ToolbarButton>
 
           <ToolbarDivider />

@@ -334,7 +334,7 @@ function QuestionEditor({
         label="Domanda"
         value={questionHtml}
         onChange={setQuestionHtml}
-        hint="Puoi formattare il testo (grassetto, corsivo, sottolineato, colori, dimensioni, elenchi) e inserire immagini tra i paragrafi. Incolla o trascina un'immagine per caricarla."
+        hint="Formatta il testo e allinea paragrafi e immagini (sinistra, centro, destra, giustificato). Puoi inserire immagini tra i paragrafi: incolla o trascina un'immagine per caricarla."
       />
 
       <fieldset className="space-y-3">
@@ -457,7 +457,7 @@ function QuestionEditor({
         label="Spiegazione"
         value={explanationHtml}
         onChange={setExplanationHtml}
-        hint="Compare dopo la risposta dell'utente. Puoi formattare il testo e inserire immagini (PNG, JPG o WebP) tra i paragrafi."
+        hint="Compare dopo la risposta dell'utente. Puoi formattare e allineare il testo e inserire immagini (PNG, JPG o WebP) tra i paragrafi."
       />
 
       <Alert variant="info">

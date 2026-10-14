@@ -64,6 +64,13 @@ const TEXT_STYLE_PROPS = new Set([
   "font-family",
 ]);
 
+/** Proprietà CSS consentite sui blocchi (paragrafi, ecc.). */
+const BLOCK_STYLE_PROPS = new Set(["text-align"]);
+
+function isSafeTextAlignValue(value: string): boolean {
+  return /^(left|center|right|justify)$/i.test(value);
+}
+
 function isSafeColorValue(value: string): boolean {
   return (
     /^#[0-9a-f]{3,8}$/i.test(value) ||
@@ -84,21 +91,29 @@ function isSafeFontFamilyValue(value: string): boolean {
   return /^[a-z0-9][a-z0-9 ,-]{0,80}$/i.test(value);
 }
 
-function sanitizeStyleAttribute(style: string): string {
+function sanitizeStyleAttribute(
+  style: string,
+  kind: "text" | "block"
+): string {
   const kept: string[] = [];
   for (const declaration of style.split(";")) {
     const separator = declaration.indexOf(":");
     if (separator === -1) continue;
     const property = declaration.slice(0, separator).trim().toLowerCase();
     const value = declaration.slice(separator + 1).trim();
-    if (!TEXT_STYLE_PROPS.has(property) || value === "") continue;
+    if (value === "") continue;
 
-    const safe =
-      property === "font-size"
-        ? isSafeFontSizeValue(value)
-        : property === "font-family"
-          ? isSafeFontFamilyValue(value)
-          : isSafeColorValue(value);
+    let safe = false;
+    if (kind === "block") {
+      safe = BLOCK_STYLE_PROPS.has(property) && isSafeTextAlignValue(value);
+    } else if (TEXT_STYLE_PROPS.has(property)) {
+      safe =
+        property === "font-size"
+          ? isSafeFontSizeValue(value)
+          : property === "font-family"
+            ? isSafeFontFamilyValue(value)
+            : isSafeColorValue(value);
+    }
     if (!safe) continue;
 
     kept.push(`${property}: ${value}`);
@@ -137,8 +152,11 @@ function sanitizeTagAttributes(tagName: string, attributes: string): string {
     const name = match[1].toLowerCase();
     const value = match[2] ?? match[3] ?? "";
 
-    if (tagName === "span" && name === "style") {
-      const style = sanitizeStyleAttribute(value);
+    if ((tagName === "span" || tagName === "p") && name === "style") {
+      const style = sanitizeStyleAttribute(
+        value,
+        tagName === "span" ? "text" : "block"
+      );
       if (style) kept.push(`style="${style}"`);
     } else if (tagName === "img") {
       if (name === "src") {
