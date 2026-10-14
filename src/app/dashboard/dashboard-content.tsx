@@ -7,7 +7,7 @@ import { Alert } from "@/components/ui/alert";
 import { StatCard } from "./stat-card";
 import { QuizSetup } from "./quiz-setup";
 import { RecentAttempts } from "./recent-attempts";
-import { TopicPies } from "./topic-pies";
+import { TopicPies, type TopicPieDatum } from "./topic-pies";
 import type { AttemptSummary, TopicStat } from "@/lib/types";
 import { BarChart3, BookOpenCheck, Target } from "lucide-react";
 
@@ -65,7 +65,7 @@ export async function DashboardContent() {
         supabase
           .from("questions")
           .select("topic")
-          .order("topic", { ascending: true })
+          .order("id", { ascending: true })
       ),
     ]);
 
@@ -112,6 +112,28 @@ export async function DashboardContent() {
         .filter((t): t is string => Boolean(t))
     ),
   ].sort((a, b) => a.localeCompare(b, "it"));
+
+  // Copertura per materia: svolte vs totale disponibile (tutte le domande
+  // del database per quella materia, comprese quelle mai affrontate).
+  const topicCounts = new Map<string, number>();
+  for (const row of topicsResult.rows) {
+    if (!row.topic) continue;
+    topicCounts.set(row.topic, (topicCounts.get(row.topic) ?? 0) + 1);
+  }
+
+  const pieData: TopicPieDatum[] = topics
+    .map((topic) => ({
+      topic,
+      done: topicMap.get(topic)?.total ?? 0,
+      correct: topicMap.get(topic)?.correct ?? 0,
+      available: topicCounts.get(topic) ?? 0,
+    }))
+    .sort((a, b) => {
+      // Prima le materie già affrontate (per numero di svolte), poi le altre.
+      if ((a.done > 0) !== (b.done > 0)) return a.done > 0 ? -1 : 1;
+      if (a.done !== b.done) return b.done - a.done;
+      return a.topic.localeCompare(b.topic, "it");
+    });
 
   const bestTopic = [...topicStats]
     .filter((t) => t.total >= 3)
@@ -186,11 +208,11 @@ export async function DashboardContent() {
             Percentuali per materia
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Fatti, corretti e sbagliati: ogni nuova risposta sovrascrive la
-            precedente.
+            Copertura sul totale disponibile: corrette, sbagliate e ancora da
+            svolgere. Ogni nuova risposta sovrascrive la precedente.
           </p>
           <div className="mt-4">
-            <TopicPies stats={topicStats.slice(0, 10)} />
+            <TopicPies data={pieData} />
           </div>
         </div>
       </section>
