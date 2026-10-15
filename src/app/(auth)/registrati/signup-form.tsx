@@ -108,20 +108,20 @@ export function SignupForm() {
 
   if (emailSent) {
     return (
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
-        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
+      <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-6 text-center sm:p-8">
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
           <MailCheck className="h-6 w-6" aria-hidden="true" />
         </span>
-        <h2 className="mt-4 text-lg font-semibold text-slate-900">
+        <h2 className="mt-4 text-lg font-semibold text-neutral-900">
           Controlla la tua email
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        <p className="mt-2 text-sm leading-relaxed text-neutral-600">
           Abbiamo inviato un link di conferma a{" "}
-          <strong className="text-slate-900">{email.trim()}</strong>. Apri
+          <strong className="text-neutral-900">{email.trim()}</strong>. Apri
           l&apos;email e clicca sul link per attivare l&apos;account (controlla
           anche la cartella spam).
         </p>
-        <p className="mt-4 text-xs leading-relaxed text-slate-500">
+        <p className="mt-4 text-xs leading-relaxed text-neutral-500">
           Non hai ricevuto nulla? Attendi qualche minuto e controlla la posta
           indesiderata. Se usi una casella istituzionale (es. universitaria),
           le email esterne possono essere bloccate dai filtri dell&apos;ateneo:
@@ -139,7 +139,7 @@ export function SignupForm() {
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+    <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-5 sm:p-8">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <TextField
           id="display-name"
@@ -184,20 +184,20 @@ export function SignupForm() {
 
         {/* Dati facoltativi per le statistiche aggregate: sezione discreta,
             chiusa di default, per non appesantire la registrazione. */}
-        <details className="group rounded-2xl border border-slate-200 bg-slate-50/60">
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm text-slate-600 transition-colors hover:text-slate-900 [&::-webkit-details-marker]:hidden">
+        <details className="group rounded-lg border border-neutral-200 bg-neutral-50/60">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm text-neutral-600 transition-colors hover:text-neutral-900 [&::-webkit-details-marker]:hidden">
             <ChevronDown
-              className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180"
+              className="h-4 w-4 shrink-0 text-neutral-400 transition-transform group-open:rotate-180"
               aria-hidden="true"
             />
             <span>
               Raccontaci di te{" "}
-              <span className="text-slate-400">(facoltativo)</span>
+              <span className="text-neutral-400">(facoltativo)</span>
             </span>
           </summary>
 
-          <div className="border-t border-slate-200/70 px-4 pb-4 pt-3">
-            <p className="text-xs leading-relaxed text-slate-500">
+          <div className="border-t border-neutral-200/70 px-4 pb-4 pt-3">
+            <p className="text-xs leading-relaxed text-neutral-500">
               Ci aiuti a misurare — solo in forma aggregata — gli esiti degli
               studenti. Puoi modificare o rimuovere questi dati quando vuoi dal
               tuo account.
@@ -207,7 +207,7 @@ export function SignupForm() {
               <div className="space-y-1.5">
                 <label
                   htmlFor="status"
-                  className="block text-sm font-medium text-slate-700"
+                  className="block text-sm font-medium text-neutral-700"
                 >
                   Status
                 </label>
@@ -216,7 +216,7 @@ export function SignupForm() {
                   name="status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="block h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                  className="block h-11 w-full rounded-md border border-neutral-300 bg-white px-3.5 text-sm text-neutral-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
                 >
                   <option value="">Preferisco non indicarlo</option>
                   {STATUS_OPTIONS.map((option) => (
@@ -230,7 +230,7 @@ export function SignupForm() {
               <div className="space-y-1.5">
                 <label
                   htmlFor="year"
-                  className="block text-sm font-medium text-slate-700"
+                  className="block text-sm font-medium text-neutral-700"
                 >
                   Anno di studi
                 </label>
@@ -239,7 +239,7 @@ export function SignupForm() {
                   name="year"
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
-                  className="block h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                  className="block h-11 w-full rounded-md border border-neutral-300 bg-white px-3.5 text-sm text-neutral-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
                 >
                   <option value="">Preferisco non indicarlo</option>
                   {YEAR_OPTIONS.map((option) => (
@@ -327,7 +327,7 @@ export function SignupForm() {
           )}
         </Button>
 
-        <p className="text-center text-xs leading-relaxed text-slate-500">
+        <p className="text-center text-xs leading-relaxed text-neutral-500">
           Registrandoti dichiari di avere almeno 14 anni. I tuoi dati sono
           trattati secondo la Privacy Policy e puoi cancellare l&apos;account in
           ogni momento.

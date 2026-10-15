@@ -29,7 +29,7 @@ export function LogoutButton({ className }: { className?: string }) {
       onClick={handleLogout}
       disabled={pending}
       className={cn(
-        "inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:opacity-60",
+        "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 disabled:opacity-60",
         className
       )}
     >

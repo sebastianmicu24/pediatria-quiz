@@ -1,5 +1,5 @@
 -- ============================================================
---  Pediatroma - Schema database per Supabase
+--  pediatro.me - Schema database per Supabase
 --  Esegui questo file nell'SQL Editor del tuo progetto Supabase.
 --  È idempotente: puoi rieseguirlo senza perdere i dati.
 -- ============================================================

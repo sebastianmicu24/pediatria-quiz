@@ -122,7 +122,7 @@ Supabase sul piano gratuito ha un limite molto basso di email/ora. Collegando **
 | Username | `resend` |
 | Password | la tua API key `re_...` |
 | Sender email | es. `noreply@tuodominio.it` (dominio verificato) |
-| Sender name | `Pediatroma` |
+| Sender name | `pediatro.me` |
 
 Salva e usa il pulsante di invio email di test.
 
@@ -175,7 +175,7 @@ ADMIN_EMAILS                   = sebastianmicu24@gmail.com
 ## 4. Checklist di collaudo
 
 1. Apri il sito → **Registrati** con una email vera.
-2. Ricevi l'email di conferma (mittente `Pediatroma`) → clicca il link → vieni portato alla dashboard.
+2. Ricevi l'email di conferma (mittente `pediatro.me`) → clicca il link → vieni portato alla dashboard.
 3. Esegui un quiz completo → verifica che la dashboard mostri statististiche aggiornate.
 4. **Password dimenticata** → ricevi l'email → reimposta → accedi con la nuova password.
 5. Pagina **Account** → compila status/città/scuola (facoltativi) → scarica l'export JSON → prova l'eliminazione di un account di test.

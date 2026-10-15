@@ -49,16 +49,16 @@ export function RequestResetForm() {
 
   if (sent) {
     return (
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
-        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
+      <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-6 text-center sm:p-8">
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
           <MailCheck className="h-6 w-6" aria-hidden="true" />
         </span>
-        <h2 className="mt-4 text-lg font-semibold text-slate-900">
+        <h2 className="mt-4 text-lg font-semibold text-neutral-900">
           Email inviata
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        <p className="mt-2 text-sm leading-relaxed text-neutral-600">
           Se esiste un account associato a{" "}
-          <strong className="text-slate-900">{email.trim()}</strong>, riceverai
+          <strong className="text-neutral-900">{email.trim()}</strong>, riceverai
           a breve un&apos;email con il link per reimpostare la password.
           Controlla anche la cartella spam.
         </p>
@@ -67,7 +67,7 @@ export function RequestResetForm() {
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-6 sm:p-8">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <TextField
           id="email"

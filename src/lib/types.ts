@@ -33,3 +33,14 @@ export type TopicStat = {
   total: number;
   correct: number;
 };
+
+/** Copertura di un argomento: domande svolte, corrette e disponibili. */
+export type TopicCoverageDatum = {
+  topic: string;
+  /** Domande svolte (con almeno una risposta). */
+  done: number;
+  /** Di cui corrette (ultima risposta data). */
+  correct: number;
+  /** Domande totali disponibili per l'argomento. */
+  available: number;
+};

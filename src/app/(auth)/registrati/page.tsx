@@ -5,22 +5,22 @@ import { SignupForm } from "./signup-form";
 export const metadata: Metadata = {
   title: "Registrati",
   description:
-    "Crea il tuo account gratuito su Pediatroma e inizia subito ad allenarti.",
+    "Crea il tuo account gratuito su pediatro.me e inizia subito ad allenarti.",
 };
 
 export default function SignupPage() {
   return (
     <>
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-neutral-900">
         Crea il tuo account
       </h1>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">
+      <p className="mt-2 text-sm leading-relaxed text-neutral-600">
         Gratuito, in meno di un minuto. Nessuna carta di credito.
       </p>
 
       <SignupForm />
 
-      <p className="mt-6 text-sm text-slate-600">
+      <p className="mt-6 text-sm text-neutral-600">
         Hai già un account?{" "}
         <Link
           href="/login"

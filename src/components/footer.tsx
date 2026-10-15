@@ -1,31 +1,30 @@
 import Link from "next/link";
-import { LogoFull } from "@/components/logo";
-import { LEGAL } from "@/lib/legal";
-import { COOKIE_PATH, PRIVACY_PATH, TERMS_PATH } from "@/lib/legal";
+import { LogoWordmark } from "@/components/logo";
+import { LEGAL, COOKIE_PATH, PRIVACY_PATH, TERMS_PATH } from "@/lib/legal";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
 const linkClass =
-  "text-sm text-slate-500 transition-colors hover:text-slate-900";
+  "text-sm text-neutral-600 transition-colors hover:text-neutral-900";
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto w-full max-w-6xl px-4 py-12">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="lg:col-span-2">
-            <LogoFull className="w-40 sm:w-44" />
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-500">
-              Quiz per un domani più grande: domande di pediatria con
-              spiegazioni dettagliate, statistiche personali e ripasso
-              strutturato per argomento. Da Roma, per chi studia e lavora in
-              pediatria.
+    <footer className="border-t border-neutral-200 bg-white">
+      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <LogoWordmark />
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500">
+              Quiz di pediatria con spiegazioni e statistiche personali. Da
+              Roma, per chi studia e lavora in pediatria.
             </p>
           </div>
 
-          <nav aria-label="Collegamenti utili" className="space-y-3">
-            <h2 className="text-sm font-semibold text-slate-900">Naviga</h2>
-            <ul className="space-y-2">
+          <nav aria-label="Collegamenti utili">
+            <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-neutral-400">
+              Sito
+            </h2>
+            <ul className="mt-3 space-y-2">
               <li>
                 <Link href="/" className={linkClass}>
                   Home
@@ -44,9 +43,11 @@ export function Footer() {
             </ul>
           </nav>
 
-          <nav aria-label="Informazioni legali" className="space-y-3">
-            <h2 className="text-sm font-semibold text-slate-900">Legale</h2>
-            <ul className="space-y-2">
+          <nav aria-label="Informazioni legali">
+            <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-neutral-400">
+              Legale
+            </h2>
+            <ul className="mt-3 space-y-2">
               <li>
                 <Link href={PRIVACY_PATH} className={linkClass}>
                   Privacy Policy
@@ -66,19 +67,20 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-slate-200 pt-6 text-xs leading-relaxed text-slate-500 sm:flex-row sm:items-start sm:justify-between">
+        <div className="mt-10 flex flex-col gap-3 border-t border-neutral-200 pt-6 text-xs leading-relaxed text-neutral-500 md:flex-row md:justify-between">
           <p>
-            © {CURRENT_YEAR} {LEGAL.siteName} — Titolare del trattamento:{" "}
-            {LEGAL.owner}
-            {" · "}
-            <a href={`mailto:${LEGAL.email}`} className="underline hover:text-slate-900">
+            © {CURRENT_YEAR} {LEGAL.siteName} · Titolare del trattamento:{" "}
+            {LEGAL.owner} ·{" "}
+            <a
+              href={`mailto:${LEGAL.email}`}
+              className="underline underline-offset-2 hover:text-neutral-900"
+            >
               {LEGAL.email}
             </a>
           </p>
           <p className="max-w-md">
-            I contenuti hanno finalità esclusivamente didattiche e non
-            costituiscono consulenza medica: non sostituiscono il giudizio
-            clinico né le linee guida ufficiali.
+            Contenuti a scopo didattico: non costituiscono consulenza medica né
+            sostituiscono il giudizio clinico e le linee guida ufficiali.
           </p>
         </div>
       </div>

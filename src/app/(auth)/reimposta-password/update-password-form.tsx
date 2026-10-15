@@ -56,7 +56,7 @@ export function UpdatePasswordForm() {
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-6 sm:p-8">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <TextField
           id="password"

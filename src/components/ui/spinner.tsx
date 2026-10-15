@@ -14,7 +14,7 @@ export function Spinner({ className }: { className?: string }) {
         cy="12"
         r="10"
         stroke="currentColor"
-        strokeWidth="4"
+        strokeWidth="3"
       />
       <path
         className="opacity-90"

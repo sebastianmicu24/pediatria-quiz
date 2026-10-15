@@ -93,7 +93,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <div className="mt-8 rounded-lg border border-neutral-200 bg-white p-6 sm:p-8">
       {linkError === "link-non-valido" ? (
         <Alert variant="error" className="mb-5">
           Il link che hai usato non è valido o è scaduto. Accedi con le tue
@@ -166,7 +166,7 @@ export function LoginForm() {
                 "Reinvia email di conferma"
               )}
             </Button>
-            <p className="text-xs leading-relaxed text-slate-500">
+            <p className="text-xs leading-relaxed text-neutral-500">
               Se usi una casella istituzionale (es. universitaria) e non ricevi
               l&apos;email, scrivi a{" "}
               <a

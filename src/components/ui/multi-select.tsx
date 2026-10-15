@@ -95,7 +95,7 @@ export function MultiSelect({
 
   return (
     <fieldset ref={rootRef} className="relative min-w-0">
-      <legend className="text-sm font-semibold text-slate-900">{legend}</legend>
+      <legend className="text-sm font-medium text-neutral-800">{legend}</legend>
 
       <button
         ref={triggerRef}
@@ -105,25 +105,25 @@ export function MultiSelect({
         aria-haspopup="true"
         aria-controls={open ? listId : undefined}
         className={cn(
-          "mt-3 flex h-11 w-full touch-manipulation items-center justify-between gap-3 rounded-xl border bg-white px-3.5 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
+          "mt-1.5 flex h-10 w-full touch-manipulation items-center justify-between gap-3 rounded-md border bg-white px-3 text-sm transition-colors",
           open
-            ? "border-brand-500 ring-2 ring-brand-500/25"
-            : "border-slate-300 hover:border-slate-400"
+            ? "border-brand-600 ring-1 ring-brand-600"
+            : "border-neutral-300 hover:border-neutral-400"
         )}
       >
         <span
           className={cn(
             "truncate text-left",
             selected.length === 0
-              ? "text-slate-500"
-              : "font-medium text-slate-900"
+              ? "text-neutral-500"
+              : "font-medium text-neutral-900"
           )}
         >
           {summary}
         </span>
         <ChevronDown
           className={cn(
-            "h-4 w-4 shrink-0 text-slate-400 transition-transform",
+            "h-4 w-4 shrink-0 text-neutral-400 transition-transform",
             open && "rotate-180"
           )}
           aria-hidden="true"
@@ -133,13 +133,13 @@ export function MultiSelect({
       {open ? (
         <div
           id={listId}
-          className="absolute z-30 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10"
+          className="absolute z-30 mt-2 w-full overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg shadow-neutral-900/10"
         >
           {searchable ? (
-            <div className="border-b border-slate-100 p-2">
+            <div className="border-b border-neutral-100 p-2">
               <div className="relative">
                 <Search
-                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
                   aria-hidden="true"
                 />
                 <input
@@ -148,7 +148,7 @@ export function MultiSelect({
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder={searchPlaceholder}
                   aria-label={searchPlaceholder}
-                  className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/25"
+                  className="h-10 w-full rounded-lg border border-neutral-200 bg-neutral-50 pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-600"
                 />
               </div>
             </div>
@@ -156,7 +156,7 @@ export function MultiSelect({
 
           <ul className="max-h-64 overflow-y-auto p-1.5">
             {filtered.length === 0 ? (
-              <li className="px-3 py-2.5 text-sm text-slate-500">
+              <li className="px-3 py-2.5 text-sm text-neutral-500">
                 {emptyLabel}
               </li>
             ) : (
@@ -169,7 +169,7 @@ export function MultiSelect({
                         "flex cursor-pointer touch-manipulation items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
                         isSelected
                           ? "bg-brand-50 font-medium text-brand-900"
-                          : "text-slate-700 hover:bg-slate-50"
+                          : "text-neutral-700 hover:bg-neutral-50"
                       )}
                     >
                       <input
@@ -192,7 +192,7 @@ export function MultiSelect({
             )}
           </ul>
 
-          <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-2 py-1.5">
+          <div className="flex items-center justify-between gap-2 border-t border-neutral-100 px-2 py-1.5">
             <button
               type="button"
               onClick={() => onChange(options.map((option) => option.value))}
@@ -203,7 +203,7 @@ export function MultiSelect({
             <button
               type="button"
               onClick={() => onChange([])}
-              className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-50"
+              className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-neutral-500 transition-colors hover:bg-neutral-50"
             >
               Pulisci
             </button>

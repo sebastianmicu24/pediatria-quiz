@@ -1,4 +1,4 @@
-# Sicurezza di Pediatroma — Report di audit
+# Sicurezza di pediatro.me — Report di audit
 
 **Data:** 7 ottobre 2026 · **Ambito:** applicazione Next.js, database Supabase (RLS), API, configurazione di deploy.
 
@@ -64,7 +64,7 @@ Tutte le correzioni sono già incluse nel codice e in `supabase/migrations/2026-
    - Durante l'alfa, valuta **Settings → Deployment Protection** (Vercel Authentication / Password) per limitare l'accesso al sito.
    - Controlla che le variabili d'ambiente siano impostate solo negli ambienti giusti (Production/Preview), mai in Git.
 3. **Resend / DNS**:
-   - Mantieni corretti i record **SPF e DKIM** del dominio: proteggono dalla spoofing delle email di Pediatroma.
+   - Mantieni corretti i record **SPF e DKIM** del dominio: proteggono dalla spoofing delle email di pediatro.me.
 4. **Operativo**:
    - Non condividere mai la **secret key**; in caso di sospetta compromissione, ruotala immediatamente (Settings → API Keys).
    - Usa un password manager per il Titolare e per gli account admin.

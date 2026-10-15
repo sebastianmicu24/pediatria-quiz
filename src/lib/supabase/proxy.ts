@@ -8,6 +8,8 @@ const PROTECTED_PREFIXES = [
   "/quiz",
   "/account",
   "/statistiche",
+  "/turni",
+  "/strumenti",
   "/admin",
   "/reimposta-password",
 ];

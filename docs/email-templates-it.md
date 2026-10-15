@@ -10,17 +10,17 @@ Il parametro `{{ .SiteURL }}` è la **Site URL** configurata in Supabase (es. `h
 **Subject:**
 
 ```
-Conferma la tua email per attivare l'account — Pediatroma
+Conferma la tua email per attivare l'account — pediatro.me
 ```
 
 **Body (HTML):**
 
 ```html
 <div style="font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#0f172a">
-  <p style="font-size:18px;font-weight:700;margin:0 0 24px">Pediatroma</p>
+  <p style="font-size:18px;font-weight:700;margin:0 0 24px">pediatro.me</p>
   <h1 style="font-size:20px;margin:0 0 12px">Conferma la tua email</h1>
   <p style="font-size:14px;line-height:1.7;color:#334155;margin:0 0 24px">
-    Benvenuto/a in Pediatroma! Clicca il pulsante qui sotto per attivare il tuo account e iniziare subito ad allenarti.
+    Benvenuto/a in pediatro.me! Clicca il pulsante qui sotto per attivare il tuo account e iniziare subito ad allenarti.
   </p>
   <p style="margin:0 0 24px">
     <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email&amp;next=/dashboard"
@@ -33,7 +33,7 @@ Conferma la tua email per attivare l'account — Pediatroma
   </p>
   <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0" />
   <p style="font-size:11px;line-height:1.6;color:#94a3b8;margin:0">
-    Pediatroma — contenuti a scopo didattico, non sostituiscono il parere medico.
+    pediatro.me — contenuti a scopo didattico, non sostituiscono il parere medico.
   </p>
 </div>
 ```
@@ -45,14 +45,14 @@ Conferma la tua email per attivare l'account — Pediatroma
 **Subject:**
 
 ```
-Reimposta la password del tuo account — Pediatroma
+Reimposta la password del tuo account — pediatro.me
 ```
 
 **Body (HTML):**
 
 ```html
 <div style="font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#0f172a">
-  <p style="font-size:18px;font-weight:700;margin:0 0 24px">Pediatroma</p>
+  <p style="font-size:18px;font-weight:700;margin:0 0 24px">pediatro.me</p>
   <h1 style="font-size:20px;margin:0 0 12px">Reimposta la password</h1>
   <p style="font-size:14px;line-height:1.7;color:#334155;margin:0 0 24px">
     Abbiamo ricevuto una richiesta di reimpostazione della password per l'account associato a questo indirizzo email. Clicca il pulsante per scegliere una nuova password.
@@ -68,7 +68,7 @@ Reimposta la password del tuo account — Pediatroma
   </p>
   <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0" />
   <p style="font-size:11px;line-height:1.6;color:#94a3b8;margin:0">
-    Pediatroma — contenuti a scopo didattico, non sostituiscono il parere medico.
+    pediatro.me — contenuti a scopo didattico, non sostituiscono il parere medico.
   </p>
 </div>
 ```
@@ -80,14 +80,14 @@ Reimposta la password del tuo account — Pediatroma
 **Subject:**
 
 ```
-Conferma il tuo nuovo indirizzo email — Pediatroma
+Conferma il tuo nuovo indirizzo email — pediatro.me
 ```
 
 **Body (HTML):**
 
 ```html
 <div style="font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#0f172a">
-  <p style="font-size:18px;font-weight:700;margin:0 0 24px">Pediatroma</p>
+  <p style="font-size:18px;font-weight:700;margin:0 0 24px">pediatro.me</p>
   <h1 style="font-size:20px;margin:0 0 12px">Conferma il nuovo indirizzo email</h1>
   <p style="font-size:14px;line-height:1.7;color:#334155;margin:0 0 24px">
     Hai chiesto di associare il nuovo indirizzo <strong>{{ .NewEmail }}</strong> al tuo account. Clicca il pulsante per confermare.
@@ -111,17 +111,17 @@ Conferma il tuo nuovo indirizzo email — Pediatroma
 **Subject:**
 
 ```
-Il tuo indirizzo email è stato aggiornato — Pediatroma
+Il tuo indirizzo email è stato aggiornato — pediatro.me
 ```
 
 **Body (HTML):**
 
 ```html
 <div style="font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#0f172a">
-  <p style="font-size:18px;font-weight:700;margin:0 0 24px">Pediatroma</p>
+  <p style="font-size:18px;font-weight:700;margin:0 0 24px">pediatro.me</p>
   <h1 style="font-size:20px;margin:0 0 12px">Indirizzo email aggiornato</h1>
   <p style="font-size:14px;line-height:1.7;color:#334155;margin:0 0 24px">
-    Ti informiamo che l'indirizzo email del tuo account Pediatroma è stato modificato.
+    Ti informiamo che l'indirizzo email del tuo account pediatro.me è stato modificato.
   </p>
   <p style="font-size:12px;line-height:1.6;color:#64748b;margin:0 0 8px">
     Se non riconosci questa modifica, contattaci immediatamente rispondendo a questa email.

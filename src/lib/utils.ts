@@ -240,3 +240,21 @@ export function parseDifficulties(
     .filter((item) => [1, 2, 3].includes(item));
   return [...new Set(parsed)];
 }
+
+/** Giorni di calendario trascorsi da una data ISO (0 = oggi, 1 = ieri…). */
+export function daysSince(iso: string, now: number): number {
+  const day = (value: number) => {
+    const d = new Date(value);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  };
+  return Math.max(0, Math.round((day(now) - day(Date.parse(iso))) / 86_400_000));
+}
+
+/** "oggi", "ieri", "3 giorni fa": per riepiloghi di attività. */
+export function relativeDay(iso: string, now: number): string {
+  const days = daysSince(iso, now);
+  if (days === 0) return "oggi";
+  if (days === 1) return "ieri";
+  return `${days} giorni fa`;
+}

@@ -1,13 +1,18 @@
-export const SITE_NAME = "Pediatroma";
+export const SITE_NAME = "pediatro.me";
 export const SITE_TAGLINE = "Quiz per un domani più grande";
 export const SITE_DESCRIPTION =
-  "Pediatroma è la palestra dei futuri pediatri: quiz di pediatria con spiegazioni, statistiche personali e contenuti per studenti, specializzandi e professionisti. Registrati gratis.";
+  "pediatro.me: quiz di pediatria con spiegazioni, statistiche personali e ripasso per argomento, per studenti, specializzandi e pediatri. Da Roma, gratuito.";
 
 /** Statistiche del dataset (aggiornate da scripts/generate-data.mjs). */
 export const QUIZ_STATS = {
   questions: 12449,
   topics: 19,
 };
+
+/** Numero con separatore delle migliaia all'italiana (12449 → 12.449). */
+export function formatNumber(value: number): string {
+  return new Intl.NumberFormat("it-IT").format(value);
+}
 
 export const DIFFICULTY_LABELS: Record<number, string> = {
   1: "Base",

@@ -1,4 +1,4 @@
-# Pediatroma
+# pediatro.me
 
 **Quiz per un domani più grande.** Piattaforma web per allenarsi con quiz di pediatria: domande con spiegazioni, filtri per argomento e difficoltà, statistiche personali e un pannello riservato con gli esiti aggregati degli studenti.
 
@@ -16,9 +16,9 @@
 - **Registrazione e accesso** con email e password; conferma email, recupero password e reinvio del link di conferma.
 - **Quiz configurabili**: filtra per argomento (18) e difficoltà (Base / Intermedia / Avanzata), scegli quante domande (10–50), estrazione casuale.
 - **Feedback immediato** con spiegazione della risposta e revisione finale degli errori.
-- **Statistiche personali**: precisione complessiva, prestazioni per argomento, storico dei quiz. Il punteggio è ricalcolato server-side: non falsificabile dal client.
-- **Pannello statistiche (admin)** su `/statistiche`: esiti aggregati e anonimi per status (studente/specializzando/professionista), città e scuola, attività giornaliera e precisione per argomento. Accesso tramite allowlist `ADMIN_EMAILS`.
-- **Gestione quiz (admin)** su `/admin`: ricerca, modifica con editor formattato (grassetto, corsivo, elenchi) ed eliminazione delle domande, con validazione e sanitizzazione lato server.
+- **Statistiche personali** su `/statistiche`: precisione complessiva, prestazioni per argomento, storico dei quiz. Il punteggio è ricalcolato server-side: non falsificabile dal client.
+- **Pannello admin** su `/admin` (panoramica): esiti aggregati e anonimi per status (studente/specializzando/professionista), città e scuola, attività giornaliera e precisione per argomento. Schede utente su `/admin/utenti`. Accesso tramite allowlist `ADMIN_EMAILS`.
+- **Gestione quiz (admin)** su `/admin/quiz`: ricerca, modifica con editor formattato (grassetto, corsivo, elenchi) ed eliminazione delle domande, con validazione e sanitizzazione lato server.
 - **Profilo con dati facoltativi**: status, città e scuola di provenienza — modificabili e rimovibili in ogni momento, usati solo per statistiche aggregate.
 - **Privacy by design**: solo cookie tecnici, nessun analytics, esportazione dei dati in JSON ed eliminazione definitiva dell'account self-service.
 - **Pagine legali complete**: Privacy Policy, Cookie Policy e Termini di servizio (GDPR + normativa italiana).
@@ -40,9 +40,11 @@
 │  ├─ schema.sql                     # Tabelle, RLS, trigger e RPC (idempotente)
 │  └─ migrations/                    # Migrazioni incrementali da applicare sull'SQL Editor
 └─ src/
-   ├─ app/                           # Rotte: pubbliche, auth, dashboard, quiz, account, statistiche, API
-   ├─ components/                    # UI riutilizzabile (brand Pediatroma)
+   ├─ app/                           # Rotte, divise in gruppi: (marketing), (auth), (app) = area riservata, api
+   │  └─ (app)/                      #   dashboard, quiz, statistiche, account, admin, turni*, strumenti*  (*in arrivo)
+   ├─ components/                    # UI riutilizzabile: ui/ (design system), shell/ (navigazione), site/ (sito pubblico)
    ├─ lib/                           # Client Supabase, auth, admin, utility, dati legali
+   │                                   navigation.ts (menu), tools.ts (registro strumenti), user-stats.ts
    └─ proxy.ts                       # Sessione Supabase + protezione rotte (ex middleware)
 ```
 
@@ -90,7 +92,7 @@ Tutte le variabili sono documentate in [`.env.example`](.env.example):
 - `SUPABASE_SERVICE_ROLE_KEY` — **secret key** (`sb_secret_...`; accettata anche la legacy `service_role`). **Segreta**, usata solo lato server (pannello statistiche, eliminazione account). Su Vercel va aggiunta senza prefisso `NEXT_PUBLIC_`.
 - `NEXT_PUBLIC_SITE_URL` — URL pubblico del sito (es. `https://pediatro.me`).
 - `NEXT_PUBLIC_LEGAL_OWNER`, `NEXT_PUBLIC_LEGAL_EMAIL`, `NEXT_PUBLIC_LEGAL_ADDRESS` — dati del titolare del trattamento mostrati nelle pagine legali.
-- `ADMIN_EMAILS` — email separate da virgola abilitate a `/statistiche`.
+- `ADMIN_EMAILS` — email separate da virgola abilitate a `/admin`.
 
 > Trovi URL e chiavi nel dashboard Supabase: pulsante **Connect** oppure **Settings (⚙) → API Keys**. Dettagli in [`docs/SETUP.md`](docs/SETUP.md).
 
@@ -114,3 +116,14 @@ Le domande derivano da materiale di studio pediatrico e sono pensate per l'autov
 ## Licenza
 
 Codice © Cristian Sebastian Micu — tutti i diritti riservati, salvo diversa indicazione.
+
+## Interfaccia e design system
+
+Il piano di redesign e le scelte di stile sono in [`docs/REDESIGN.md`](docs/REDESIGN.md).
+
+**Aggiungere una nuova sezione** all'area riservata (es. Turni, Strumenti):
+
+1. Una voce in `src/lib/navigation.ts` (`status: "soon"` finché non è pronta, poi `"live"`).
+2. La cartella `src/app/(app)/<sezione>/page.tsx`, con `<PageContainer>` + `<PageHeader>`.
+3. Il prefisso in `PROTECTED_PREFIXES` di `src/lib/supabase/proxy.ts`.
+4. Per gli strumenti: una voce in `src/lib/tools.ts` e la pagina in `src/app/(app)/strumenti/<slug>/`.

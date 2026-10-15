@@ -1,32 +1,33 @@
 import Link from "next/link";
+import { LogoWordmark } from "@/components/logo";
+import { StatusPage } from "@/components/status-page";
 import { ButtonLink } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col items-center px-4 py-24 text-center">
-      <p className="text-sm font-semibold uppercase tracking-wider text-brand-700">
-        Errore 404
-      </p>
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-        Pagina non trovata
-      </h1>
-      <p className="mt-4 text-base leading-relaxed text-slate-600">
-        La pagina che cerchi non esiste o è stata spostata. Controlla
-        l&apos;indirizzo oppure torna alla dashboard per continuare ad
-        allenarti.
-      </p>
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <ButtonLink href="/">Torna alla home</ButtonLink>
-        <ButtonLink href="/dashboard" variant="secondary">
-          Vai alla dashboard
-        </ButtonLink>
+    <main id="contenuto">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-4 sm:px-6">
+        <Link href="/" aria-label="pediatro.me — Home">
+          <LogoWordmark />
+        </Link>
       </div>
-      <Link
-        href="/registrati"
-        className="mt-6 text-sm font-medium text-brand-700 underline"
+      <StatusPage
+        code="Errore 404"
+        title="Pagina non trovata"
+        actions={
+          <>
+            <ButtonLink href="/">Torna alla home</ButtonLink>
+            <ButtonLink href="/dashboard" variant="secondary">
+              Vai alla dashboard
+            </ButtonLink>
+          </>
+        }
       >
-        Non hai ancora un account? Registrati gratis
-      </Link>
-    </div>
+        <p>
+          La pagina che cerchi non esiste o è stata spostata. Controlla
+          l&apos;indirizzo oppure torna alla home.
+        </p>
+      </StatusPage>
+    </main>
   );
 }

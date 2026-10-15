@@ -2,7 +2,6 @@
 
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import { Cookie } from "lucide-react";
 import { COOKIE_PATH } from "@/lib/legal";
 
 const STORAGE_KEY = "pediatroma:cookie-notice-v1";
@@ -52,27 +51,25 @@ export function CookieNotice() {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:p-4"
       role="region"
       aria-label="Informativa sull'uso dei cookie"
     >
-      <div className="mx-auto flex max-w-3xl flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-xl shadow-slate-900/5 backdrop-blur sm:flex-row sm:items-center">
-        <p className="flex items-start gap-2.5 text-sm leading-relaxed text-slate-600">
-          <Cookie className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" aria-hidden="true" />
-          <span>
-            Usiamo solo <strong>cookie tecnici</strong> indispensabili
-            all&apos;accesso. Nessun tracciamento, nessuna pubblicità. Dettagli
-            nella{" "}
-            <Link href={COOKIE_PATH} className="font-medium text-brand-700 underline">
-              Cookie Policy
-            </Link>
-            .
-          </span>
+      <div className="pointer-events-auto flex max-w-md sm:ml-auto flex-col gap-3 rounded-lg border border-neutral-300 bg-white p-4 shadow-lg shadow-neutral-900/10 sm:flex-row sm:items-center">
+        <p className="text-[13px] leading-relaxed text-neutral-600">
+          Usiamo solo <strong className="font-semibold text-neutral-900">cookie tecnici</strong>{" "}
+          per l&apos;accesso: nessun tracciamento, nessuna pubblicità.{" "}
+          <Link
+            href={COOKIE_PATH}
+            className="font-medium text-brand-700 underline underline-offset-2"
+          >
+            Dettagli
+          </Link>
         </p>
         <button
           type="button"
           onClick={dismiss}
-          className="inline-flex h-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-medium text-white transition-colors hover:bg-slate-700"
+          className="inline-flex h-9 shrink-0 items-center justify-center rounded-md bg-neutral-900 px-4 text-sm font-medium text-white transition-colors hover:bg-neutral-700"
         >
           Ho capito
         </button>

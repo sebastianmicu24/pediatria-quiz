@@ -1,18 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
-import { NavbarSkeleton } from "@/components/navbar-skeleton";
-import { Footer } from "@/components/footer";
 import { CookieNotice } from "@/components/cookie-notice";
 import { AuthHashHandler } from "@/components/auth-hash-handler";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
 import { siteUrl } from "@/lib/env";
 
-const inter = Inter({
+const plex = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600"],
+  variable: "--font-plex",
+  display: "swap",
+});
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
   display: "swap",
 });
 
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [
-    "pediatroma",
+    "pediatro.me",
     "quiz pediatria",
     "pediatria",
     "quiz medicina",
@@ -50,21 +53,19 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="it" className={inter.variable}>
-      <body className="flex min-h-dvh flex-col bg-slate-50 font-sans text-slate-800 antialiased">
+    <html
+      lang="it"
+      data-scroll-behavior="smooth"
+      className={`${plex.variable} ${sourceSerif.variable}`}
+    >
+      <body className="min-h-dvh bg-neutral-50 font-sans text-neutral-800 antialiased">
         <a
           href="#contenuto"
-          className="sr-only rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-900 shadow-lg focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50"
+          className="sr-only rounded-md bg-white px-4 py-2 text-sm font-medium text-neutral-900 focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50"
         >
           Salta al contenuto
         </a>
-        <Suspense fallback={<NavbarSkeleton />}>
-          <Navbar />
-        </Suspense>
-        <main id="contenuto" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        {children}
         <CookieNotice />
         <AuthHashHandler />
       </body>

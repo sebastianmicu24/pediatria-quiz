@@ -10,17 +10,17 @@ export const metadata: Metadata = {
 export default function ForgotPasswordPage() {
   return (
     <>
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-neutral-900">
         Password dimenticata?
       </h1>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">
+      <p className="mt-2 text-sm leading-relaxed text-neutral-600">
         Inserisci l&apos;email del tuo account: ti invieremo un link per
         impostare una nuova password.
       </p>
 
       <RequestResetForm />
 
-      <p className="mt-6 text-sm text-slate-600">
+      <p className="mt-6 text-sm text-neutral-600">
         Ti sei ricordato la password?{" "}
         <Link
           href="/login"

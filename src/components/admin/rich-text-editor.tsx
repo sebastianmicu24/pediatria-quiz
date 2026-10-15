@@ -29,7 +29,7 @@ import {
   Underline as UnderlineIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { uploadQuizImage } from "@/app/admin/actions";
+import { uploadQuizImage } from "@/app/(app)/admin/quiz/actions";
 
 const FONT_SIZE_OPTIONS = [
   "12px",
@@ -117,7 +117,7 @@ export function RichTextEditor({
       attributes: {
         id,
         class:
-          "rich-text min-h-24 px-3.5 py-3 text-sm leading-relaxed text-slate-900 focus:outline-none",
+          "rich-text min-h-24 px-3.5 py-3 text-sm leading-relaxed text-neutral-900 focus:outline-none",
       },
       handlePaste: (_view, event) => {
         const file = event.clipboardData?.files?.[0];
@@ -200,13 +200,13 @@ export function RichTextEditor({
     <div>
       <label
         htmlFor={id}
-        className="mb-1.5 block text-sm font-medium text-slate-700"
+        className="mb-1.5 block text-sm font-medium text-neutral-700"
       >
         {label}
       </label>
-      <div className="overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/30">
+      <div className="overflow-hidden rounded-md border border-neutral-300 bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/30">
         <div
-          className="flex flex-wrap items-center gap-0.5 border-b border-slate-200 bg-slate-50/80 px-1.5 py-1.5"
+          className="flex flex-wrap items-center gap-0.5 border-b border-neutral-200 bg-neutral-50/80 px-1.5 py-1.5"
           role="toolbar"
           aria-label="Formattazione del testo"
         >
@@ -302,7 +302,7 @@ export function RichTextEditor({
           <label
             title="Colore del testo"
             className={cn(
-              "relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-200/70",
+              "relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-200/70",
               state?.color && "bg-brand-100"
             )}
           >
@@ -331,7 +331,7 @@ export function RichTextEditor({
           <label
             title="Colore di evidenziazione"
             className={cn(
-              "relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-200/70",
+              "relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-200/70",
               state?.background && "bg-brand-100"
             )}
           >
@@ -365,7 +365,7 @@ export function RichTextEditor({
               if (!size) editor?.chain().focus().unsetFontSize().run();
               else editor?.chain().focus().setFontSize(size).run();
             }}
-            className="h-8 rounded-lg border border-slate-200 bg-white px-1.5 text-xs text-slate-700 focus:border-brand-500 focus:outline-none disabled:opacity-40"
+            className="h-8 rounded-lg border border-neutral-200 bg-white px-1.5 text-xs text-neutral-700 focus:border-brand-500 focus:outline-none disabled:opacity-40"
           >
             <option value="">Dim.</option>
             {FONT_SIZE_OPTIONS.map((size) => (
@@ -385,7 +385,7 @@ export function RichTextEditor({
               if (!family) editor?.chain().focus().unsetFontFamily().run();
               else editor?.chain().focus().setFontFamily(family).run();
             }}
-            className="h-8 max-w-24 rounded-lg border border-slate-200 bg-white px-1.5 text-xs text-slate-700 focus:border-brand-500 focus:outline-none disabled:opacity-40"
+            className="h-8 max-w-24 rounded-lg border border-neutral-200 bg-white px-1.5 text-xs text-neutral-700 focus:border-brand-500 focus:outline-none disabled:opacity-40"
           >
             <option value="">Font</option>
             {FONT_FAMILY_OPTIONS.map((family) => (
@@ -445,13 +445,13 @@ export function RichTextEditor({
 
         <EditorContent editor={editor} />
       </div>
-      {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-xs text-neutral-500">{hint}</p> : null}
     </div>
   );
 }
 
 function ToolbarDivider() {
-  return <span className="mx-1 h-5 w-px bg-slate-200" aria-hidden="true" />;
+  return <span className="mx-1 h-5 w-px bg-neutral-200" aria-hidden="true" />;
 }
 
 function ToolbarButton({
@@ -477,7 +477,7 @@ function ToolbarButton({
       onMouseDown={(event) => event.preventDefault()}
       onClick={onClick}
       className={cn(
-        "inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-200/70 disabled:opacity-40",
+        "inline-flex h-8 w-8 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-200/70 disabled:opacity-40",
         active && "bg-brand-100 text-brand-800"
       )}
     >
