@@ -1,75 +1,13 @@
 import { ArrowRight, Check } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { MedicalDisclaimer } from "@/components/medical-disclaimer";
-import { QUIZ_STATS, formatNumber } from "@/lib/constants";
-import { LEGAL } from "@/lib/legal";
-
-const FEATURES = [
-  {
-    title: "Domande con spiegazione",
-    text: "Dopo ogni risposta compare la spiegazione, con i riferimenti essenziali per il ripasso.",
-  },
-  {
-    title: "Filtri per argomento e difficoltà",
-    text: "Scegli uno o più argomenti e il livello: ti alleni su ciò che ti serve, quando ti serve.",
-  },
-  {
-    title: "Ripasso mirato",
-    text: "Riprendi solo le domande sbagliate o quelle mai viste. Ogni risposta aggiorna il tuo stato di ripasso.",
-  },
-  {
-    title: "Statistiche personali",
-    text: "Precisione, copertura per argomento e andamento nel tempo: sai sempre dove mancano punti.",
-  },
-  {
-    title: "Dati protetti",
-    text: "Server in UE, nessun tracciamento pubblicitario, esportazione ed eliminazione dei dati in un clic.",
-  },
-];
-
-const STEPS = [
-  {
-    title: "Crea l'account",
-    text: "Registrazione in meno di un minuto con email e password. Nessuna carta di credito.",
-  },
-  {
-    title: "Scegli cosa ripassare",
-    text: "Seleziona argomenti, difficoltà e stato di ripasso. Le domande arrivano una alla volta, finché vuoi.",
-  },
-  {
-    title: "Controlla i progressi",
-    text: "Leggi le spiegazioni, rivedi gli errori e consulta le statistiche per decidere cosa studiare dopo.",
-  },
-];
-
-const FAQ = [
-  {
-    q: "pediatro.me è gratuito?",
-    a: "Sì. La registrazione e l'utilizzo dei quiz sono completamente gratuiti: serve solo un indirizzo email valido.",
-  },
-  {
-    q: "Non ho ricevuto l'email di conferma, cosa faccio?",
-    a: `Controlla la posta indesiderata (spam). Se usi una casella istituzionale (es. universitaria), le email esterne possono essere bloccate dai filtri dell'ateneo: in quel caso scrivi a ${LEGAL.email} e confermeremo il tuo account manualmente.`,
-  },
-  {
-    q: "I contenuti sostituiscono i libri di testo?",
-    a: "No. I quiz sono uno strumento di autovalutazione e ripasso: non sostituiscono lo studio sui manuali né le linee guida ufficiali.",
-  },
-  {
-    q: "Perché mi chiedete scuola, città e status?",
-    a: "Sono dati facoltativi: ci aiutano a capire chi usa pediatro.me e a misurare in forma aggregata (mai individuale) come migliorano gli esiti degli studenti. Puoi compilarli, modificarli o rimuoverli in qualsiasi momento dalla pagina Account.",
-  },
-  {
-    q: "Come vengono trattati i miei dati?",
-    a: "I dati sono ospitati su infrastrutture con server in Unione Europea, protetti con connessioni cifrate. Non effettuiamo profilazione pubblicitaria né vendiamo dati. Puoi esportare o eliminare il tuo account in qualsiasi momento dalla pagina Account.",
-  },
-  {
-    q: "Le spiegazioni sono affidabili?",
-    a: "Le domande derivano da materiale di studio pediatrico e le spiegazioni sono riviste per finalità didattiche. In ambito clinico fanno sempre fede le linee guida ufficiali e il giudizio del medico.",
-  },
-];
-
-const PREVIEW_OPTIONS = ["6 mesi", "5 mesi", "9 mesi", "8 mesi"];
+import {
+  FAQ,
+  FEATURES,
+  HERO_STATS,
+  PREVIEW_OPTIONS,
+  STEPS,
+} from "@/content/marketing";
 
 export default function HomePage() {
   return (
@@ -101,11 +39,7 @@ export default function HomePage() {
             </div>
 
             <dl className="mt-12 grid max-w-md grid-cols-3 border-t border-neutral-200">
-              {[
-                { value: formatNumber(QUIZ_STATS.questions), label: "domande" },
-                { value: String(QUIZ_STATS.topics), label: "argomenti" },
-                { value: "Gratis", label: "sempre" },
-              ].map((item, index) => (
+              {HERO_STATS.map((item, index) => (
                 <div
                   key={item.label}
                   className={

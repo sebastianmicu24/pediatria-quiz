@@ -43,6 +43,7 @@
    ├─ app/                           # Rotte, divise in gruppi: (marketing), (auth), (app) = area riservata, api
    │  └─ (app)/                      #   dashboard, quiz, statistiche, account, admin, turni*, strumenti*  (*in arrivo)
    ├─ components/                    # UI riutilizzabile: ui/ (design system), shell/ (navigazione), site/ (sito pubblico)
+   ├─ content/                       # Testi editabili: landing (marketing.ts) e pagine legali (legal/)
    ├─ lib/                           # Client Supabase, auth, admin, utility, dati legali
    │                                   navigation.ts (menu), tools.ts (registro strumenti), user-stats.ts
    └─ proxy.ts                       # Sessione Supabase + protezione rotte (ex middleware)
@@ -112,6 +113,22 @@ Report di audit e raccomandazioni operative: **[docs/SICUREZZA.md](docs/SICUREZZ
 ## Contenuti dei quiz
 
 Le domande derivano da materiale di studio pediatrico e sono pensate per l'autovalutazione. **Non costituiscono consulenza medica**: fanno sempre fede le linee guida ufficiali e il giudizio del clinico. Se aggiorni il dataset, rigenera i dati con `npm run generate:data` e aggiorna i conteggi in `src/lib/constants.ts`.
+
+## Modificare i testi (landing e pagine legali)
+
+I testi editoriali non stanno nei componenti: sono raccolti in `src/content/`, così si modificano in un punto solo e senza toccare l'impaginazione.
+
+| Cosa vuoi cambiare | Dove |
+| --- | --- |
+| Domande frequenti, sezioni "Cosa trovi" e "Come funziona", numeri e filtri dell'anteprima in home | `src/content/marketing.ts` (`FAQ`, `FEATURES`, `STEPS`, `HERO_STATS`, `PREVIEW_OPTIONS`) |
+| Privacy Policy | `src/content/legal/privacy.tsx` |
+| Termini di servizio | `src/content/legal/termini.tsx` |
+| Cookie Policy | `src/content/legal/cookie.tsx` |
+| Titolare, email, indirizzo, data "ultimo aggiornamento" | `src/lib/legal.ts` (o le variabili `NEXT_PUBLIC_LEGAL_*`) |
+| Etichette di difficoltà, ripasso, status e anno di studi | `src/lib/constants.ts` |
+| Voci di menu e sezioni dell'area riservata | `src/lib/navigation.ts` e `src/lib/tools.ts` |
+
+Ogni file di contenuto è un modulo normale: per una voce in più basta aggiungere un elemento all'array, per toglierla rimuoverlo. Titoli di sezione e impaginazione restano nelle rispettive `page.tsx`, che ora contengono solo il rendering.
 
 ## Licenza
 
