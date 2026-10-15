@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
+import { LEGAL } from "@/lib/legal";
 import { safeNextPath } from "@/lib/utils";
 import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
@@ -165,6 +166,17 @@ export function LoginForm() {
                 "Reinvia email di conferma"
               )}
             </Button>
+            <p className="text-xs leading-relaxed text-slate-500">
+              Se usi una casella istituzionale (es. universitaria) e non ricevi
+              l&apos;email, scrivi a{" "}
+              <a
+                href={`mailto:${LEGAL.email}`}
+                className="font-medium text-brand-700 underline underline-offset-2"
+              >
+                {LEGAL.email}
+              </a>
+              : confermeremo il tuo account manualmente.
+            </p>
           </div>
         ) : null}
 

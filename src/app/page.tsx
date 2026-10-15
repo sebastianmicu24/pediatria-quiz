@@ -11,6 +11,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { MedicalDisclaimer } from "@/components/medical-disclaimer";
 import { LogoFull } from "@/components/logo";
 import { QUIZ_STATS } from "@/lib/constants";
+import { LEGAL } from "@/lib/legal";
 
 export default function HomePage() {
   return (
@@ -240,6 +241,10 @@ export default function HomePage() {
               {
                 q: "Pediatroma è gratuito?",
                 a: "Sì. La registrazione e l'utilizzo dei quiz sono completamente gratuiti: serve solo un indirizzo email valido.",
+              },
+              {
+                q: "Non ho ricevuto l'email di conferma, cosa faccio?",
+                a: `Controlla la posta indesiderata (spam): a volte capita. Se usi una casella istituzionale (es. universitaria), le email esterne possono essere bloccate dai filtri dell'ateneo: in quel caso scrivi a ${LEGAL.email} — confermeremo il tuo account manualmente.`,
               },
               {
                 q: "I contenuti sostituiscono i libri di testo?",

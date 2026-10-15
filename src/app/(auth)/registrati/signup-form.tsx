@@ -7,6 +7,7 @@ import { ChevronDown, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { STATUS_OPTIONS, YEAR_OPTIONS } from "@/lib/constants";
+import { LEGAL } from "@/lib/legal";
 import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -120,10 +121,18 @@ export function SignupForm() {
           l&apos;email e clicca sul link per attivare l&apos;account (controlla
           anche la cartella spam).
         </p>
-        <p className="mt-4 text-xs text-slate-500">
-          Non hai ricevuto nulla? Attendi qualche minuto e riprova la
-          registrazione, oppure dalla pagina di accesso potrai richiedere il
-          reinvio dell&apos;email.
+        <p className="mt-4 text-xs leading-relaxed text-slate-500">
+          Non hai ricevuto nulla? Attendi qualche minuto e controlla la posta
+          indesiderata. Se usi una casella istituzionale (es. universitaria),
+          le email esterne possono essere bloccate dai filtri dell&apos;ateneo:
+          scrivi a{" "}
+          <a
+            href={`mailto:${LEGAL.email}`}
+            className="font-medium text-brand-700 underline underline-offset-2"
+          >
+            {LEGAL.email}
+          </a>{" "}
+          e confermeremo il tuo account manualmente.
         </p>
       </div>
     );

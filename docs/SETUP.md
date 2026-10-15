@@ -202,6 +202,7 @@ Il report completo dell'audit (vulnerabilità trovate, corrette e raccomandate) 
 | --- | --- | --- |
 | "Configurazione Supabase mancante" | `.env.local` incompleto | Compila `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`, riavvia `npm run dev` |
 | Le email non arrivano | SMTP non configurato o dominio non verificato | Controlla **Authentication → Emails** e i record DNS di Resend (anche cartella spam) |
+| Le email non arrivano **solo a una casella istituzionale** (es. universitaria) | I filtri dell'ateneo bloccano/sequestrano le email esterne (o l'indirizzo è in lista di soppressione su Resend) | 1) Controlla lo stato del destinatario in **Resend → Emails** (delivered/bounced/suppressed) e la posta indesiderata; 2) **conferma manuale** dal pannello admin (`/admin/utenti` → "Conferma email"); 3) tieni **un solo record DMARC** (`_dmarc`): record duplicati invalidi la configurazione |
 | Dashboard dice "Database non inizializzato" | Schema non applicato | Esegui `supabase/schema.sql` nell'SQL Editor |
 | Quiz vuoti "Nessuna domanda" | Domande non importate | Esegui `npm run import:questions` |
 | Errore 500 su "Elimina account" | Manca la chiave segreta | Aggiungi `SUPABASE_SERVICE_ROLE_KEY` (la **Secret key**) su Vercel e ridai il deploy |
