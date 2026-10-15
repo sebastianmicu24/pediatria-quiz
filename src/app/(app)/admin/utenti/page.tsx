@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import type { AdminSearchParams } from "@/lib/supabase/search-params";
 import { AdminUsersContent } from "./admin-users-content";
 
 export const metadata: Metadata = {
@@ -8,7 +9,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminUsersPage() {
+export default function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<AdminSearchParams>;
+}) {
   return (
     <Suspense
       fallback={
@@ -25,7 +30,7 @@ export default function AdminUsersPage() {
         </div>
       }
     >
-      <AdminUsersContent />
+      <AdminUsersContent searchParams={searchParams} />
     </Suspense>
   );
 }

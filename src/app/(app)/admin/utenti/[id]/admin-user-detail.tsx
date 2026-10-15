@@ -64,50 +64,27 @@ export async function AdminUserDetail({
 
   const admin = createAdminClient();
 
-  const { data: authData, error: authError } =
-    await admin.auth.admin.getUserById(id);
-  const authUser = authData?.user;
-  if (authError || !authUser) notFound();
-
   // Profilo (fallback se le colonne anno/tag non sono ancora presenti).
-  let profile: ProfileRow | null = null;
-  {
+  async function fetchProfile(): Promise<ProfileRow | null> {
     const withMeta = await admin
       .from("profiles")
       .select("display_name, status, year, school, city, tags")
       .eq("id", id)
       .maybeSingle();
-    if (!withMeta.error) {
-      profile = withMeta.data as ProfileRow | null;
-    } else if (isMissingColumnError(withMeta.error.message)) {
-      const legacy = await admin
-        .from("profiles")
-        .select("display_name, status, school, city")
-        .eq("id", id)
-        .maybeSingle();
-      profile = legacy.data ? { ...legacy.data, year: null, tags: [] } : null;
-    }
+    if (!withMeta.error) return withMeta.data as ProfileRow | null;
+    if (!isMissingColumnError(withMeta.error.message)) return null;
+
+    const legacy = await admin
+      .from("profiles")
+      .select("display_name, status, school, city")
+      .eq("id", id)
+      .maybeSingle();
+    return legacy.data ? { ...legacy.data, year: null, tags: [] } : null;
   }
-
-  const tags = Array.isArray(profile?.tags) ? profile.tags : [];
-  const verified = tags.some(isVerifiedTag);
-
-  // Esercitazioni svolte (più recenti prima).
-  const { rows: attempts } = await fetchAllRows<AttemptRow>(() =>
-    admin
-      .from("quiz_attempts")
-      .select(
-        "id, topic, difficulty, total_questions, correct_answers, completed_at"
-      )
-      .eq("user_id", id)
-      .order("completed_at", { ascending: false })
-      .order("id", { ascending: true })
-  );
 
   // Andamento per materia: ultima risposta per domanda (question_progress)
   // oppure risposte storiche se la migrazione non è ancora applicata.
-  let topicRows: TopicAnswerRow[] = [];
-  {
+  async function fetchTopicAnswers(): Promise<TopicAnswerRow[]> {
     const progress = await fetchAllRows<TopicAnswerRow>(() =>
       admin
         .from("question_progress")
@@ -115,27 +92,72 @@ export async function AdminUserDetail({
         .eq("user_id", id)
         .order("question_id", { ascending: true })
     );
-    if (!progress.error) {
-      topicRows = progress.rows;
-    } else {
-      const answers = await fetchAllRows<TopicAnswerRow>(() =>
-        admin
-          .from("quiz_answers")
-          .select(
-            "is_correct, questions!inner(topic), quiz_attempts!inner(user_id)"
-          )
-          .eq("quiz_attempts.user_id", id)
-          .order("id", { ascending: true })
-      );
-      topicRows = answers.rows;
-    }
+    if (!progress.error) return progress.rows;
+
+    const answers = await fetchAllRows<TopicAnswerRow>(() =>
+      admin
+        .from("quiz_answers")
+        .select(
+          "is_correct, questions!inner(topic), quiz_attempts!inner(user_id)"
+        )
+        .eq("quiz_attempts.user_id", id)
+        .order("id", { ascending: true })
+    );
+    return answers.rows;
   }
 
-  // Copertura per materia: svolte vs totale disponibile.
-  const { rows: questionRows } = await fetchAllRows<{ topic: string | null }>(
-    () =>
+  // Domande disponibili per argomento: la vista restituisce una riga per
+  // argomento (19). Senza la migrazione si leggono le sole materie.
+  async function fetchTopicCounts(): Promise<Map<string, number>> {
+    const counts = new Map<string, number>();
+    const view = await admin
+      .from("question_topic_counts")
+      .select("topic, available");
+    if (!view.error) {
+      for (const row of view.data ?? []) {
+        counts.set(String(row.topic), Number(row.available) || 0);
+      }
+      return counts;
+    }
+    if (!isMissingColumnError(view.error.message)) return counts;
+
+    const { rows } = await fetchAllRows<{ topic: string | null }>(() =>
       admin.from("questions").select("topic").order("id", { ascending: true })
-  );
+    );
+    for (const row of rows) {
+      if (!row.topic) continue;
+      counts.set(row.topic, (counts.get(row.topic) ?? 0) + 1);
+    }
+    return counts;
+  }
+
+  // Le cinque letture sono indipendenti fra loro: partono insieme invece
+  // che una dopo l'altra (con la paginazione di ogni tabella in sequenza).
+  const [authResult, profile, attemptsResult, topicRows, topicCounts] =
+    await Promise.all([
+      admin.auth.admin.getUserById(id),
+      fetchProfile(),
+      fetchAllRows<AttemptRow>(() =>
+        admin
+          .from("quiz_attempts")
+          .select(
+            "id, topic, difficulty, total_questions, correct_answers, completed_at"
+          )
+          .eq("user_id", id)
+          .order("completed_at", { ascending: false })
+          .order("id", { ascending: true })
+      ),
+      fetchTopicAnswers(),
+      fetchTopicCounts(),
+    ]);
+
+  const authUser = authResult.data?.user;
+  if (authResult.error || !authUser) notFound();
+
+  const attempts = attemptsResult.rows;
+
+  const tags = Array.isArray(profile?.tags) ? profile.tags : [];
+  const verified = tags.some(isVerifiedTag);
 
   const topicMap = new Map<string, { total: number; correct: number }>();
   for (const row of topicRows) {
@@ -146,12 +168,6 @@ export async function AdminUserDetail({
     entry.total += 1;
     if (row.is_correct) entry.correct += 1;
     topicMap.set(topic, entry);
-  }
-
-  const topicCounts = new Map<string, number>();
-  for (const row of questionRows) {
-    if (!row.topic) continue;
-    topicCounts.set(row.topic, (topicCounts.get(row.topic) ?? 0) + 1);
   }
 
   const coverageData: TopicCoverageDatum[] = [...topicCounts.keys()]

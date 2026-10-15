@@ -516,7 +516,17 @@ Ordine consigliato: **Fase 1 subito** (mezza giornata, dimezza il problema più 
   - `src/lib/user-stats.ts`: percorso principale via RPC, con **ricaduta automatica** sul percorso storico se la funzione non è ancora stata applicata al database (nessun disservizio prima della migrazione).
   - Verifiche: `npm run lint` e `next build` puliti; test di parità fra percorso RPC e percorso storico (totali, copertura, best/worst, tentativi, casi limite) con esito identico.
   - **Azione richiesta:** eseguire la migrazione nell'SQL Editor di Supabase. Dopo la migrazione, confrontare i numeri di dashboard e statistiche con quelli precedenti.
-- **Fasi 2-4 — da fare.**
+- **Fase 3 — fatto (16 ottobre 2026).**
+  - `supabase/migrations/2026-10-16_elenchi-admin.sql`: `profiles.email` (+ trigger di registrazione e backfill), viste `user_attempt_counts`, `question_topic_counts` e `admin_question_list`.
+  - `supabase/migrations/2026-10-16_panoramica-admin.sql`: funzione `get_admin_overview()`.
+  - `src/app/(app)/admin/overview-content.tsx`: una sola RPC al posto di tre scansioni complete (profili, tentativi, tutte le risposte).
+  - `src/app/(app)/admin/quiz/*`: filtro, ricerca (sul testo senza tag HTML), conteggio e paginazione lato server: da 8,79 MB per apertura a **~18 KB** (20 domande complete).
+  - `src/app/(app)/admin/utenti/*`: paginazione lato server (25 utenti), ricerca su nome/email/città/scuola nel database, esercitazioni per utente dalla vista invece di scaricare tutti i tentativi.
+  - `src/app/(app)/admin/utenti/[id]/admin-user-detail.tsx`: le 5 letture in parallelo invece che in sequenza; conteggio domande per argomento dalla vista (19 righe) invece della tabella intera.
+  - Tutti i percorsi hanno una **ricaduta** sul comportamento precedente se la migrazione non è ancora applicata (viste assenti, colonna `email` assente).
+  - Verifiche: `npm run lint` e `next build` puliti; test di parità fra la vecchia aggregazione JS e la funzione SQL su dati sintetici (KPI, status, anno, città e scuole top 8, attività a 14 giorni, fasce di punteggio, precisione per argomento) con esito identico.
+  - **Azione richiesta:** eseguire le due migrazioni nell'SQL Editor. Unica differenza nota: i tentativi di un utente **senza** riga di profilo (caso che non dovrebbe verificarsi: il profilo nasce con l'account) compaiono nei totali ma non nelle ripartizioni per status/anno.
+- **Fasi 2 e 4 — da fare.**
 
 ---
 

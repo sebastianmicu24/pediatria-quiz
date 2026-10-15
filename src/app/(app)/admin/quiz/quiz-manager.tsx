@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
@@ -13,9 +13,9 @@ import {
   X,
 } from "lucide-react";
 import { cn, stripHtml } from "@/lib/utils";
-import { difficultyLabel } from "@/lib/constants";
+import { difficultyLabel, formatNumber } from "@/lib/constants";
 import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { fieldClass } from "@/components/ui/input";
@@ -37,47 +37,49 @@ export type AdminQuestion = {
   explanation: string;
 };
 
-const PAGE_SIZE = 20;
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 const inputClass = `${fieldClass} border-neutral-300`;
 
+/** Link a una pagina dell'elenco mantenendo i filtri attivi. */
+function pageHref(target: number, query: string, topic: string) {
+  const params = new URLSearchParams();
+  if (query) params.set("q", query);
+  if (topic) params.set("topic", topic);
+  if (target > 1) params.set("page", String(target));
+  const search = params.toString();
+  return search ? `/admin/quiz?${search}` : "/admin/quiz";
+}
+
+/**
+ * Elenco delle domande. Ricerca, filtro e paginazione sono lato server
+ * (l'URL contiene q, topic e page): il browser riceve solo la pagina
+ * corrente, non l'intero archivio.
+ */
 export function AdminQuizManager({
   questions,
   topics,
+  total,
+  page,
+  pageCount,
+  query,
+  topic,
 }: {
   questions: AdminQuestion[];
   topics: string[];
+  total: number;
+  page: number;
+  pageCount: number;
+  query: string;
+  topic: string;
 }) {
   const router = useRouter();
-  const [search, setSearch] = useState("");
-  const [topicFilter, setTopicFilter] = useState("all");
-  const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<AdminQuestion | null>(null);
   const [notice, setNotice] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return questions.filter((item) => {
-      if (topicFilter !== "all" && item.topic !== topicFilter) return false;
-      if (!query) return true;
-      return (
-        stripHtml(item.question).toLowerCase().includes(query) ||
-        item.topic.toLowerCase().includes(query)
-      );
-    });
-  }, [questions, search, topicFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const current = filtered.slice(
-    (safePage - 1) * PAGE_SIZE,
-    safePage * PAGE_SIZE
-  );
 
   async function handleDelete(item: AdminQuestion) {
     const preview = stripHtml(item.question).slice(0, 90);
@@ -125,7 +127,11 @@ export function AdminQuizManager({
         </Alert>
       ) : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <form
+        method="get"
+        action="/admin/quiz"
+        className="flex flex-col gap-3 sm:flex-row"
+      >
         <div className="relative flex-1">
           <Search
             className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
@@ -133,46 +139,48 @@ export function AdminQuizManager({
           />
           <input
             type="search"
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-            placeholder="Cerca nel testo della domanda o nell'argomento…"
+            name="q"
+            defaultValue={query}
+            placeholder="Cerca nel testo della domanda, nell'argomento o nell'ID…"
             aria-label="Cerca domande"
             className={cn(inputClass, "pl-10")}
           />
         </div>
         <select
-          value={topicFilter}
-          onChange={(event) => {
-            setTopicFilter(event.target.value);
-            setPage(1);
-          }}
+          name="topic"
+          defaultValue={topic}
           aria-label="Filtra per argomento"
           className={cn(inputClass, "sm:w-64")}
         >
-          <option value="all">Tutti gli argomenti ({questions.length})</option>
-          {topics.map((topic) => (
-            <option key={topic} value={topic}>
-              {topic}
+          <option value="">Tutti gli argomenti</option>
+          {topics.map((item) => (
+            <option key={item} value={item}>
+              {item}
             </option>
           ))}
         </select>
-      </div>
+        <Button type="submit" variant="secondary">
+          Cerca
+        </Button>
+        {query || topic ? (
+          <ButtonLink href="/admin/quiz" variant="ghost">
+            Azzera
+          </ButtonLink>
+        ) : null}
+      </form>
 
       <p className="text-xs text-neutral-500">
-        {filtered.length} domande trovate
-        {totalPages > 1 ? ` · pagina ${safePage} di ${totalPages}` : ""}
+        {formatNumber(total)} domande trovate
+        {pageCount > 1 ? ` · pagina ${page} di ${pageCount}` : ""}
       </p>
 
-      {current.length === 0 ? (
+      {questions.length === 0 ? (
         <p className="rounded-lg border border-dashed border-neutral-300 bg-white px-4 py-10 text-center text-sm text-neutral-500">
           Nessuna domanda corrisponde ai filtri.
         </p>
       ) : (
         <ul className="divide-y divide-neutral-100 overflow-hidden rounded-lg border border-neutral-200 bg-white">
-          {current.map((item) => (
+          {questions.map((item) => (
             <li
               key={item.id}
               className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
@@ -227,27 +235,37 @@ export function AdminQuizManager({
         </ul>
       )}
 
-      {totalPages > 1 ? (
+      {pageCount > 1 ? (
         <div className="flex items-center justify-between gap-3">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setPage(Math.max(1, safePage - 1))}
-            disabled={safePage <= 1}
-          >
-            Precedente
-          </Button>
+          {page > 1 ? (
+            <ButtonLink
+              href={pageHref(page - 1, query, topic)}
+              variant="secondary"
+              size="sm"
+            >
+              Precedente
+            </ButtonLink>
+          ) : (
+            <Button variant="secondary" size="sm" disabled>
+              Precedente
+            </Button>
+          )}
           <p className="text-xs text-neutral-500">
-            Pagina {safePage} di {totalPages}
+            Pagina {page} di {pageCount}
           </p>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setPage(Math.min(totalPages, safePage + 1))}
-            disabled={safePage >= totalPages}
-          >
-            Successiva
-          </Button>
+          {page < pageCount ? (
+            <ButtonLink
+              href={pageHref(page + 1, query, topic)}
+              variant="secondary"
+              size="sm"
+            >
+              Successiva
+            </ButtonLink>
+          ) : (
+            <Button variant="secondary" size="sm" disabled>
+              Successiva
+            </Button>
+          )}
         </div>
       ) : null}
     </div>

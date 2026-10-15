@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Link from "next/link";
 import { BadgeCheck, Search } from "lucide-react";
 import { isVerifiedTag, statusLabel, yearLabel } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { fieldClass } from "@/components/ui/input";
 import { ConfirmEmailButton, UserTagEditor } from "./user-controls";
@@ -25,34 +25,41 @@ export type AdminUser = {
   attempts: number;
 };
 
+/** Link a una pagina dell'elenco mantenendo la ricerca attiva. */
+function pageHref(target: number, query: string) {
+  const params = new URLSearchParams();
+  if (query) params.set("q", query);
+  if (target > 1) params.set("page", String(target));
+  const search = params.toString();
+  return search ? `/admin/utenti?${search}` : "/admin/utenti";
+}
+
+/**
+ * Elenco utenti. Ricerca e paginazione sono lato server (l'URL contiene
+ * q e page): prima il browser riceveva tutti gli utenti e li filtrava.
+ */
 export function AdminUsersManager({
   users,
   allTags,
+  total,
+  page,
+  pageCount,
+  query,
 }: {
   users: AdminUser[];
   allTags: string[];
+  total: number;
+  page: number;
+  pageCount: number;
+  query: string;
 }) {
-  const [query, setQuery] = useState("");
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter((user) =>
-      [
-        user.email,
-        user.displayName,
-        user.city,
-        user.school,
-        user.tags.join(" "),
-      ]
-        .filter(Boolean)
-        .some((value) => String(value).toLowerCase().includes(q))
-    );
-  }, [users, query]);
-
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <form
+        method="get"
+        action="/admin/utenti"
+        className="flex flex-wrap items-center justify-between gap-3"
+      >
         <div className="relative w-full sm:max-w-sm">
           <Search
             className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
@@ -60,23 +67,33 @@ export function AdminUsersManager({
           />
           <input
             type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Cerca per nome, email, città o tag…"
+            name="q"
+            defaultValue={query}
+            placeholder="Cerca per nome, email, città o scuola…"
             aria-label="Cerca utenti"
             className={`${fieldClass} border-neutral-300 pl-9`}
           />
         </div>
-        <p className="text-sm tabular-nums text-neutral-500">
-          {filtered.length} di {users.length} utenti
-        </p>
-      </div>
+        <div className="flex items-center gap-2">
+          <Button type="submit" variant="secondary" size="sm">
+            Cerca
+          </Button>
+          {query ? (
+            <ButtonLink href="/admin/utenti" variant="ghost" size="sm">
+              Azzera
+            </ButtonLink>
+          ) : null}
+          <p className="text-sm tabular-nums text-neutral-500">
+            {users.length} di {total} utenti
+          </p>
+        </div>
+      </form>
 
-      {filtered.length === 0 ? (
+      {users.length === 0 ? (
         <EmptyState className="mt-4">Nessun utente trovato.</EmptyState>
       ) : (
         <ul className="mt-4 divide-y divide-neutral-200 overflow-hidden rounded-lg border border-neutral-200 bg-white">
-          {filtered.map((user) => {
+          {users.map((user) => {
             const verified = user.tags.some(isVerifiedTag);
             const details = [
               user.status ? statusLabel(user.status) : null,
@@ -153,6 +170,40 @@ export function AdminUsersManager({
           })}
         </ul>
       )}
+
+      {pageCount > 1 ? (
+        <div className="mt-4 flex items-center justify-between gap-3">
+          {page > 1 ? (
+            <ButtonLink
+              href={pageHref(page - 1, query)}
+              variant="secondary"
+              size="sm"
+            >
+              Precedente
+            </ButtonLink>
+          ) : (
+            <Button variant="secondary" size="sm" disabled>
+              Precedente
+            </Button>
+          )}
+          <p className="text-xs text-neutral-500">
+            Pagina {page} di {pageCount}
+          </p>
+          {page < pageCount ? (
+            <ButtonLink
+              href={pageHref(page + 1, query)}
+              variant="secondary"
+              size="sm"
+            >
+              Successiva
+            </ButtonLink>
+          ) : (
+            <Button variant="secondary" size="sm" disabled>
+              Successiva
+            </Button>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

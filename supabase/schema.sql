@@ -10,6 +10,7 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   display_name text,
+  email text,
   accepted_terms_at timestamptz,
   marketing_consent boolean not null default false,
   status text check (
@@ -134,10 +135,11 @@ set search_path = ''
 as $$
 begin
   insert into public.profiles (
-    id, display_name, accepted_terms_at, marketing_consent, status, year, school, city
+    id, email, display_name, accepted_terms_at, marketing_consent, status, year, school, city
   )
   values (
     new.id,
+    new.email,
     nullif(left(btrim(coalesce(new.raw_user_meta_data ->> 'display_name', '')), 50), ''),
     case
       when (new.raw_user_meta_data -> 'accepted_terms') = 'true'::jsonb then now()
@@ -159,7 +161,7 @@ begin
     nullif(left(btrim(coalesce(new.raw_user_meta_data ->> 'school', '')), 100), ''),
     nullif(left(btrim(coalesce(new.raw_user_meta_data ->> 'city', '')), 60), '')
   )
-  on conflict (id) do nothing;
+  on conflict (id) do update set email = excluded.email;
   return new;
 end;
 $$;
@@ -593,6 +595,14 @@ alter table public.profiles add column if not exists school text;
 alter table public.profiles add column if not exists city text;
 alter table public.profiles add column if not exists year text;
 alter table public.profiles add column if not exists tags text[] not null default '{}';
+alter table public.profiles add column if not exists email text;
+
+-- Email degli account esistenti (il trigger la salva per i nuovi).
+update public.profiles p
+set email = u.email
+from auth.users u
+where u.id = p.id
+  and p.email is distinct from u.email;
 
 do $$
 begin
@@ -651,3 +661,213 @@ update storage.buckets
 set file_size_limit = 5242880,
     allowed_mime_types = array['image/png', 'image/jpeg', 'image/webp']
 where id = 'quiz-images';
+
+-- ─────────────────────────────────────────────────────────────
+-- 12. Viste e funzioni dell'area amministrazione
+--     Evitano di scaricare tabelle intere per aggregare in
+--     JavaScript (diagnosi e misure in docs/PERFORMANCE.md).
+--     Le viste sono security_invoker e leggibili solo dal service
+--     role: non aggiungono superficie pubblica.
+-- ─────────────────────────────────────────────────────────────
+
+-- Esercitazioni per utente (una riga per utente, non per tentativo).
+create or replace view public.user_attempt_counts
+with (security_invoker = true)
+as
+select
+  user_id,
+  count(*)::int as attempts,
+  max(completed_at) as last_attempt
+from public.quiz_attempts
+group by user_id;
+
+revoke all on public.user_attempt_counts from anon, authenticated;
+grant select on public.user_attempt_counts to service_role;
+
+-- Domande disponibili per argomento (19 righe invece di 12.449).
+create or replace view public.question_topic_counts
+with (security_invoker = true)
+as
+select topic, count(*)::int as available
+from public.questions
+group by topic;
+
+revoke all on public.question_topic_counts from anon, authenticated;
+grant select on public.question_topic_counts to service_role;
+
+-- Elenco domande per l'area admin. question_plain è il testo senza
+-- tag HTML, per una ricerca che non trovi i nomi dei tag.
+create or replace view public.admin_question_list
+with (security_invoker = true)
+as
+select
+  id,
+  source_id,
+  question,
+  question_plain,
+  options,
+  answer_index,
+  topic,
+  difficulty,
+  explanation,
+  created_at
+from (
+  select
+    q.*,
+    btrim(
+      regexp_replace(regexp_replace(q.question, '<[^>]*>', ' ', 'g'), '\s+', ' ', 'g')
+    ) as question_plain
+  from public.questions q
+) q;
+
+revoke all on public.admin_question_list from anon, authenticated;
+grant select on public.admin_question_list to service_role;
+
+-- ─────────────────────────────────────────────────────────────
+-- 12b. Panoramica admin in una sola chiamata
+--      Giorni dell'attività in UTC (come l'orologio del server).
+-- ─────────────────────────────────────────────────────────────
+create or replace function public.get_admin_overview(p_days int default 14)
+returns jsonb
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  with prof as (
+    select id, status, year, city, school, created_at
+    from public.profiles
+  ),
+  att as (
+    select user_id, total_questions, correct_answers, completed_at
+    from public.quiz_attempts
+  ),
+  per_user as (
+    select
+      p.id, p.status, p.year, p.city, p.school, p.created_at,
+      coalesce(sum(a.total_questions), 0)::int as questions,
+      coalesce(sum(a.correct_answers), 0)::int as correct
+    from prof p
+    left join att a on a.user_id = p.id
+    group by p.id, p.status, p.year, p.city, p.school, p.created_at
+  ),
+  kpi as (
+    select
+      (select count(*)::int from prof) as total_users,
+      (select count(*)::int from prof
+        where created_at > now() - interval '30 days') as new_users_30,
+      (select count(*)::int from att) as total_attempts,
+      (select coalesce(sum(total_questions), 0)::int from att) as total_questions,
+      (select coalesce(sum(correct_answers), 0)::int from att) as total_correct,
+      (select count(distinct user_id)::int from att
+        where completed_at > now() - interval '30 days') as active_users_30
+  ),
+  by_status as (
+    select coalesce(status, '') as key, count(*)::int as users,
+           coalesce(sum(questions), 0)::int as questions,
+           coalesce(sum(correct), 0)::int as correct
+    from per_user
+    group by 1
+  ),
+  by_year as (
+    select coalesce(year, '') as key, count(*)::int as users,
+           coalesce(sum(questions), 0)::int as questions,
+           coalesce(sum(correct), 0)::int as correct
+    from per_user
+    group by 1
+  ),
+  by_city as (
+    select btrim(city) as key, count(*)::int as users,
+           coalesce(sum(questions), 0)::int as questions,
+           coalesce(sum(correct), 0)::int as correct
+    from per_user
+    where btrim(coalesce(city, '')) <> ''
+    group by 1
+    order by 2 desc
+    limit 8
+  ),
+  by_school as (
+    select btrim(school) as key, count(*)::int as users,
+           coalesce(sum(questions), 0)::int as questions,
+           coalesce(sum(correct), 0)::int as correct
+    from per_user
+    where btrim(coalesce(school, '')) <> ''
+    group by 1
+    order by 2 desc
+    limit 8
+  ),
+  activity as (
+    select d.day,
+           to_char(d.day, 'DD/MM') as label,
+           count(a.user_id)::int as count
+    from generate_series(
+           date_trunc('day', now()) - make_interval(days => greatest(p_days, 1) - 1),
+           date_trunc('day', now()),
+           interval '1 day'
+         ) as d(day)
+    left join att a
+      on a.completed_at >= d.day
+     and a.completed_at < d.day + interval '1 day'
+    group by d.day
+  ),
+  scores as (
+    select
+      count(*) filter (
+        where total_questions > 0
+          and correct_answers::numeric / total_questions >= 0.85
+      )::int as ge85,
+      count(*) filter (
+        where total_questions > 0
+          and correct_answers::numeric / total_questions >= 0.70
+          and correct_answers::numeric / total_questions < 0.85
+      )::int as b70_84,
+      count(*) filter (
+        where total_questions > 0
+          and correct_answers::numeric / total_questions >= 0.50
+          and correct_answers::numeric / total_questions < 0.70
+      )::int as b50_69,
+      count(*) filter (
+        where total_questions > 0
+          and correct_answers::numeric / total_questions < 0.50
+      )::int as lt50
+    from att
+  ),
+  by_topic as (
+    select q.topic::text as topic, count(*)::int as questions,
+           count(*) filter (where a.is_correct)::int as correct
+    from public.quiz_answers a
+    join public.questions q on q.id = a.question_id
+    group by 1
+  )
+  select jsonb_build_object(
+    'kpi', (select to_jsonb(k) from kpi k),
+    'byStatus', (
+      select coalesce(jsonb_agg(to_jsonb(b) order by b.users desc), '[]'::jsonb)
+      from by_status b
+    ),
+    'byYear', (
+      select coalesce(jsonb_agg(to_jsonb(b) order by b.key), '[]'::jsonb)
+      from by_year b
+    ),
+    'byCity', (
+      select coalesce(jsonb_agg(to_jsonb(c) order by c.users desc), '[]'::jsonb)
+      from by_city c
+    ),
+    'bySchool', (
+      select coalesce(jsonb_agg(to_jsonb(s) order by s.users desc), '[]'::jsonb)
+      from by_school s
+    ),
+    'activity', (
+      select coalesce(jsonb_agg(to_jsonb(a) - 'day' order by a.day), '[]'::jsonb)
+      from activity a
+    ),
+    'scores', (select to_jsonb(s) from scores s),
+    'byTopic', (
+      select coalesce(jsonb_agg(to_jsonb(t) order by t.questions desc), '[]'::jsonb)
+      from by_topic t
+    )
+  );
+$$;
+
+revoke all on function public.get_admin_overview(int) from public, anon, authenticated;
+grant execute on function public.get_admin_overview(int) to service_role;

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import type { AdminSearchParams } from "@/lib/supabase/search-params";
 import { QuizContent } from "./quiz-content";
 
 export const metadata: Metadata = {
@@ -8,7 +9,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminQuizPage() {
+export default function AdminQuizPage({
+  searchParams,
+}: {
+  searchParams: Promise<AdminSearchParams>;
+}) {
   return (
     <Suspense
       fallback={
@@ -22,7 +27,7 @@ export default function AdminQuizPage() {
         </div>
       }
     >
-      <QuizContent />
+      <QuizContent searchParams={searchParams} />
     </Suspense>
   );
 }
