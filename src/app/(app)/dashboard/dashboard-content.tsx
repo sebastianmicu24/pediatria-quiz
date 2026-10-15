@@ -5,7 +5,7 @@ import { requireUser } from "@/lib/auth";
 import { loadUserStats, type UserStats } from "@/lib/user-stats";
 import { APP_NAV } from "@/lib/navigation";
 import { formatNumber } from "@/lib/constants";
-import { formatPercent, relativeDay } from "@/lib/utils";
+import { formatPercent, relativeTime } from "@/lib/utils";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -26,6 +26,24 @@ function greetingFor(now: number): string {
   if (hour >= 5 && hour < 13) return "Buongiorno";
   if (hour >= 13 && hour < 18) return "Buon pomeriggio";
   return "Buonasera";
+}
+
+/**
+ * Percentuale dei quiz svolti sul totale disponibile. Con oltre 12.000 quiz in
+ * archivio la percentuale intera resta a 0% per molto tempo: sotto l'1%
+ * mostriamo un decimale, così il progresso rimane leggibile.
+ */
+function donePercentage(done: number, available: number): string {
+  if (available <= 0) return "0%";
+  const percent = (done / available) * 100;
+  if (percent > 0 && percent < 1) {
+    // Troncamento (non arrotondamento): sotto l'1% non vogliamo leggere 1%.
+    const truncated = Math.floor(percent * 10) / 10;
+    return `${new Intl.NumberFormat("it-IT", {
+      maximumFractionDigits: 1,
+    }).format(truncated)}%`;
+  }
+  return formatPercent(done, available);
 }
 
 function ReviewShortcut({
@@ -106,7 +124,8 @@ export function DashboardView({
   firstName: string;
   stats: UserStats;
   now: number;
-}) {  const { totals, attempts } = stats;
+}) {
+  const { totals, attempts, bestTopic, worstTopic } = stats;
   const wrongCount = totals.uniqueDone - totals.uniqueCorrect;
   const newCount = Math.max(0, totals.available - totals.uniqueDone);
   const lastAttempt = attempts[0];
@@ -136,9 +155,9 @@ export function DashboardView({
         className="mt-8"
         items={[
           {
-            label: "Domande risposte",
-            value: formatNumber(totals.answered),
-            hint: `${formatNumber(totals.attempts)} esercitazioni`,
+            label: "Quiz svolti",
+            value: donePercentage(totals.uniqueDone, totals.available),
+            hint: `${formatNumber(totals.uniqueDone)} su ${formatNumber(totals.available)} quiz`,
           },
           {
             label: "Precisione",
@@ -146,14 +165,23 @@ export function DashboardView({
             hint: `${formatNumber(totals.correct)} risposte corrette`,
           },
           {
-            label: "Copertura",
-            value: formatPercent(totals.uniqueDone, totals.available),
-            hint: `${formatNumber(totals.uniqueDone)} di ${formatNumber(totals.available)} domande`,
+            label: "Best & Worst",
+            variant: "text",
+            value: bestTopic
+              ? `Migliore: ${bestTopic.topic} (${formatPercent(bestTopic.correct, bestTopic.total)})`
+              : "—",
+            detail: worstTopic
+              ? `Peggiore: ${worstTopic.topic} (${formatPercent(worstTopic.correct, worstTopic.total)})`
+              : undefined,
           },
           {
-            label: "Ultima esercitazione",
-            value: lastAttempt ? relativeDay(lastAttempt.completed_at, now) : "—",
-            hint: lastAttempt?.topic ?? (lastAttempt ? "Argomenti misti" : "Nessuna ancora"),
+            label: "Ultimo Quiz",
+            value: lastAttempt
+              ? relativeTime(lastAttempt.completed_at, now)
+              : "—",
+            hint:
+              lastAttempt?.topic ??
+              (lastAttempt ? "Argomenti misti" : "Nessuno ancora"),
           },
         ]}
       />

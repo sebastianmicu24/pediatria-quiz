@@ -241,20 +241,24 @@ export function parseDifficulties(
   return [...new Set(parsed)];
 }
 
-/** Giorni di calendario trascorsi da una data ISO (0 = oggi, 1 = ieri…). */
-export function daysSince(iso: string, now: number): number {
-  const day = (value: number) => {
-    const d = new Date(value);
-    d.setHours(0, 0, 0, 0);
-    return d.getTime();
-  };
-  return Math.max(0, Math.round((day(now) - day(Date.parse(iso))) / 86_400_000));
-}
+/**
+ * Distanza temporale in parole ("adesso", "5 minuti fa", "3 ore fa",
+ * "8 giorni fa", "2 mesi fa"): usa l'unità più adatta alla distanza.
+ */
+export function relativeTime(iso: string, now: number): string {
+  const minutes = Math.floor(Math.max(0, now - Date.parse(iso)) / 60_000);
+  if (minutes < 1) return "adesso";
+  if (minutes < 60) return `${minutes} ${minutes === 1 ? "minuto" : "minuti"} fa`;
 
-/** "oggi", "ieri", "3 giorni fa": per riepiloghi di attività. */
-export function relativeDay(iso: string, now: number): string {
-  const days = daysSince(iso, now);
-  if (days === 0) return "oggi";
-  if (days === 1) return "ieri";
-  return `${days} giorni fa`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} ${hours === 1 ? "ora" : "ore"} fa`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} ${days === 1 ? "giorno" : "giorni"} fa`;
+
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} ${months === 1 ? "mese" : "mesi"} fa`;
+
+  const years = Math.floor(months / 12);
+  return `${years} ${years === 1 ? "anno" : "anni"} fa`;
 }

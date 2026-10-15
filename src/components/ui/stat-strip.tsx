@@ -4,6 +4,13 @@ export type StatItem = {
   label: string;
   value: string;
   hint?: string;
+  /**
+   * Riga aggiuntiva sotto il hint. A differenza del hint va a capo invece di
+   * essere troncata: serve ai valori testuali lunghi (es. nomi di materia).
+   */
+  detail?: string;
+  /** `text` per valori in parole (corpo più piccolo del numero). */
+  variant?: "metric" | "text";
 };
 
 /**
@@ -38,11 +45,23 @@ export function StatStrip({
           )}
         >
           <dt className="text-xs font-medium text-neutral-500">{item.label}</dt>
-          <dd className="mt-1.5 text-2xl font-semibold tabular-nums tracking-tight text-neutral-900">
+          <dd
+            className={cn(
+              "mt-1.5 font-semibold tracking-tight text-neutral-900",
+              item.variant === "text"
+                ? "text-[15px] leading-snug"
+                : "text-2xl tabular-nums"
+            )}
+          >
             {item.value}
           </dd>
           {item.hint ? (
             <p className="mt-1 truncate text-xs text-neutral-500">{item.hint}</p>
+          ) : null}
+          {item.detail ? (
+            <p className="mt-0.5 text-xs leading-snug text-neutral-500">
+              {item.detail}
+            </p>
           ) : null}
         </div>
       ))}

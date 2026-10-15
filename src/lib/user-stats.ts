@@ -51,7 +51,10 @@ export type UserStats = {
     uniqueCorrect: number;
     available: number;
   };
-  bestTopic: { topic: string; correct: number; total: number } | null;
+  /** Materia con la percentuale di risposte corrette più alta. */
+  bestTopic: TopicStat | null;
+  /** Materia con la percentuale più bassa (null se non c'è confronto). */
+  worstTopic: TopicStat | null;
 };
 
 /** Carica tutto ciò che serve per dashboard e pagina statistiche personali. */
@@ -118,9 +121,17 @@ export async function loadUserStats(
       return a.topic.localeCompare(b.topic, "it");
     });
 
-  const best = [...topicStats]
-    .filter((t) => t.total >= 3)
-    .sort((a, b) => b.correct / b.total - a.correct / a.total)[0];
+  // Materie in cui si va meglio e peggio. Il confronto usa le materie con
+  // almeno 3 domande svolte, ma solo se ce ne sono almeno due; altrimenti
+  // ripiega su tutte quelle affrontate, così il confronto esiste sempre
+  // (e resta assente solo quando non c'è nulla da confrontare).
+  const byAccuracy = [...topicStats].sort(
+    (a, b) => b.correct / b.total - a.correct / a.total || b.total - a.total
+  );
+  const solid = byAccuracy.filter((t) => t.total >= 3);
+  const ranked = solid.length >= 2 ? solid : byAccuracy;
+  const best = ranked[0] ?? null;
+  const worst = ranked.length > 1 ? ranked[ranked.length - 1] : null;
 
   return {
     hasError,
@@ -136,6 +147,7 @@ export async function loadUserStats(
       uniqueCorrect: coverage.reduce((sum, c) => sum + c.correct, 0),
       available: coverage.reduce((sum, c) => sum + c.available, 0),
     },
-    bestTopic: best ?? null,
+    bestTopic: best,
+    worstTopic: worst,
   };
 }

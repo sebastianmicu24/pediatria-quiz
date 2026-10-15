@@ -65,6 +65,10 @@ export const FAQ: FaqItem[] = [
     a: "Sì. La registrazione e l'utilizzo dei quiz sono completamente gratuiti: serve solo un indirizzo email valido.",
   },
   {
+    q: "Perché mi devo registrare?",
+    a: "Serve la registrazione per salvare i progressi e monitorare il proprio andamento",
+  },
+  {
     q: "Non ho ricevuto l'email di conferma, cosa faccio?",
     a: `Controlla la posta indesiderata (spam). Se usi una casella istituzionale (es. universitaria), le email esterne possono essere bloccate dai filtri dell'ateneo: in quel caso scrivi a ${LEGAL.email} e confermeremo il tuo account manualmente.`,
   },
