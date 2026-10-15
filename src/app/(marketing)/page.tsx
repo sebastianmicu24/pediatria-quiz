@@ -94,7 +94,7 @@ export default function HomePage() {
                           {isCorrect ? (
                             <Check className="h-3.5 w-3.5" />
                           ) : (
-                            "ABCD"[index]
+                            String.fromCharCode(65 + index)
                           )}
                         </span>
                         {option}

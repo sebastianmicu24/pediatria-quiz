@@ -70,7 +70,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "Chi ha creato i quiz?",
-    a: "I quiz sono stati tradotti dall'inglese da un grande database pubblico derivante prinicpalmente dagli esami AIIMS & NEET PG. Sono stati selezionati automaticamente solo i quiz contenenti riferimenti a pazienti pediatrici. Ci potrebbero perciò essere quiz non inerenti alla specializzazione in pediatria.",
+    a: "I quiz sono stati tradotti dall'inglese da un grande database pubblico derivante principalmente dagli esami AIIMS & NEET PG. Sono stati selezionati automaticamente solo i quiz contenenti riferimenti a pazienti pediatrici. Ci potrebbero perciò essere quiz non inerenti alla specializzazione in pediatria.",
   },
   {
     q: "Perché mi chiedete scuola, città e status?",
