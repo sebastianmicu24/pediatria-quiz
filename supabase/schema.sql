@@ -172,6 +172,27 @@ create trigger on_auth_user_created
   for each row
   execute function public.handle_new_user();
 
+-- Se l'utente cambia email, il profilo resta allineato (la ricerca per
+-- email nell'area admin resta corretta).
+create or replace function public.handle_user_email_changed()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  update public.profiles set email = new.email where id = new.id;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_email_changed on auth.users;
+create trigger on_auth_user_email_changed
+  after update of email on auth.users
+  for each row
+  when (old.email is distinct from new.email)
+  execute function public.handle_user_email_changed();
+
 -- ─────────────────────────────────────────────────────────────
 -- 7. Row Level Security
 -- ─────────────────────────────────────────────────────────────

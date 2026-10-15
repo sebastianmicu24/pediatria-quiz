@@ -517,7 +517,7 @@ Ordine consigliato: **Fase 1 subito** (mezza giornata, dimezza il problema più 
   - Verifiche: `npm run lint` e `next build` puliti; test di parità fra percorso RPC e percorso storico (totali, copertura, best/worst, tentativi, casi limite) con esito identico.
   - **Azione richiesta:** eseguire la migrazione nell'SQL Editor di Supabase. Dopo la migrazione, confrontare i numeri di dashboard e statistiche con quelli precedenti.
 - **Fase 3 — fatto (16 ottobre 2026).**
-  - `supabase/migrations/2026-10-16_elenchi-admin.sql`: `profiles.email` (+ trigger di registrazione e backfill), viste `user_attempt_counts`, `question_topic_counts` e `admin_question_list`.
+  - `supabase/migrations/2026-10-16_elenchi-admin.sql`: `profiles.email` (trigger di registrazione, backfill e sincronizzazione quando l'email cambia), viste `user_attempt_counts`, `question_topic_counts` e `admin_question_list`.
   - `supabase/migrations/2026-10-16_panoramica-admin.sql`: funzione `get_admin_overview()`.
   - `src/app/(app)/admin/overview-content.tsx`: una sola RPC al posto di tre scansioni complete (profili, tentativi, tutte le risposte).
   - `src/app/(app)/admin/quiz/*`: filtro, ricerca (sul testo senza tag HTML), conteggio e paginazione lato server: da 8,79 MB per apertura a **~18 KB** (20 domande complete).
