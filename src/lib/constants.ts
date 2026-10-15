@@ -27,9 +27,12 @@ export function difficultyLabel(difficulty: number | null | undefined): string {
 
 /**
  * Dimensione dei lotti di domande caricati progressivamente durante
- * un'esercitazione (primo lotto + richiami successivi).
+ * un'esercitazione (primo lotto + richiami successivi). Un lotto più
+ * grande dimezza i round trip del precaricamento: il costo di ogni
+ * richiesta è dominato dal viaggio, non dai 15 KB di domande
+ * (docs/PERFORMANCE.md § 5.G).
  */
-export const EXERCISE_BATCH_SIZE = 10;
+export const EXERCISE_BATCH_SIZE = 20;
 
 /**
  * Status dell'utente (dato facoltativo del profilo).

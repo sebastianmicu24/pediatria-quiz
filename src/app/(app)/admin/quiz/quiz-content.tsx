@@ -1,4 +1,6 @@
 import { requireAdmin } from "@/lib/admin";
+import { getTopicCatalog } from "@/lib/catalog";
+import { measured } from "@/lib/perf";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isMissingColumnError } from "@/lib/supabase/schema-compat";
 import { formatNumber } from "@/lib/constants";
@@ -37,14 +39,10 @@ export async function QuizContent({
 
   const admin = createAdminClient();
 
-  // Argomenti per il filtro: una riga per argomento (19), non 12.449 righe.
-  const topicsResult = await admin
-    .from("question_topic_counts")
-    .select("topic")
-    .order("topic", { ascending: true });
-  const topics = topicsResult.error
-    ? []
-    : (topicsResult.data ?? []).map((row) => String(row.topic));
+  // Argomenti per il filtro: dal catalogo in cache (19 righe, non
+  // 12.449) e con ricaduta su un elenco vuoto se la vista non è ancora
+  // stata creata dal database (docs/PERFORMANCE.md § 5.B).
+  const topics = (await getTopicCatalog()).map((entry) => entry.topic);
 
   // Solo le domande della pagina richiesta. La vista admin_question_list
   // espone il testo senza tag HTML per la ricerca; se non è ancora stata
@@ -66,11 +64,19 @@ export async function QuizContent({
       .range(from, from + PAGE_SIZE - 1);
   }
 
-  let result = await fetchPage(true);
-  if (result.error && isMissingColumnError(result.error.message)) {
+  // Una sola misura per la lettura della pagina, ricaduta compresa.
+  const loadPage = async () => {
+    const first = await fetchPage(true);
+    if (!first.error || !isMissingColumnError(first.error.message)) return first;
     // Vista non ancora creata: si presta dalla tabella (ricerca sul testo HTML).
-    result = await fetchPage(false);
-  }
+    return fetchPage(false);
+  };
+
+  const result = await measured("admin_question_list", loadPage, (page) => ({
+    rows: page.data?.length ?? 0,
+    total: page.count ?? undefined,
+    code: page.error?.code,
+  }));
 
   if (result.error) {
     return (

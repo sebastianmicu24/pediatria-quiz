@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { measured } from "@/lib/perf";
 import { fetchAllRows } from "@/lib/supabase/paginate";
+import { isMissingFunctionError } from "@/lib/supabase/schema-compat";
 import type {
   AttemptSummary,
   TopicCoverageDatum,
@@ -154,18 +156,41 @@ function asCoverage(value: unknown): TopicCoverageDatum[] {
 }
 
 /**
+ * Esito della lettura via RPC. "missing" = funzione non (ancora)
+ * applicata al database (o firma diversa); "error" = errore inatteso
+ * (timeout, 5xx, permessi).
+ */
+type RpcOutcome =
+  | { kind: "ok"; stats: UserStats }
+  | { kind: "missing" }
+  | { kind: "error" };
+
+/**
  * Carica le statistiche con get_user_stats(): il database aggrega le
  * 12.449 domande in 19 righe invece di trasferire l'intera tabella.
- * Restituisce null se la funzione non è ancora stata applicata al
- * database (in quel caso si ricade sul percorso storico).
  */
 async function loadStatsFromRpc(
   supabase: SupabaseClient
-): Promise<UserStats | null> {
-  const { data, error } = await supabase.rpc("get_user_stats", {
-    p_attempt_limit: ATTEMPT_LIMIT,
-  });
-  if (error || !data) return null;
+): Promise<RpcOutcome> {
+  const { data, error } = await measured(
+    "get_user_stats",
+    () => supabase.rpc("get_user_stats", { p_attempt_limit: ATTEMPT_LIMIT }),
+    (result) => {
+      const attempts = (result.data as { attempts?: unknown[] } | null)
+        ?.attempts;
+      return {
+        attempts: Array.isArray(attempts) ? attempts.length : 0,
+        code: result.error?.code,
+      };
+    }
+  );
+
+  if (error) {
+    return isMissingFunctionError(error)
+      ? { kind: "missing" }
+      : { kind: "error" };
+  }
+  if (!data) return { kind: "error" };
 
   const payload = data as {
     totals?: Record<string, unknown> | null;
@@ -186,27 +211,30 @@ async function loadStatsFromRpc(
   const { best, worst } = pickBestWorst(topicStats);
 
   return {
-    hasError: false,
-    attempts: (payload.attempts ?? []) as AttemptSummary[],
-    topics,
-    coverage,
-    topicStats,
-    totals: {
-      attempts: asNumber(totals.attempts),
-      answered: asNumber(totals.answered),
-      correct: asNumber(totals.correct),
-      uniqueDone: asNumber(totals.uniqueDone),
-      uniqueCorrect: asNumber(totals.uniqueCorrect),
-      available: asNumber(totals.available),
+    kind: "ok",
+    stats: {
+      hasError: false,
+      attempts: (payload.attempts ?? []) as AttemptSummary[],
+      topics,
+      coverage,
+      topicStats,
+      totals: {
+        attempts: asNumber(totals.attempts),
+        answered: asNumber(totals.answered),
+        correct: asNumber(totals.correct),
+        uniqueDone: asNumber(totals.uniqueDone),
+        uniqueCorrect: asNumber(totals.uniqueCorrect),
+        available: asNumber(totals.available),
+      },
+      bestTopic: best,
+      worstTopic: worst,
     },
-    bestTopic: best,
-    worstTopic: worst,
   };
 }
 
 // ─────────────────────────────────────────────────────────────
 //  Percorso storico: lettura diretta delle tabelle
-//  (solo se la RPC non è disponibile o fallisce)
+//  (solo se la RPC non è disponibile: migrazione non applicata)
 // ─────────────────────────────────────────────────────────────
 
 /**
@@ -289,12 +317,40 @@ async function loadStatsFromTables(
   };
 }
 
+/** Stato di errore: la pagina avvisa invece di mostrare zeri verosimili. */
+function emptyUserStats(): UserStats {
+  return {
+    hasError: true,
+    attempts: [],
+    topics: [],
+    coverage: [],
+    topicStats: [],
+    totals: {
+      attempts: 0,
+      answered: 0,
+      correct: 0,
+      uniqueDone: 0,
+      uniqueCorrect: 0,
+      available: 0,
+    },
+    bestTopic: null,
+    worstTopic: null,
+  };
+}
+
 /** Carica tutto ciò che serve per dashboard e pagina statistiche personali. */
 export async function loadUserStats(
   supabase: SupabaseClient,
   userId: string
 ): Promise<UserStats> {
-  const fromRpc = await loadStatsFromRpc(supabase);
-  if (fromRpc) return fromRpc;
-  return loadStatsFromTables(supabase, userId);
+  const outcome = await loadStatsFromRpc(supabase);
+  if (outcome.kind === "ok") return outcome.stats;
+
+  // Funzione non presente nel database: ricaduta sul percorso storico.
+  if (outcome.kind === "missing") return loadStatsFromTables(supabase, userId);
+
+  // Errore inatteso (timeout, 5xx, permessi): niente ricaduta pesante,
+  // che sotto carico peggiorerebbe la situazione invece di migliorarla.
+  // La misura è nei log dell'app (docs/PERFORMANCE.md § 5.I).
+  return emptyUserStats();
 }

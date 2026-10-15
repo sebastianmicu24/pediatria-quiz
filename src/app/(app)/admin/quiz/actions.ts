@@ -1,7 +1,9 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { requireUser } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
+import { QUESTIONS_TAG } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sanitizeHtml, stripHtml } from "@/lib/utils";
 
@@ -93,6 +95,10 @@ export async function updateQuestion(
     return { status: "error", message: "Salvataggio non riuscito. Riprova." };
   }
 
+  // Il catalogo degli argomenti è memorizzato da Next (src/lib/catalog.ts):
+  // rigenerarlo subito, così l'admin vede il proprio cambiamento.
+  updateTag(QUESTIONS_TAG);
+
   return { status: "success", message: "Domanda aggiornata correttamente." };
 }
 
@@ -113,6 +119,8 @@ export async function deleteQuestion(
   if (error) {
     return { ok: false, message: "Eliminazione non riuscita. Riprova." };
   }
+  // Il catalogo argomenti in cache non deve più contare la domanda.
+  updateTag(QUESTIONS_TAG);
   return { ok: true, message: "Domanda eliminata." };
 }
 

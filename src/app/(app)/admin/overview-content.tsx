@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/lib/admin";
+import { measured } from "@/lib/perf";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatDate, formatPercent } from "@/lib/utils";
 import { formatNumber, statusLabel, yearLabel, YEAR_OPTIONS } from "@/lib/constants";
@@ -76,9 +77,11 @@ export async function OverviewContent() {
   await requireAdmin();
 
   const admin = createAdminClient();
-  const { data, error } = await admin.rpc("get_admin_overview", {
-    p_days: OVERVIEW_DAYS,
-  });
+  const { data, error } = await measured(
+    "get_admin_overview",
+    () => admin.rpc("get_admin_overview", { p_days: OVERVIEW_DAYS }),
+    (result) => ({ code: result.error?.code })
+  );
 
   if (error || !data) {
     return (

@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/lib/admin";
+import { measured } from "@/lib/perf";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isMissingColumnError } from "@/lib/supabase/schema-compat";
 import {
@@ -103,24 +104,31 @@ export async function AdminUsersContent({
       .range(from, from + PAGE_SIZE - 1);
   }
 
-  let loadedPage: {
+  async function loadProfilesPage(): Promise<{
     rows: ProfileRow[];
     total: number;
     hasEmail: boolean;
-  } | null = null;
-  for (const variant of PROFILE_SELECTS) {
-    const { data, count, error } = await fetchProfiles(variant);
-    if (!error) {
-      const rawRows = (data ?? []) as unknown as Record<string, unknown>[];
-      loadedPage = {
-        rows: rawRows.map((row) => normalizeProfile(row, variant)),
-        total: count ?? rawRows.length,
-        hasEmail: variant.email,
-      };
-      break;
+  } | null> {
+    for (const variant of PROFILE_SELECTS) {
+      const { data, count, error } = await fetchProfiles(variant);
+      if (!error) {
+        const rawRows = (data ?? []) as unknown as Record<string, unknown>[];
+        return {
+          rows: rawRows.map((row) => normalizeProfile(row, variant)),
+          total: count ?? rawRows.length,
+          hasEmail: variant.email,
+        };
+      }
+      if (!isMissingColumnError(error.message)) return null;
     }
-    if (!isMissingColumnError(error.message)) break;
+    return null;
   }
+
+  const loadedPage = await measured(
+    "profiles (elenco admin)",
+    loadProfilesPage,
+    (page) => ({ rows: page?.rows.length ?? 0, total: page?.total })
+  );
 
   if (!loadedPage) {
     return (
@@ -140,10 +148,14 @@ export async function AdminUsersContent({
     { email: string | null; lastSignInAt: string | null; confirmed: boolean }
   >();
   for (let authPage = 1; authPage <= 20; authPage++) {
-    const { data, error } = await admin.auth.admin.listUsers({
-      page: authPage,
-      perPage: 1000,
-    });
+    const { data, error } = await measured(
+      "auth.listUsers",
+      () => admin.auth.admin.listUsers({ page: authPage, perPage: 1000 }),
+      (result) => ({
+        rows: result.data?.users.length ?? 0,
+        code: result.error?.code,
+      })
+    );
     if (error) {
       return (
         <Alert variant="error">

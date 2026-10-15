@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { measured } from "@/lib/perf";
 import { fetchAllRows } from "@/lib/supabase/paginate";
+import { isMissingFunctionError } from "@/lib/supabase/schema-compat";
 import { shuffle } from "@/lib/utils";
 import type { Question } from "@/lib/types";
 
@@ -67,19 +69,38 @@ export async function fetchQuestionBatch(
   supabase: SupabaseClient,
   { topics, difficulties, statuses, count, exclude = [] }: BatchFilters
 ): Promise<Question[]> {
-  const { data, error } = await supabase.rpc("get_quiz_questions", {
-    p_count: count,
-    p_topics: topics,
-    p_difficulties: difficulties,
-    p_exclude: exclude,
-    p_status: statuses,
-  });
+  const { data, error } = await measured(
+    "get_quiz_questions",
+    () =>
+      supabase.rpc("get_quiz_questions", {
+        p_count: count,
+        p_topics: topics,
+        p_difficulties: difficulties,
+        p_exclude: exclude,
+        p_status: statuses,
+      }),
+    (result) => ({
+      rows: Array.isArray(result.data) ? result.data.length : 0,
+      code: result.error?.code,
+    })
+  );
 
-  if (!error && data) {
-    return (data as QuestionRow[]).map(toQuestion).filter(isValidQuestion);
+  if (!error) {
+    // Nessuna riga (o nessuna domanda con questi filtri): archivio esaurito.
+    return ((data as QuestionRow[] | null) ?? [])
+      .map(toQuestion)
+      .filter(isValidQuestion);
   }
 
   // Fallback (finché la migrazione non è applicata al database).
+  //
+  // Il percorso storico legge un conteggio esatto più fino a 3 finestre
+  // da 800 righe complete: si attiva solo se la RPC non esiste (firma
+  // diversa o migrazione non applicata). Su un errore transitorio la
+  // ricaduta moltiplicherebbe il carico invece di ridurlo, quindi è
+  // meglio restituire un lotto vuoto (l'esercitazione termina).
+  if (!isMissingFunctionError(error)) return [];
+
   // Per non scaricare l'intero archivio (migliaia di domande) a ogni
   // richiesta si legge una finestra casuale di righe filtrate.
   const seen = new Set(exclude);

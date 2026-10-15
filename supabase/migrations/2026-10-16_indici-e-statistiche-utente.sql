@@ -14,6 +14,13 @@
 --     richieste da 1000) solo per contare le domande per materia.
 --
 --  Esegui questo file nell'SQL Editor di Supabase. È idempotente.
+--
+--  Prerequisito: il database deve avere già la base di
+--  supabase/schema.sql (in particolare la tabella question_progress).
+--  Se l'esecuzione fallisce con "relation public.question_progress does
+--  not exist", il database è indietro rispetto allo schema: esegui
+--  schema.sql per intero (include anche questa migrazione) e salta
+--  questo file.
 -- ============================================================
 
 -- ─────────────────────────────────────────────────────────────

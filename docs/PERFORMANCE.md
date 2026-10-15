@@ -526,7 +526,28 @@ Ordine consigliato: **Fase 1 subito** (mezza giornata, dimezza il problema più 
   - Tutti i percorsi hanno una **ricaduta** sul comportamento precedente se la migrazione non è ancora applicata (viste assenti, colonna `email` assente).
   - Verifiche: `npm run lint` e `next build` puliti; test di parità fra la vecchia aggregazione JS e la funzione SQL su dati sintetici (KPI, status, anno, città e scuole top 8, attività a 14 giorni, fasce di punteggio, precisione per argomento) con esito identico.
   - **Azione richiesta:** eseguire le due migrazioni nell'SQL Editor. Unica differenza nota: i tentativi di un utente **senza** riga di profilo (caso che non dovrebbe verificarsi: il profilo nasce con l'account) compaiono nei totali ma non nelle ripartizioni per status/anno.
-- **Fasi 2 e 4 — da fare.**
+- **Fase 2 — fatto (16 ottobre 2026).**
+  - `src/lib/catalog.ts`: catalogo argomenti con le domande disponibili, letto dalla vista `question_topic_counts` (19 righe invece di 12.449) e memorizzato da Next (`"use cache"`, `cacheLife("hours")`, tag `questions`). Le azioni admin che scrivono su `questions` chiamano `updateTag("questions")`, così l'admin vede subito i propri cambiamenti. Usano il catalogo `/admin/quiz` (filtro argomenti) e il dettaglio utente (domande disponibili per argomento).
+  - `EXERCISE_BATCH_SIZE` 10 → 20 (`src/lib/constants.ts`): metà dei round trip di precaricamento. Nessuna modifica all'interfaccia: l'esercitazione mostra sempre una domanda alla volta.
+  - **Ricaduta selettiva.** `fetchQuestionBatch` (`src/lib/questions.ts`) e `loadUserStats` (`src/lib/user-stats.ts`) usano il percorso storico *solo* se la RPC risulta assente dal database (`isMissingFunctionError` in `src/lib/supabase/schema-compat.ts`: `PGRST202`/`PGRST203`/`42883`/`42P01`, o messaggio "Could not find the function…"). Su un errore transitorio (timeout, 5xx) la ricaduta non scatta più: moltiplicherebbe il carico proprio quando il database è in difficoltà. In quel caso la dashboard mostra lo stato di errore e la lettura resta nei log.
+  - **`p_exclude` non modificato** (valutato e scartato con motivo misurato). L'array contiene gli id delle domande già mostrate nella sessione: ~36 byte l'una, quindi 1-2 KB nell'uso normale (un'esercitazione tipica è 10-40 domande). Le due alternative del report sono peggiori del problema: inviare solo il lotto corrente, o filtrare in SQL per `p_since` (inizio sessione), ripropone domande che il client scarta comunque (`fresh`), e con pool ristretti un lotto interamente di doppioni farebbe terminare l'esercitazione in anticipo. Da rivedere solo se una sessione arriva a centinaia di domande.
+  - Verifiche: `npm run lint`, `npx tsc --noEmit` e `next build` (28 rotte) puliti; prova **dal vivo sul database del progetto** (dove le RPC non esistono ancora): `fetchQuestionBatch` restituisce 5 domande reali dal percorso storico e `loadUserStats` i totali corretti senza `hasError`; un timeout simulato *non* fa scattare la ricaduta; test di parità RPC/storico ancora verde; la funzione in cache risponde 19 argomenti e le chiamate successive non toccano il database.
+- **Fase 4 — fatto (16 ottobre 2026).**
+  - `src/lib/supabase/proxy.ts`: `getClaims()` al posto di `getUser()`. Con chiavi di firma asimmetriche la firma del JWT viene verificata in locale con le chiavi pubbliche (JWKS in cache di processo): una chiamata di rete in meno per ogni navigazione. Se il progetto usa ancora JWT simmetrici (HS256), `getClaims()` ricade internamente su `getUser()` e il comportamento resta identico a prima. In entrambi i casi la sessione scaduta viene rinnovata prima della verifica e i cookie aggiornati vengono riscritti nella risposta. Se la verifica non è disponibile (rete o JWKS irraggiungibile) i redirect non vengono applicati: un guasto momentaneo non deve mandare al login chi è già connesso.
+  - `src/lib/perf.ts`: misure di durata con una riga per lettura (durata, righe, codice di errore) su `get_user_stats`, `get_quiz_questions`, `get_admin_overview`, `question_topic_counts`, elenchi admin e dettaglio utente. Sempre attive in sviluppo; in produzione si accendono con `PERF_LOG=1` per non riempire i log.
+  - Materialized view + `pg_cron`: **non fatta** (voce opzionale). Le aggregazioni pesanti sono già dentro il database e quelle ripetute a ogni page view sono in cache Next: un dato non in tempo reale non vale il vantaggio residuo.
+  - Verifiche: build pulita; sul server di sviluppo le rotte protette rispondono `307` verso `/login?next=…` (proxy 4-11 ms) e il catalogo risulta servito dalla cache.
+- **Nota sul database del progetto (16 ottobre 2026).** Un controllo diretto (solo letture) mostra che il database di produzione è **indietro rispetto a `supabase/schema.sql`**:
+
+  | Oggetto | Stato |
+  | --- | --- |
+  | `profiles.email`, viste `user_attempt_counts` / `question_topic_counts` / `admin_question_list` | presenti |
+  | `profiles.year`, `profiles.tags` | **assenti** |
+  | tabella `question_progress` | **assente** |
+  | `get_quiz_questions` (firma a 5 parametri) | **assente** (esiste una versione vecchia a 4 parametri) |
+  | `get_user_stats`, `get_admin_overview` | **assenti** |
+
+  Conseguenza: oggi il sito funziona interamente sui percorsi di ricaduta (quiz e dashboard leggono le tabelle; `/admin` invita ad applicare la migrazione). Le due migrazioni `2026-10-16_indici-e-statistiche-utente.sql` e `2026-10-16_panoramica-admin.sql` **non possono essere applicate** finché mancano il loro prerequisito: falliscono con `relation "public.question_progress" does not exist` e `column "year" does not exist`. La via corretta è eseguire per intero **`supabase/schema.sql`** (idempotente: crea la tabella mancante, aggiunge le colonne, ricrea funzioni e viste e include tutte e tre le migrazioni del 16/10). Dopo di che le tre migrazioni diventano superflue.
 
 ---
 

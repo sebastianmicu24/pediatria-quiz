@@ -50,10 +50,29 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Importante: chiamare getUser() all'inizio per aggiornare i token.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() legge la sessione (aggiornando il token se è scaduto o
+  // sta per scadere) e ne verifica la firma: i cookie aggiornati vengono
+  // poi riscritti nella risposta, esattamente come faceva getUser().
+  //
+  // Con chiavi di firma asimmetriche la verifica avviene in locale con
+  // le chiavi pubbliche (JWKS in cache di processo): una navigazione
+  // costa un round trip in meno. Se il progetto usa ancora JWT
+  // simmetrici (HS256), getClaims() ricade internamente su getUser() e
+  // il comportamento resta identico a prima (docs/PERFORMANCE.md § 5.H).
+  //
+  // "known" distingue "nessuna sessione" da "verifica non disponibile"
+  // (rete o JWKS irraggiungibile): nel secondo caso non si applicano i
+  // redirect, altrimenti un guasto momentaneo manderebbe al login anche
+  // gli utenti connessi. La decisione vera resta nelle pagine.
+  let userId: string | null = null;
+  let known = true;
+  try {
+    const { data } = await supabase.auth.getClaims();
+    const sub = data?.claims?.sub;
+    userId = typeof sub === "string" ? sub : null;
+  } catch {
+    known = false;
+  }
 
   const applyCookies = <T extends NextResponse>(response: T): T => {
     pendingCookies.forEach(({ name, value, options }) => {
@@ -67,7 +86,7 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname, search } = request.nextUrl;
 
-  if (!user && matchesPrefix(pathname, PROTECTED_PREFIXES)) {
+  if (known && !userId && matchesPrefix(pathname, PROTECTED_PREFIXES)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "";
@@ -75,7 +94,7 @@ export async function updateSession(request: NextRequest) {
     return applyCookies(NextResponse.redirect(url));
   }
 
-  if (user && matchesPrefix(pathname, AUTH_PAGES)) {
+  if (known && userId && matchesPrefix(pathname, AUTH_PAGES)) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     url.search = "";

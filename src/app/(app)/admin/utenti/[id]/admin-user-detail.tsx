@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BadgeCheck } from "lucide-react";
 import { requireAdmin } from "@/lib/admin";
+import { getTopicCatalog } from "@/lib/catalog";
+import { measured } from "@/lib/perf";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchAllRows } from "@/lib/supabase/paginate";
 import { isMissingColumnError } from "@/lib/supabase/schema-compat";
@@ -106,20 +108,15 @@ export async function AdminUserDetail({
     return answers.rows;
   }
 
-  // Domande disponibili per argomento: la vista restituisce una riga per
-  // argomento (19). Senza la migrazione si leggono le sole materie.
+  // Domande disponibili per argomento: catalogo in cache (una riga per
+  // argomento). Senza la migrazione si leggono le sole materie.
   async function fetchTopicCounts(): Promise<Map<string, number>> {
     const counts = new Map<string, number>();
-    const view = await admin
-      .from("question_topic_counts")
-      .select("topic, available");
-    if (!view.error) {
-      for (const row of view.data ?? []) {
-        counts.set(String(row.topic), Number(row.available) || 0);
-      }
+    const catalog = await getTopicCatalog();
+    if (catalog.length > 0) {
+      for (const entry of catalog) counts.set(entry.topic, entry.available);
       return counts;
     }
-    if (!isMissingColumnError(view.error.message)) return counts;
 
     const { rows } = await fetchAllRows<{ topic: string | null }>(() =>
       admin.from("questions").select("topic").order("id", { ascending: true })
@@ -137,17 +134,24 @@ export async function AdminUserDetail({
     await Promise.all([
       admin.auth.admin.getUserById(id),
       fetchProfile(),
-      fetchAllRows<AttemptRow>(() =>
-        admin
-          .from("quiz_attempts")
-          .select(
-            "id, topic, difficulty, total_questions, correct_answers, completed_at"
-          )
-          .eq("user_id", id)
-          .order("completed_at", { ascending: false })
-          .order("id", { ascending: true })
+      measured(
+        "quiz_attempts (utente)",
+        () =>
+          fetchAllRows<AttemptRow>(() =>
+            admin
+              .from("quiz_attempts")
+              .select(
+                "id, topic, difficulty, total_questions, correct_answers, completed_at"
+              )
+              .eq("user_id", id)
+              .order("completed_at", { ascending: false })
+              .order("id", { ascending: true })
+          ),
+        (result) => ({ rows: result.rows.length })
       ),
-      fetchTopicAnswers(),
+      measured("progressi utente", () => fetchTopicAnswers(), (rows) => ({
+        rows: rows.length,
+      })),
       fetchTopicCounts(),
     ]);
 

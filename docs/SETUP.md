@@ -20,7 +20,9 @@ Questa guida copre la configurazione completa: **Supabase** (database + auth), *
 2. Incolla il contenuto di `supabase/schema.sql` ed esegui (**Run**).
 3. Verifica in **Table Editor** che siano presenti le tabelle: `profiles`, `questions`, `quiz_attempts`, `quiz_answers`.
 
-> **Database già esistente?** Dopo un aggiornamento dello schema, esegui anche i file in `supabase/migrations/` (es. `2026-10-07_dati-statistiche-profilo.sql` per i campi status/scuola/città). In alternativa, riesegui l'intero `schema.sql`: è idempotente e include le migrazioni.
+> **Database già esistente?** Dopo un aggiornamento dello schema, esegui anche i file in `supabase/migrations/` (es. `2026-10-07_dati-statistiche-profilo.sql` per i campi status/scuola/città). In alternativa — ed è la via più semplice — **riesegui l'intero `schema.sql`**: è idempotente e include tutte le migrazioni, comprese le tre del 16/10/2026.
+>
+> Se una migrazione fallisce con `relation "public.…" does not exist` o `column "…" does not exist`, il database è indietro rispetto allo schema: non è un errore del file di migrazione, è il segnale che manca la base. Esegui `supabase/schema.sql` (crea tabelle e colonne mancanti, poi le migrazioni diventano superflue).
 
 Lo schema include: Row Level Security su tutte le tabelle, creazione automatica del profilo alla registrazione (con registrazione dei consensi) e la funzione RPC `save_quiz_attempt` (punteggio calcolato server-side).
 
@@ -159,7 +161,15 @@ NEXT_PUBLIC_LEGAL_EMAIL        = contact@sebastianmicu.com
 ADMIN_EMAILS                   = sebastianmicu24@gmail.com
 ```
 
+Opzionale, per diagnosticare le prestazioni in produzione:
+
+```
+PERF_LOG                       = 1        ← misure di durata nei log (vedi PERFORMANCE.md § 5.I)
+```
+
 > `SUPABASE_SERVICE_ROLE_KEY` serve solo alla route di eliminazione account: senza di essa tutto il resto funziona, ma il pulsante "Elimina account" restituirà un errore di configurazione.
+>
+> `PERF_LOG=1` fa stampare nei log di Vercel una riga per ogni lettura pesante (`get_user_stats`, `get_admin_overview`, elenchi admin) con durata e righe: serve solo quando si indaga su una pagina lenta, quindi conviene toglierlo dopo. In sviluppo le misure sono sempre attive.
 
 ### 3.3 Deploy e dominio
 
@@ -187,7 +197,7 @@ ADMIN_EMAILS                   = sebastianmicu24@gmail.com
 
 ## 5. Sicurezza (consigliato)
 
-- **Migrazioni**: dopo ogni aggiornamento applica in ordine i file in `supabase/migrations/` che non hai ancora eseguito. Le tre del 16/10/2026 (`indici-e-statistiche-utente`, `elenchi-admin`, `panoramica-admin`) aggiungono indici, viste e funzioni che spostano le aggregazioni dentro il database: senza di esse il sito continua a funzionare con le query lente descritte in [`PERFORMANCE.md`](PERFORMANCE.md).
+- **Migrazioni**: dopo ogni aggiornamento applica in ordine i file in `supabase/migrations/` che non hai ancora eseguito. Le tre del 16/10/2026 (`indici-e-statistiche-utente`, `elenchi-admin`, `panoramica-admin`) aggiungono indici, viste e funzioni che spostano le aggregazioni dentro il database: senza di esse il sito continua a funzionare con le query lente descritte in [`PERFORMANCE.md`](PERFORMANCE.md). Se invece una di queste fallisce con `column "year" does not exist` o `relation "public.question_progress" does not exist`, il database non ha ancora la base dello schema: esegui `supabase/schema.sql` (idempotente, include tutto) e le tre migrazioni diventano superflue.
 - **Supabase → Authentication**: password minima 8 caratteri; mantieni attiva l'Email Enumeration Protection; controlla periodicamente **Database → Advisors → Security**.
 - **Vercel**: durante la fase alfa valuta **Settings → Deployment Protection** per limitare l'accesso al sito.
 - **Secret key**: non condividerla mai; in caso di sospetta compromissione ruotala da Settings → API Keys.
@@ -204,6 +214,7 @@ Il report completo dell'audit (vulnerabilità trovate, corrette e raccomandate) 
 | Le email non arrivano | SMTP non configurato o dominio non verificato | Controlla **Authentication → Emails** e i record DNS di Resend (anche cartella spam) |
 | Le email non arrivano **solo a una casella istituzionale** (es. universitaria) | I filtri dell'ateneo bloccano/sequestrano le email esterne (o l'indirizzo è in lista di soppressione su Resend) | 1) Controlla lo stato del destinatario in **Resend → Emails** (delivered/bounced/suppressed) e la posta indesiderata; 2) **conferma manuale** dal pannello admin (`/admin/utenti` → "Conferma email"); 3) tieni **un solo record DMARC** (`_dmarc`): record duplicati invalidi la configurazione |
 | Dashboard dice "Database non inizializzato" | Schema non applicato | Esegui `supabase/schema.sql` nell'SQL Editor |
+| Una migrazione fallisce: `relation "public.question_progress" does not exist` o `column "year" does not exist` | Il database è indietro rispetto a `schema.sql` (mancano tabelle/colonne di versioni precedenti) | Esegui `supabase/schema.sql` per intero: crea ciò che manca e include le tre migrazioni del 16/10/2026. Poi verifica con `select count(*) from public.question_topic_counts;` (19) |
 | Quiz vuoti "Nessuna domanda" | Domande non importate | Esegui `npm run import:questions` |
 | Errore 500 su "Elimina account" | Manca la chiave segreta | Aggiungi `SUPABASE_SERVICE_ROLE_KEY` (la **Secret key**) su Vercel e ridai il deploy |
 | Link email "non valido o scaduto" | Redirect URL non configurato o link già usato | Aggiorna le Redirect URLs su Supabase; i link sono monouso e scadono |

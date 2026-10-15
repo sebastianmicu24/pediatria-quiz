@@ -15,6 +15,11 @@
 --  in UTC. La pagina statistiche personali usa invece Europe/Rome.
 --
 --  Esegui questo file nell'SQL Editor di Supabase. È idempotente.
+--
+--  Prerequisito: la colonna profiles.year deve esistere (schema.sql
+--  § 10). Se l'esecuzione fallisce con "column year does not exist" il
+--  database è indietro rispetto allo schema: esegui schema.sql per
+--  intero (include anche questa funzione) e salta questo file.
 -- ============================================================
 
 create or replace function public.get_admin_overview(p_days int default 14)
