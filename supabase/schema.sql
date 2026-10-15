@@ -31,6 +31,23 @@ create table if not exists public.profiles (
 comment on table public.profiles is 'Profilo applicativo collegato a auth.users. Contiene le preferenze e i riferimenti ai consensi raccolti in fase di registrazione.';
 
 -- ─────────────────────────────────────────────────────────────
+-- 1b. Colonne dei profili aggiunte dopo la prima versione dello
+--     schema (idempotenti: su un database nuovo esistono già).
+--
+--     Stanno qui, e non in fondo al file, perché le istruzioni che
+--     seguono le citano per nome (es. il GRANT per colonna) e Postgres
+--     le verifica subito: su un database più vecchio dello schema il
+--     GRANT fallirebbe con "column \"year\" of relation \"profiles\"
+--     does not exist" e l'intero script verrebbe annullato.
+-- ─────────────────────────────────────────────────────────────
+alter table public.profiles add column if not exists status text;
+alter table public.profiles add column if not exists school text;
+alter table public.profiles add column if not exists city text;
+alter table public.profiles add column if not exists year text;
+alter table public.profiles add column if not exists tags text[] not null default '{}';
+alter table public.profiles add column if not exists email text;
+
+-- ─────────────────────────────────────────────────────────────
 -- 2. DOMANDE
 -- ─────────────────────────────────────────────────────────────
 create table if not exists public.questions (
@@ -449,6 +466,9 @@ $$;
 drop function if exists public.get_quiz_questions(int, text, int);
 drop function if exists public.get_quiz_questions(int, text, int, uuid[]);
 drop function if exists public.get_quiz_questions(int, text[], int[], uuid[]);
+-- Firma presente sul database di produzione (parametri in ordine diverso):
+-- senza questa riga resterebbe come funzione morta accanto a quella nuova.
+drop function if exists public.get_quiz_questions(int, int, uuid[], text);
 
 revoke all on function public.get_quiz_questions(int, text[], int[], uuid[], text[]) from public, anon;
 grant execute on function public.get_quiz_questions(int, text[], int[], uuid[], text[]) to authenticated;
@@ -608,15 +628,10 @@ create index if not exists profiles_created_idx
 
 -- ─────────────────────────────────────────────────────────────
 -- 10. Migrazioni incrementali (idempotenti)
---     Aggiungono al database esistente le colonne introdotte
---     nelle versioni successive dello schema.
+--     Completano i dati di un database esistente. Le colonne nuove
+--     dei profili sono aggiunte nella sezione 1b, prima delle
+--     istruzioni che le citano.
 -- ─────────────────────────────────────────────────────────────
-alter table public.profiles add column if not exists status text;
-alter table public.profiles add column if not exists school text;
-alter table public.profiles add column if not exists city text;
-alter table public.profiles add column if not exists year text;
-alter table public.profiles add column if not exists tags text[] not null default '{}';
-alter table public.profiles add column if not exists email text;
 
 -- Email degli account esistenti (il trigger la salva per i nuovi).
 update public.profiles p
