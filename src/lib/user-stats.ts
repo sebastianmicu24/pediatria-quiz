@@ -12,27 +12,14 @@ type TopicAnswerRow = {
 };
 
 /**
- * Esiti per materia basati sui progressi: una riga per domanda con
- * l'ultima risposta data (le nuove risposte sovrascrivono le vecchie).
- * Se la tabella question_progress non è ancora presente (migrazione
- * non applicata), ricade sulle risposte storiche.
+ * Tentativi caricati per la dashboard e per la cronologia delle statistiche.
+ * I totali (numero di esercitazioni, risposte, corrette) non dipendono da
+ * questo limite: nel percorso normale li calcola il database.
  */
-async function fetchTopicProgress(supabase: SupabaseClient) {
-  const progress = await fetchAllRows<TopicAnswerRow>(() =>
-    supabase
-      .from("question_progress")
-      .select("is_correct, questions!inner(topic)")
-      .order("question_id", { ascending: true })
-  );
-  if (!progress.error) return progress;
+const ATTEMPT_LIMIT = 500;
 
-  return fetchAllRows<TopicAnswerRow>(() =>
-    supabase
-      .from("quiz_answers")
-      .select("is_correct, questions!inner(topic)")
-      .order("id", { ascending: true })
-  );
-}
+/** Materie confrontate per "migliore/peggiore": almeno 3 domande svolte. */
+const MIN_ANSWERS_FOR_COMPARISON = 3;
 
 export type UserStats = {
   hasError: boolean;
@@ -57,8 +44,195 @@ export type UserStats = {
   worstTopic: TopicStat | null;
 };
 
-/** Carica tutto ciò che serve per dashboard e pagina statistiche personali. */
-export async function loadUserStats(
+// ─────────────────────────────────────────────────────────────
+//  Calcoli condivisi dai due percorsi (RPC e lettura diretta)
+// ─────────────────────────────────────────────────────────────
+
+/** Aggrega righe "materia + esito" in statistiche per materia. */
+function topicStatsFromRows(rows: TopicAnswerRow[]): TopicStat[] {
+  const byTopic = new Map<string, { total: number; correct: number }>();
+  for (const row of rows) {
+    const nested = row.questions;
+    const topic = Array.isArray(nested) ? nested[0]?.topic : nested?.topic;
+    if (!topic) continue;
+    const entry = byTopic.get(topic) ?? { total: 0, correct: 0 };
+    entry.total += 1;
+    if (row.is_correct) entry.correct += 1;
+    byTopic.set(topic, entry);
+  }
+  return [...byTopic.entries()]
+    .map(([topic, s]) => ({ topic, total: s.total, correct: s.correct }))
+    .sort((a, b) => b.total - a.total);
+}
+
+/** Copertura: prima gli argomenti già affrontati, poi per numero di svolte. */
+function sortCoverage(a: TopicCoverageDatum, b: TopicCoverageDatum) {
+  if ((a.done > 0) !== (b.done > 0)) return a.done > 0 ? -1 : 1;
+  if (a.done !== b.done) return b.done - a.done;
+  return a.topic.localeCompare(b.topic, "it");
+}
+
+function coverageFrom(
+  topics: string[],
+  topicStats: TopicStat[],
+  availableByTopic: Map<string, number>
+): TopicCoverageDatum[] {
+  const doneByTopic = new Map(topicStats.map((stat) => [stat.topic, stat]));
+  return topics
+    .map((topic) => ({
+      topic,
+      done: doneByTopic.get(topic)?.total ?? 0,
+      correct: doneByTopic.get(topic)?.correct ?? 0,
+      available: availableByTopic.get(topic) ?? 0,
+    }))
+    .sort(sortCoverage);
+}
+
+/**
+ * Materie in cui si va meglio e peggio. Il confronto usa le materie con
+ * almeno 3 domande svolte, ma solo se ce ne sono almeno due; altrimenti
+ * ripiega su tutte quelle affrontate, così il confronto esiste sempre
+ * (e resta assente solo quando non c'è nulla da confrontare).
+ */
+function pickBestWorst(topicStats: TopicStat[]): {
+  best: TopicStat | null;
+  worst: TopicStat | null;
+} {
+  const byAccuracy = [...topicStats].sort(
+    (a, b) => b.correct / b.total - a.correct / a.total || b.total - a.total
+  );
+  const solid = byAccuracy.filter(
+    (stat) => stat.total >= MIN_ANSWERS_FOR_COMPARISON
+  );
+  const ranked = solid.length >= 2 ? solid : byAccuracy;
+  return {
+    best: ranked[0] ?? null,
+    worst: ranked.length > 1 ? ranked[ranked.length - 1] : null,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Percorso normale: una sola RPC, aggregazione in SQL
+// ─────────────────────────────────────────────────────────────
+
+function asNumber(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function asTopicStats(value: unknown): TopicStat[] {
+  if (!Array.isArray(value)) return [];
+  const stats: TopicStat[] = [];
+  for (const raw of value) {
+    if (!raw || typeof raw !== "object") continue;
+    const row = raw as Record<string, unknown>;
+    if (typeof row.topic !== "string" || !row.topic) continue;
+    stats.push({
+      topic: row.topic,
+      total: asNumber(row.total),
+      correct: asNumber(row.correct),
+    });
+  }
+  return stats.sort((a, b) => b.total - a.total);
+}
+
+function asCoverage(value: unknown): TopicCoverageDatum[] {
+  if (!Array.isArray(value)) return [];
+  const rows: TopicCoverageDatum[] = [];
+  for (const raw of value) {
+    if (!raw || typeof raw !== "object") continue;
+    const row = raw as Record<string, unknown>;
+    if (typeof row.topic !== "string" || !row.topic) continue;
+    rows.push({
+      topic: row.topic,
+      done: asNumber(row.done),
+      correct: asNumber(row.correct),
+      available: asNumber(row.available),
+    });
+  }
+  return rows.sort(sortCoverage);
+}
+
+/**
+ * Carica le statistiche con get_user_stats(): il database aggrega le
+ * 12.449 domande in 19 righe invece di trasferire l'intera tabella.
+ * Restituisce null se la funzione non è ancora stata applicata al
+ * database (in quel caso si ricade sul percorso storico).
+ */
+async function loadStatsFromRpc(
+  supabase: SupabaseClient
+): Promise<UserStats | null> {
+  const { data, error } = await supabase.rpc("get_user_stats", {
+    p_attempt_limit: ATTEMPT_LIMIT,
+  });
+  if (error || !data) return null;
+
+  const payload = data as {
+    totals?: Record<string, unknown> | null;
+    topics?: unknown;
+    coverage?: unknown;
+    topicStats?: unknown;
+    attempts?: unknown;
+  };
+
+  const topicStats = asTopicStats(payload.topicStats);
+  const topics = Array.isArray(payload.topics)
+    ? payload.topics
+        .filter((topic): topic is string => typeof topic === "string")
+        .sort((a, b) => a.localeCompare(b, "it"))
+    : [];
+  const coverage = asCoverage(payload.coverage);
+  const totals = payload.totals ?? {};
+  const { best, worst } = pickBestWorst(topicStats);
+
+  return {
+    hasError: false,
+    attempts: (payload.attempts ?? []) as AttemptSummary[],
+    topics,
+    coverage,
+    topicStats,
+    totals: {
+      attempts: asNumber(totals.attempts),
+      answered: asNumber(totals.answered),
+      correct: asNumber(totals.correct),
+      uniqueDone: asNumber(totals.uniqueDone),
+      uniqueCorrect: asNumber(totals.uniqueCorrect),
+      available: asNumber(totals.available),
+    },
+    bestTopic: best,
+    worstTopic: worst,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Percorso storico: lettura diretta delle tabelle
+//  (solo se la RPC non è disponibile o fallisce)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Esiti per materia basati sui progressi: una riga per domanda con
+ * l'ultima risposta data (le nuove risposte sovrascrivono le vecchie).
+ * Se la tabella question_progress non è ancora presente (migrazione
+ * non applicata), ricade sulle risposte storiche.
+ */
+async function fetchTopicProgress(supabase: SupabaseClient) {
+  const progress = await fetchAllRows<TopicAnswerRow>(() =>
+    supabase
+      .from("question_progress")
+      .select("is_correct, questions!inner(topic)")
+      .order("question_id", { ascending: true })
+  );
+  if (!progress.error) return progress;
+
+  return fetchAllRows<TopicAnswerRow>(() =>
+    supabase
+      .from("quiz_answers")
+      .select("is_correct, questions!inner(topic)")
+      .order("id", { ascending: true })
+  );
+}
+
+async function loadStatsFromTables(
   supabase: SupabaseClient,
   userId: string
 ): Promise<UserStats> {
@@ -70,7 +244,7 @@ export async function loadUserStats(
       )
       .eq("user_id", userId)
       .order("completed_at", { ascending: false })
-      .limit(500),
+      .limit(ATTEMPT_LIMIT),
     fetchTopicProgress(supabase),
     fetchAllRows<{ topic: string | null }>(() =>
       supabase
@@ -85,20 +259,7 @@ export async function loadUserStats(
   );
 
   const attempts = (attemptsResult.data ?? []) as AttemptSummary[];
-
-  const topicMap = new Map<string, { total: number; correct: number }>();
-  for (const row of topicProgressResult.rows) {
-    const nested = row.questions;
-    const topic = Array.isArray(nested) ? nested[0]?.topic : nested?.topic;
-    if (!topic) continue;
-    const entry = topicMap.get(topic) ?? { total: 0, correct: 0 };
-    entry.total += 1;
-    if (row.is_correct) entry.correct += 1;
-    topicMap.set(topic, entry);
-  }
-  const topicStats: TopicStat[] = [...topicMap.entries()]
-    .map(([topic, s]) => ({ topic, total: s.total, correct: s.correct }))
-    .sort((a, b) => b.total - a.total);
+  const topicStats = topicStatsFromRows(topicProgressResult.rows);
 
   const topicCounts = new Map<string, number>();
   for (const row of topicsResult.rows) {
@@ -106,32 +267,8 @@ export async function loadUserStats(
     topicCounts.set(row.topic, (topicCounts.get(row.topic) ?? 0) + 1);
   }
   const topics = [...topicCounts.keys()].sort((a, b) => a.localeCompare(b, "it"));
-
-  const coverage: TopicCoverageDatum[] = topics
-    .map((topic) => ({
-      topic,
-      done: topicMap.get(topic)?.total ?? 0,
-      correct: topicMap.get(topic)?.correct ?? 0,
-      available: topicCounts.get(topic) ?? 0,
-    }))
-    .sort((a, b) => {
-      // Prima gli argomenti già affrontati (per numero di svolte), poi gli altri.
-      if ((a.done > 0) !== (b.done > 0)) return a.done > 0 ? -1 : 1;
-      if (a.done !== b.done) return b.done - a.done;
-      return a.topic.localeCompare(b.topic, "it");
-    });
-
-  // Materie in cui si va meglio e peggio. Il confronto usa le materie con
-  // almeno 3 domande svolte, ma solo se ce ne sono almeno due; altrimenti
-  // ripiega su tutte quelle affrontate, così il confronto esiste sempre
-  // (e resta assente solo quando non c'è nulla da confrontare).
-  const byAccuracy = [...topicStats].sort(
-    (a, b) => b.correct / b.total - a.correct / a.total || b.total - a.total
-  );
-  const solid = byAccuracy.filter((t) => t.total >= 3);
-  const ranked = solid.length >= 2 ? solid : byAccuracy;
-  const best = ranked[0] ?? null;
-  const worst = ranked.length > 1 ? ranked[ranked.length - 1] : null;
+  const coverage = coverageFrom(topics, topicStats, topicCounts);
+  const { best, worst } = pickBestWorst(topicStats);
 
   return {
     hasError,
@@ -150,4 +287,14 @@ export async function loadUserStats(
     bestTopic: best,
     worstTopic: worst,
   };
+}
+
+/** Carica tutto ciò che serve per dashboard e pagina statistiche personali. */
+export async function loadUserStats(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<UserStats> {
+  const fromRpc = await loadStatsFromRpc(supabase);
+  if (fromRpc) return fromRpc;
+  return loadStatsFromTables(supabase, userId);
 }

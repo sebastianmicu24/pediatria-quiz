@@ -187,7 +187,7 @@ ADMIN_EMAILS                   = sebastianmicu24@gmail.com
 
 ## 5. Sicurezza (consigliato)
 
-- **Migrazioni**: dopo ogni aggiornamento applica i file in `supabase/migrations/` (l'ultimo applica l'hardening di sicurezza).
+- **Migrazioni**: dopo ogni aggiornamento applica in ordine i file in `supabase/migrations/` che non hai ancora eseguito. L'ultimo (`2026-10-16_indici-e-statistiche-utente.sql`) aggiunge gli indici delle query più pesanti, attiva la RLS su `question_progress` e crea la funzione `get_user_stats()` usata da dashboard e statistiche: senza quella funzione il sito continua a funzionare, ma con le query lente descritte in [`PERFORMANCE.md`](PERFORMANCE.md).
 - **Supabase → Authentication**: password minima 8 caratteri; mantieni attiva l'Email Enumeration Protection; controlla periodicamente **Database → Advisors → Security**.
 - **Vercel**: durante la fase alfa valuta **Settings → Deployment Protection** per limitare l'accesso al sito.
 - **Secret key**: non condividerla mai; in caso di sospetta compromissione ruotala da Settings → API Keys.
