@@ -3,8 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { parseDifficulties } from "@/lib/utils";
 import { EXERCISE_BATCH_SIZE, isReviewStatus } from "@/lib/constants";
 import { fetchQuestionBatch } from "@/lib/questions";
+import { getTopicCatalog } from "@/lib/catalog";
 import { QuizClient } from "./quiz-client";
 import { QuizEmpty } from "./quiz-empty";
+import { QuizEmptyFilters } from "./quiz-empty-filters";
 
 type QuizSearchParams = Awaited<PageProps<"/quiz">["searchParams"]>;
 
@@ -34,20 +36,28 @@ export async function QuizLoader({
   const statuses = toStringList(raw.status).filter(isReviewStatus);
 
   const supabase = await createClient();
-  const questions = await fetchQuestionBatch(supabase, {
-    topics,
-    difficulties,
-    statuses,
-    count: EXERCISE_BATCH_SIZE,
-    exclude: [],
-  });
+  const [questions, catalog] = await Promise.all([
+    fetchQuestionBatch(supabase, {
+      topics,
+      difficulties,
+      statuses,
+      count: EXERCISE_BATCH_SIZE,
+      exclude: [],
+    }),
+    getTopicCatalog(),
+  ]);
 
   if (questions.length === 0) {
     return (
       <QuizEmpty
         variant="empty"
         message="Nessuna domanda trovata con i filtri selezionati. Prova a cambiare argomenti, difficoltà o ripasso."
-      />
+      >
+        <QuizEmptyFilters
+          topics={catalog.map((entry) => entry.topic)}
+          value={{ topics, difficulties, statuses }}
+        />
+      </QuizEmpty>
     );
   }
 
@@ -61,6 +71,7 @@ export async function QuizLoader({
       key={quizKey}
       initialQuestions={questions}
       meta={{ topics, difficulties, statuses }}
+      availableTopics={catalog.map((entry) => entry.topic)}
     />
   );
 }

@@ -35,6 +35,12 @@ export async function QuizContent({
   const query = sanitizeSearchTerm(firstParam(params.q));
   const topic = firstParam(params.topic).trim().slice(0, 120);
   const page = parsePage(params.page);
+  // Impostato dal tasto "Quiz successivo/precedente" quando si attraversa
+  // il confine di una pagina: apre direttamente l'editor sulla prima o
+  // sull'ultima domanda della nuova pagina.
+  const editParam = firstParam(params.edit);
+  const autoEdit =
+    editParam === "first" || editParam === "last" ? editParam : null;
   const from = (page - 1) * PAGE_SIZE;
 
   const admin = createAdminClient();
@@ -113,10 +119,13 @@ export async function QuizContent({
 
       <div className="mt-6">
         <AdminQuizManager
+          key={`${page}|${topic}|${query}`}
+          autoEdit={autoEdit}
           questions={questions}
           topics={topics}
           total={total}
           page={page}
+          pageSize={PAGE_SIZE}
           pageCount={pageCount}
           query={query}
           topic={topic}

@@ -1,11 +1,20 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import {
+  useActionState,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Pencil,
   Plus,
   Search,
@@ -41,12 +50,24 @@ const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 const inputClass = `${fieldClass} border-neutral-300`;
 
-/** Link a una pagina dell'elenco mantenendo i filtri attivi. */
-function pageHref(target: number, query: string, topic: string) {
+type AutoEdit = "first" | "last" | null;
+
+/**
+ * Link a una pagina dell'elenco mantenendo i filtri attivi. Con `edit`
+ * la pagina si apre direttamente sull'editor della prima o dell'ultima
+ * domanda (usato dai tasti "Quiz successivo/precedente").
+ */
+function pageHref(
+  target: number,
+  query: string,
+  topic: string,
+  edit?: Exclude<AutoEdit, null>
+) {
   const params = new URLSearchParams();
   if (query) params.set("q", query);
   if (topic) params.set("topic", topic);
   if (target > 1) params.set("page", String(target));
+  if (edit) params.set("edit", edit);
   const search = params.toString();
   return search ? `/admin/quiz?${search}` : "/admin/quiz";
 }
@@ -61,25 +82,90 @@ export function AdminQuizManager({
   topics,
   total,
   page,
+  pageSize,
   pageCount,
   query,
   topic,
+  autoEdit,
 }: {
   questions: AdminQuestion[];
   topics: string[];
   total: number;
   page: number;
+  pageSize: number;
   pageCount: number;
   query: string;
   topic: string;
+  autoEdit: AutoEdit;
 }) {
   const router = useRouter();
-  const [editing, setEditing] = useState<AdminQuestion | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(() => {
+    if (!autoEdit || questions.length === 0) return null;
+    return (autoEdit === "first" ? questions[0] : questions[questions.length - 1])
+      .id;
+  });
+  // Domande salvate in questa sessione: si sovrappongono all'elenco del
+  // server, così "successivo/precedente" mostra subito i valori nuovi
+  // senza rileggere la pagina (e senza riordinare l'elenco mentre si lavora).
+  const [saved, setSaved] = useState<Record<string, AdminQuestion>>({});
+  const listStaleRef = useRef(false);
+  const [navigating, startNavigation] = useTransition();
   const [notice, setNotice] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const items = useMemo(
+    () => questions.map((item) => saved[item.id] ?? item),
+    [questions, saved]
+  );
+  const currentIndex = editingId
+    ? items.findIndex((item) => item.id === editingId)
+    : -1;
+  const editing = currentIndex >= 0 ? items[currentIndex] : null;
+  const hasPrevious = currentIndex > 0 || (currentIndex === 0 && page > 1);
+  const hasNext =
+    currentIndex >= 0 &&
+    (currentIndex < items.length - 1 || page < pageCount);
+
+  // Arrivati qui da un cambio di pagina: l'editor è già aperto, l'URL
+  // torna pulito e la vista riparte dall'alto.
+  useEffect(() => {
+    if (!autoEdit) return;
+    window.history.replaceState(null, "", pageHref(page, query, topic));
+    window.scrollTo({ top: 0 });
+  }, [autoEdit, page, query, topic]);
+
+  function closeEditor() {
+    setEditingId(null);
+    if (listStaleRef.current) {
+      listStaleRef.current = false;
+      setNotice({ type: "success", message: "Domanda aggiornata correttamente." });
+      router.refresh();
+    }
+  }
+
+  function goTo(direction: 1 | -1) {
+    if (currentIndex < 0 || navigating) return;
+    const target = currentIndex + direction;
+    if (target >= 0 && target < items.length) {
+      setEditingId(items[target].id);
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    // Confine della pagina: si carica la pagina vicina e si apre
+    // l'editor sulla prima/ultima domanda.
+    if (direction === 1 && page < pageCount) {
+      startNavigation(() =>
+        router.push(pageHref(page + 1, query, topic, "first"))
+      );
+    } else if (direction === -1 && page > 1) {
+      startNavigation(() =>
+        router.push(pageHref(page - 1, query, topic, "last"))
+      );
+    }
+  }
 
   async function handleDelete(item: AdminQuestion) {
     const preview = stripHtml(item.question).slice(0, 90);
@@ -104,16 +190,20 @@ export function AdminQuizManager({
   if (editing) {
     return (
       <QuestionEditor
+        key={editing.id}
         question={editing}
         topics={topics}
-        onClose={() => setEditing(null)}
-        onSaved={() => {
-          setEditing(null);
-          setNotice({
-            type: "success",
-            message: "Domanda aggiornata correttamente.",
-          });
-          router.refresh();
+        position={(page - 1) * pageSize + currentIndex + 1}
+        total={total}
+        hasPrevious={hasPrevious}
+        hasNext={hasNext}
+        navigating={navigating}
+        onPrevious={() => goTo(-1)}
+        onNext={() => goTo(1)}
+        onClose={closeEditor}
+        onSaved={(next) => {
+          listStaleRef.current = true;
+          setSaved((prev) => ({ ...prev, [next.id]: next }));
         }}
       />
     );
@@ -174,13 +264,13 @@ export function AdminQuizManager({
         {pageCount > 1 ? ` · pagina ${page} di ${pageCount}` : ""}
       </p>
 
-      {questions.length === 0 ? (
+      {items.length === 0 ? (
         <p className="rounded-lg border border-dashed border-neutral-300 bg-white px-4 py-10 text-center text-sm text-neutral-500">
           Nessuna domanda corrisponde ai filtri.
         </p>
       ) : (
         <ul className="divide-y divide-neutral-100 overflow-hidden rounded-lg border border-neutral-200 bg-white">
-          {questions.map((item) => (
+          {items.map((item) => (
             <li
               key={item.id}
               className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
@@ -208,8 +298,9 @@ export function AdminQuizManager({
                   size="sm"
                   variant="secondary"
                   onClick={() => {
-                    setEditing(item);
+                    setEditingId(item.id);
                     setNotice(null);
+                    window.scrollTo({ top: 0 });
                   }}
                 >
                   <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
@@ -277,13 +368,27 @@ const initialFormState: QuestionFormState = { status: "idle", message: "" };
 function QuestionEditor({
   question,
   topics,
+  position,
+  total,
+  hasPrevious,
+  hasNext,
+  navigating,
+  onPrevious,
+  onNext,
   onClose,
   onSaved,
 }: {
   question: AdminQuestion;
   topics: string[];
+  position: number;
+  total: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+  navigating: boolean;
+  onPrevious: () => void;
+  onNext: () => void;
   onClose: () => void;
-  onSaved: () => void;
+  onSaved: (saved: AdminQuestion) => void;
 }) {
   const [state, formAction, pending] = useActionState(
     updateQuestion,
@@ -293,6 +398,56 @@ function QuestionEditor({
   const [explanationHtml, setExplanationHtml] = useState(question.explanation);
   const [options, setOptions] = useState<string[]>(question.options);
   const [answerIndex, setAnswerIndex] = useState(question.answer_index);
+  const [topicValue, setTopicValue] = useState(question.topic);
+  const [difficultyValue, setDifficultyValue] = useState(
+    String(question.difficulty)
+  );
+
+  // Istantanea dei campi: serve a sapere se ci sono modifiche non salvate
+  // prima di passare a un'altra domanda.
+  const snapshot = JSON.stringify([
+    questionHtml,
+    explanationHtml,
+    options,
+    answerIndex,
+    topicValue.trim(),
+    difficultyValue,
+  ]);
+  const baselineRef = useRef(
+    JSON.stringify([
+      question.question,
+      question.explanation,
+      question.options,
+      question.answer_index,
+      question.topic.trim(),
+      String(question.difficulty),
+    ])
+  );
+  const submittedRef = useRef(snapshot);
+  const handledStateRef = useRef(state);
+
+  // Salvataggio riuscito: la nuova istantanea diventa il riferimento e
+  // l'elenco riceve i valori salvati.
+  useEffect(() => {
+    if (handledStateRef.current === state) return;
+    handledStateRef.current = state;
+    if (state.status === "success" && state.saved) {
+      baselineRef.current = submittedRef.current;
+      onSaved({ ...question, ...state.saved });
+    }
+  }, [state, question, onSaved]);
+
+  function leave(action: () => void) {
+    if (
+      snapshot !== baselineRef.current &&
+      !window.confirm(
+        "Ci sono modifiche non salvate: se prosegui andranno perse. Continuare?"
+      )
+    ) {
+      return;
+    }
+    action();
+  }
 
   function updateOption(index: number, value: string) {
     setOptions((prev) => prev.map((option, i) => (i === index ? value : option)));
@@ -313,23 +468,59 @@ function QuestionEditor({
   }
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form
+      action={formAction}
+      onSubmit={() => {
+        submittedRef.current = snapshot;
+      }}
+      className="space-y-6"
+    >
       <input type="hidden" name="id" value={question.id} />
       <input type="hidden" name="question" value={questionHtml} />
       <input type="hidden" name="explanation" value={explanationHtml} />
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
         <button
           type="button"
-          onClick={onClose}
+          onClick={() => leave(onClose)}
           className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Torna all&apos;elenco
         </button>
-        <p className="max-w-full truncate text-xs text-neutral-400">
-          ID: {question.source_id}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="max-w-full truncate text-xs tabular-nums text-neutral-500">
+            Quiz {formatNumber(position)} di {formatNumber(total)}
+            <span className="text-neutral-400"> · ID: {question.source_id}</span>
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => leave(onPrevious)}
+              disabled={!hasPrevious || navigating}
+              aria-label="Quiz precedente"
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Precedente</span>
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => leave(onNext)}
+              disabled={!hasNext || navigating}
+            >
+              Quiz successivo
+              {navigating ? (
+                <Spinner className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              )}
+            </Button>
+          </div>
+        </div>
       </div>
 
       {state.status === "success" ? (
@@ -338,9 +529,21 @@ function QuestionEditor({
             <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
             {state.message}
           </p>
-          <Button type="button" size="sm" onClick={onSaved}>
-            Chiudi e aggiorna l&apos;elenco
-          </Button>
+          {hasNext ? (
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => leave(onNext)}
+              disabled={navigating}
+            >
+              Quiz successivo
+              {navigating ? (
+                <Spinner className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              )}
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
@@ -440,7 +643,8 @@ function QuestionEditor({
             id="topic"
             name="topic"
             list="admin-topics"
-            defaultValue={question.topic}
+            value={topicValue}
+            onChange={(event) => setTopicValue(event.target.value)}
             maxLength={80}
             className={inputClass}
           />
@@ -461,7 +665,8 @@ function QuestionEditor({
           <select
             id="difficulty"
             name="difficulty"
-            defaultValue={String(question.difficulty)}
+            value={difficultyValue}
+            onChange={(event) => setDifficultyValue(event.target.value)}
             className={inputClass}
           >
             <option value="1">Base</option>
@@ -500,7 +705,21 @@ function QuestionEditor({
         <Button
           type="button"
           variant="secondary"
-          onClick={onClose}
+          onClick={() => leave(onNext)}
+          disabled={!hasNext || navigating}
+          className="w-full sm:w-auto"
+        >
+          Quiz successivo
+          {navigating ? (
+            <Spinner className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          )}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => leave(onClose)}
           className="w-full sm:w-auto"
         >
           Annulla

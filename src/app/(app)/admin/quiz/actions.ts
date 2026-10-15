@@ -10,6 +10,16 @@ import { sanitizeHtml, stripHtml } from "@/lib/utils";
 export type QuestionFormState = {
   status: "idle" | "success" | "error";
   message: string;
+  /** Valori effettivamente salvati (già sanitizzati), per aggiornare l'elenco senza rileggerlo. */
+  saved?: {
+    id: string;
+    question: string;
+    options: string[];
+    answer_index: number;
+    topic: string;
+    difficulty: number;
+    explanation: string;
+  };
 };
 
 const MAX_QUESTION_CHARS = 2000;
@@ -99,7 +109,19 @@ export async function updateQuestion(
   // rigenerarlo subito, così l'admin vede il proprio cambiamento.
   updateTag(QUESTIONS_TAG);
 
-  return { status: "success", message: "Domanda aggiornata correttamente." };
+  return {
+    status: "success",
+    message: "Domanda aggiornata correttamente.",
+    saved: {
+      id,
+      question: questionHtml,
+      options,
+      answer_index: answerIndex,
+      topic,
+      difficulty,
+      explanation: explanationHtml,
+    },
+  };
 }
 
 /** Elimina una domanda (e le risposte storiche collegate, per cascade). */

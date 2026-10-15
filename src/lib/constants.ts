@@ -20,6 +20,11 @@ export const DIFFICULTY_LABELS: Record<number, string> = {
   3: "Avanzata",
 };
 
+/** Opzioni dei filtri di difficoltà (dashboard e pagina del quiz). */
+export const DIFFICULTY_OPTIONS = Object.entries(DIFFICULTY_LABELS).map(
+  ([value, label]) => ({ value, label })
+);
+
 export function difficultyLabel(difficulty: number | null | undefined): string {
   if (difficulty == null) return "—";
   return DIFFICULTY_LABELS[difficulty] ?? `Livello ${difficulty}`;

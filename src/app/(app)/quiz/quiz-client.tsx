@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Home,
   RotateCcw,
+  SlidersHorizontal,
   XCircle,
 } from "lucide-react";
 import type { Question } from "@/lib/types";
@@ -18,6 +19,11 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { StatStrip } from "@/components/ui/stat-strip";
 import { fetchQuizBatch, saveQuizAttempt } from "./actions";
+import {
+  QuizFilters,
+  countFilters,
+  type QuizFilterValues,
+} from "./quiz-filters";
 
 type AnswerRecord = {
   questionId: string;
@@ -41,12 +47,19 @@ const PREFETCH_THRESHOLD = 3;
 export function QuizClient({
   initialQuestions,
   meta,
+  availableTopics,
 }: {
   initialQuestions: Question[];
-  meta: { topics: string[]; difficulties: number[]; statuses: string[] };
+  meta: QuizFilterValues;
+  availableTopics: string[];
 }) {
   const router = useRouter();
 
+  // Filtri attivi: partono dall'URL e si possono cambiare dalla pagina.
+  const [filters, setFilters] = useState<QuizFilterValues>(meta);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [applyingFilters, setApplyingFilters] = useState(false);
+  const [filtersError, setFiltersError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -65,6 +78,12 @@ export function QuizClient({
   const loadingRef = useRef(false);
   const pendingAdvanceRef = useRef(false);
   const explanationRef = useRef<HTMLElement | null>(null);
+  // Cresce a ogni cambio di filtri: scarta le risposte dei lotti richiesti
+  // con i filtri precedenti.
+  const generationRef = useRef(0);
+  // Filtri cambiati dopo aver già risposto: il tentativo non ha più un
+  // solo argomento/difficoltà da registrare.
+  const filtersChangedRef = useRef(false);
 
   // Avvia il cronometro dell'esercitazione al montaggio.
   useEffect(() => {
@@ -77,9 +96,15 @@ export function QuizClient({
     loadingRef.current = false;
     pendingAdvanceRef.current = false;
     setLoadingMore(false);
+    setApplyingFilters(false);
   });
 
   const question = questions[index];
+  // Elenco argomenti del filtro: catalogo + quelli già in uso (se il
+  // catalogo non fosse disponibile, restano comunque selezionabili).
+  const topicOptions = [
+    ...new Set([...availableTopics, ...filters.topics]),
+  ].sort((a, b) => a.localeCompare(b, "it"));
   const correctCount = answers.filter((a) => a.isCorrect).length;
 
   const finish = useCallback(
@@ -96,10 +121,14 @@ export function QuizClient({
 
       if (finalAnswers.length === 0) return;
       setSaveState("saving");
+      const singleScope = !filtersChangedRef.current;
       saveQuizAttempt({
-        topic: meta.topics.length === 1 ? meta.topics[0] : null,
+        topic:
+          singleScope && filters.topics.length === 1 ? filters.topics[0] : null,
         difficulty:
-          meta.difficulties.length === 1 ? meta.difficulties[0] : null,
+          singleScope && filters.difficulties.length === 1
+            ? filters.difficulties[0]
+            : null,
         answers: finalAnswers.map((a) => ({
           questionId: a.questionId,
           selectedIndex: a.selectedIndex,
@@ -112,7 +141,7 @@ export function QuizClient({
           setSaveState("error");
         });
     },
-    [meta.topics, meta.difficulties]
+    [filters.topics, filters.difficulties]
   );
 
   const advance = useCallback(() => {
@@ -129,14 +158,17 @@ export function QuizClient({
     }
     loadingRef.current = true;
     setLoadingMore(true);
+    const generation = generationRef.current;
     fetchQuizBatch({
-      topics: meta.topics,
-      difficulties: meta.difficulties,
-      statuses: meta.statuses,
+      topics: filters.topics,
+      difficulties: filters.difficulties,
+      statuses: filters.statuses,
       exclude: questions.map((q) => q.id),
       count: EXERCISE_BATCH_SIZE,
     })
       .then((result) => {
+        // I filtri sono cambiati mentre il lotto era in viaggio.
+        if (generation !== generationRef.current) return;
         const known = new Set(questions.map((q) => q.id));
         const fresh = result.ok
           ? result.questions.filter((q) => !known.has(q.id))
@@ -166,10 +198,82 @@ export function QuizClient({
         // richiesta (tasto "Domanda successiva" o prefetch).
       })
       .finally(() => {
+        if (generation !== generationRef.current) return;
         loadingRef.current = false;
         setLoadingMore(false);
       });
-  }, [questions, index, meta.topics, meta.difficulties, meta.statuses, exhausted, advance]);
+  }, [questions, index, filters, exhausted, advance]);
+
+  /**
+   * Applica nuovi filtri senza lasciare la pagina: si tengono le domande
+   * già risolte (servono al riepilogo), si scarta il resto del lotto e si
+   * richiede un lotto nuovo. Se non ci sono domande, non cambia nulla.
+   */
+  const applyFilters = useCallback(
+    (next: QuizFilterValues) => {
+      if (applyingFilters) return;
+      setApplyingFilters(true);
+      setFiltersError(null);
+
+      const kept = questions.slice(0, revealed ? index + 1 : index);
+      fetchQuizBatch({
+        topics: next.topics,
+        difficulties: next.difficulties,
+        statuses: next.statuses,
+        exclude: kept.map((q) => q.id),
+        count: EXERCISE_BATCH_SIZE,
+      })
+        .then((result) => {
+          if (!result.ok) {
+            setFiltersError("Impossibile caricare le domande. Riprova.");
+            return;
+          }
+          const keptIds = new Set(kept.map((q) => q.id));
+          const fresh = result.questions.filter((q) => !keptIds.has(q.id));
+          if (fresh.length === 0) {
+            setFiltersError(
+              "Nessuna domanda trovata con questi filtri: prova ad ampliarli."
+            );
+            return;
+          }
+
+          generationRef.current += 1;
+          loadingRef.current = false;
+          pendingAdvanceRef.current = false;
+          if (answers.length > 0) filtersChangedRef.current = true;
+
+          setLoadingMore(false);
+          setExhausted(false);
+          setFilters(next);
+          setQuestions([...kept, ...fresh]);
+          setIndex(kept.length);
+          setSelected(null);
+          setRevealed(false);
+          setFiltersOpen(false);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          const params = new URLSearchParams();
+          for (const topic of next.topics) params.append("topic", topic);
+          for (const level of next.difficulties) {
+            params.append("difficulty", String(level));
+          }
+          for (const status of next.statuses) params.append("status", status);
+          const search = params.toString();
+          window.history.replaceState(
+            null,
+            "",
+            search ? `/quiz?${search}` : "/quiz"
+          );
+        })
+        .catch(() => {
+          setFiltersError("Impossibile caricare le domande. Riprova.");
+        })
+        .finally(() => {
+          setApplyingFilters(false);
+        });
+    },
+    [applyingFilters, questions, revealed, index, answers.length]
+  );
 
   // Precarica il prossimo lotto quando il corrente è quasi finito.
   useEffect(() => {
@@ -180,7 +284,7 @@ export function QuizClient({
 
   const handleSelect = useCallback(
     (optionIndex: number) => {
-      if (revealed || phase !== "active") return;
+      if (revealed || phase !== "active" || applyingFilters) return;
       setSelected(optionIndex);
       setRevealed(true);
       setAnswers((prev) => [
@@ -199,11 +303,11 @@ export function QuizClient({
         });
       });
     },
-    [revealed, phase, question]
+    [revealed, phase, question, applyingFilters]
   );
 
   const goNext = useCallback(() => {
-    if (!revealed || phase !== "active") return;
+    if (!revealed || phase !== "active" || applyingFilters) return;
     if (index + 1 < questions.length) {
       advance();
       return;
@@ -215,7 +319,7 @@ export function QuizClient({
     // Fine del lotto: richiedi il prossimo e prosegui appena pronto.
     pendingAdvanceRef.current = true;
     ensureMore();
-  }, [revealed, phase, index, questions.length, exhausted, answers, advance, finish, ensureMore]);
+  }, [revealed, phase, applyingFilters, index, questions.length, exhausted, answers, advance, finish, ensureMore]);
 
   const handleTerminate = useCallback(() => {
     if (answers.length === 0) {
@@ -228,7 +332,7 @@ export function QuizClient({
   // Scorciatoie da tastiera: 1-6 / A-F per rispondere, Invio per proseguire.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (phase !== "active") return;
+      if (phase !== "active" || filtersOpen) return;
       const target = event.target as HTMLElement | null;
       if (
         target &&
@@ -259,7 +363,7 @@ export function QuizClient({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [revealed, question, handleSelect, goNext, phase]);
+  }, [revealed, question, handleSelect, goNext, phase, filtersOpen]);
 
   if (phase === "summary") {
     return (
@@ -296,7 +400,7 @@ export function QuizClient({
             {question.topic} · {difficultyLabel(question.difficulty)}
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <p
             className="flex items-center gap-3 text-sm font-medium tabular-nums"
             aria-label={`${correctCount} corrette, ${answers.length - correctCount} errate`}
@@ -316,11 +420,47 @@ export function QuizClient({
               {answers.length - correctCount}
             </span>
           </p>
-          <Button variant="secondary" size="sm" onClick={handleTerminate}>
-            Termina
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setFiltersOpen((open) => !open);
+                setFiltersError(null);
+              }}
+              aria-expanded={filtersOpen}
+              aria-controls="quiz-filters"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
+              Filtri
+              {countFilters(filters) > 0 ? (
+                <span className="rounded bg-brand-50 px-1.5 text-xs font-semibold tabular-nums text-brand-800">
+                  {countFilters(filters)}
+                </span>
+              ) : null}
+            </Button>
+            <Button variant="secondary" size="sm" onClick={handleTerminate}>
+              Termina
+            </Button>
+          </div>
         </div>
       </header>
+
+      {filtersOpen ? (
+        <div id="quiz-filters">
+          <QuizFilters
+            topics={topicOptions}
+            value={filters}
+            applying={applyingFilters}
+            error={filtersError}
+            onApply={applyFilters}
+            onCancel={() => {
+              setFiltersOpen(false);
+              setFiltersError(null);
+            }}
+          />
+        </div>
+      ) : null}
 
       <article className="mt-4 overflow-hidden rounded-lg border border-neutral-200 bg-white">
         <div className="p-5 sm:p-7">

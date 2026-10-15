@@ -7,13 +7,8 @@ import { Button } from "@/components/ui/button";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Panel, PanelHeader } from "@/components/ui/panel";
 import { Spinner } from "@/components/ui/spinner";
-import { DIFFICULTY_LABELS, REVIEW_OPTIONS } from "@/lib/constants";
+import { DIFFICULTY_OPTIONS, REVIEW_OPTIONS } from "@/lib/constants";
 import { useResetOnHide } from "@/lib/use-reset-on-hide";
-
-/** Filtro difficoltà: le etichette vivono in `DIFFICULTY_LABELS`. */
-const DIFFICULTY_OPTIONS = Object.entries(DIFFICULTY_LABELS).map(
-  ([value, label]) => ({ value, label })
-);
 
 export function QuizSetup({ topics }: { topics: string[] }) {
   const router = useRouter();
