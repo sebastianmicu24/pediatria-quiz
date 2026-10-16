@@ -50,6 +50,38 @@ const FONT_FAMILY_OPTIONS = [
   "Courier New",
 ];
 
+/** Larghezza/altezza intera valida (il sanitizzatore ammette solo 1-4 cifre). */
+function integerSizeAttribute(name: "width" | "height") {
+  return {
+    default: null,
+    parseHTML: (element: HTMLElement) => {
+      const value = Number.parseInt(element.getAttribute(name) ?? "", 10);
+      return Number.isFinite(value) && value > 0 ? value : null;
+    },
+    renderHTML: (attributes: Record<string, unknown>) => {
+      const value = Math.round(Number(attributes[name]));
+      return Number.isFinite(value) && value > 0
+        ? { [name]: Math.min(value, 9999) }
+        : {};
+    },
+  };
+}
+
+/**
+ * Immagine ridimensionabile: la maniglia d'angolo cambia la dimensione
+ * (proporzioni mantenute) e il risultato viene salvato negli attributi
+ * width/height, in pixel interi.
+ */
+const ResizableImage = ImageExtension.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      width: integerSizeAttribute("width"),
+      height: integerSizeAttribute("height"),
+    };
+  },
+});
+
 /** Normalizza un colore CSS in #rrggbb (per <input type="color">). */
 function normalizeColorInput(
   value: string | null | undefined,
@@ -110,7 +142,17 @@ export function RichTextEditor({
       TextAlign.configure({ types: ["paragraph"] }),
       // Immagini inline: si inseriscono nel paragrafo e seguono
       // l'allineamento scelto (sinistra/centro/destra/giustificato).
-      ImageExtension.configure({ allowBase64: false, inline: true }),
+      ResizableImage.configure({
+        allowBase64: false,
+        inline: true,
+        resize: {
+          enabled: true,
+          directions: ["bottom-right"],
+          minWidth: 48,
+          minHeight: 48,
+          alwaysPreserveAspectRatio: true,
+        },
+      }),
     ],
     content: value,
     editorProps: {

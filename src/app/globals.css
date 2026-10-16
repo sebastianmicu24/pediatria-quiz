@@ -212,6 +212,55 @@ body {
   border-radius: 0.375rem;
 }
 
+/* Immagini ingrandibili a schermo intero (pagina del quiz) */
+.rich-text-zoomable img {
+  cursor: zoom-in;
+}
+
+/* Immagini ridimensionabili nell'editor admin: la maniglia compare al
+   passaggio del mouse e quando l'immagine è selezionata. */
+.rich-text [data-resize-container] {
+  max-width: 100%;
+  margin: 0.3em 0.15em;
+  vertical-align: middle;
+  border-radius: 0.375rem;
+}
+
+.rich-text [data-resize-container] img {
+  display: block;
+  margin: 0;
+}
+
+.rich-text [data-resize-container].ProseMirror-selectednode img {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+}
+
+.rich-text [data-resize-handle] {
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  background-color: var(--color-brand-600);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+  touch-action: none;
+}
+
+.rich-text [data-resize-handle="bottom-right"] {
+  right: -7px !important;
+  bottom: -7px !important;
+  cursor: nwse-resize;
+}
+
+.rich-text [data-resize-container]:hover [data-resize-handle],
+.rich-text [data-resize-container].ProseMirror-selectednode [data-resize-handle],
+.rich-text [data-resize-container][data-resize-state="true"] [data-resize-handle] {
+  opacity: 1;
+}
+
 /* ── Ottimizzazioni mobile ───────────────────────────────────── */
 @media (max-width: 640px) {
   /* Evita lo zoom automatico di iOS Safari sui campi di input */

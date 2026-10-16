@@ -11,7 +11,8 @@ import {
   XCircle,
 } from "lucide-react";
 import type { Question } from "@/lib/types";
-import { cn, formatPercent, sanitizeHtml } from "@/lib/utils";
+import { cn, formatPercent } from "@/lib/utils";
+import { RichContent } from "@/components/rich-content";
 import { EXERCISE_BATCH_SIZE, difficultyLabel } from "@/lib/constants";
 import { useResetOnHide } from "@/lib/use-reset-on-hide";
 import { Alert } from "@/components/ui/alert";
@@ -464,9 +465,9 @@ export function QuizClient({
 
       <article className="mt-4 overflow-hidden rounded-lg border border-neutral-200 bg-white">
         <div className="p-5 sm:p-7">
-          <div
-            className="rich-text text-[17px] font-medium leading-relaxed text-neutral-900 sm:text-lg"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(question.question) }}
+          <RichContent
+            html={question.question}
+            className="text-[17px] font-medium leading-relaxed text-neutral-900 sm:text-lg"
           />
 
           <div
@@ -554,11 +555,9 @@ export function QuizClient({
                   }) ${question.options[question.answer_index] ?? ""}`}
             </h2>
             {question.explanation ? (
-              <div
-                className="rich-text mt-3 text-sm leading-relaxed text-neutral-700"
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml(question.explanation),
-                }}
+              <RichContent
+                html={question.explanation}
+                className="mt-3 text-sm leading-relaxed text-neutral-700"
               />
             ) : null}
 
@@ -743,11 +742,9 @@ function QuizResults({
                       />
                     )}
                     <div className="min-w-0 flex-1">
-                      <div
-                        className="rich-text text-sm font-medium leading-relaxed text-neutral-900"
-                        dangerouslySetInnerHTML={{
-                          __html: sanitizeHtml(question.question),
-                        }}
+                      <RichContent
+                        html={question.question}
+                        className="text-sm font-medium leading-relaxed text-neutral-900"
                       />
                       <div className="mt-3 space-y-1 text-sm">
                         <p className={isCorrect ? "text-emerald-800" : "text-red-800"}>
@@ -766,11 +763,9 @@ function QuizResults({
                           <summary className="cursor-pointer text-xs font-medium text-brand-700 underline underline-offset-2">
                             Mostra la spiegazione
                           </summary>
-                          <div
-                            className="rich-text mt-2 border-l-2 border-neutral-200 pl-3 text-sm leading-relaxed text-neutral-600"
-                            dangerouslySetInnerHTML={{
-                              __html: sanitizeHtml(question.explanation),
-                            }}
+                          <RichContent
+                            html={question.explanation}
+                            className="mt-2 border-l-2 border-neutral-200 pl-3 text-sm leading-relaxed text-neutral-600"
                           />
                         </details>
                       ) : null}
