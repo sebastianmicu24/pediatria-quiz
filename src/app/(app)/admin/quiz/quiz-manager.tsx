@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Eye,
+  EyeOff,
   Pencil,
   Plus,
   Search,
@@ -29,6 +31,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { fieldClass } from "@/components/ui/input";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
+import { QuestionPreview } from "./question-preview";
 import {
   deleteQuestion,
   updateQuestion,
@@ -402,6 +405,7 @@ function QuestionEditor({
   const [difficultyValue, setDifficultyValue] = useState(
     String(question.difficulty)
   );
+  const [previewing, setPreviewing] = useState(false);
 
   // Istantanea dei campi: serve a sapere se ci sono modifiche non salvate
   // prima di passare a un'altra domanda.
@@ -493,7 +497,28 @@ function QuestionEditor({
             Quiz {formatNumber(position)} di {formatNumber(total)}
             <span className="text-neutral-400"> · ID: {question.source_id}</span>
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant={previewing ? "primary" : "secondary"}
+              onClick={() => setPreviewing((value) => !value)}
+              aria-expanded={previewing}
+              title={
+                previewing
+                  ? "Torna a modificare la domanda"
+                  : "Vedi la domanda come la vede un utente"
+              }
+            >
+              {previewing ? (
+                <EyeOff className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Eye className="h-4 w-4" aria-hidden="true" />
+              )}
+              <span className="hidden sm:inline">
+                {previewing ? "Chiudi anteprima" : "Anteprima"}
+              </span>
+            </Button>
             <Button
               type="button"
               size="sm"
@@ -551,146 +576,162 @@ function QuestionEditor({
         <Alert variant="error">{state.message}</Alert>
       ) : null}
 
-      <RichTextEditor
-        id="question"
-        label="Domanda"
-        value={questionHtml}
-        onChange={setQuestionHtml}
-        hint="Formatta il testo e allinea paragrafi e immagini (sinistra, centro, destra, giustificato). Puoi inserire immagini tra i paragrafi: incolla o trascina un'immagine per caricarla, poi trascina la maniglia nell'angolo in basso a destra per ridimensionarla."
-      />
+      {previewing ? (
+        <QuestionPreview
+          questionHtml={questionHtml}
+          options={options}
+          answerIndex={answerIndex}
+          explanationHtml={explanationHtml}
+          topic={topicValue}
+          difficultyLabel={difficultyLabel(Number(difficultyValue))}
+          onClose={() => setPreviewing(false)}
+        />
+      ) : null}
 
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-neutral-700">
-          Opzioni di risposta (da 2 a 6)
-        </legend>
-        {options.map((option, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <span
-              className={cn(
-                "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-xs font-bold",
-                index === answerIndex
-                  ? "border-emerald-400 bg-emerald-50 text-emerald-800"
-                  : "border-neutral-300 bg-neutral-50 text-neutral-500"
-              )}
-              aria-hidden="true"
-            >
-              {OPTION_LETTERS[index] ?? index + 1}
-            </span>
-            <input
-              name="options"
-              value={option}
-              onChange={(event) => updateOption(index, event.target.value)}
-              maxLength={300}
-              placeholder={`Opzione ${OPTION_LETTERS[index] ?? index + 1}`}
-              className={inputClass}
-            />
+      {/* I campi restano nel modulo anche con l'anteprima aperta:
+          `hidden` li toglie solo alla vista, non ai dati inviati. */}
+      <div className="space-y-6" hidden={previewing}>
+        <RichTextEditor
+          id="question"
+          label="Domanda"
+          value={questionHtml}
+          onChange={setQuestionHtml}
+          hint="Formatta il testo e allinea paragrafi e immagini (sinistra, centro, destra, giustificato). Puoi inserire immagini tra i paragrafi: incolla o trascina un'immagine per caricarla, poi trascina la maniglia nell'angolo in basso a destra per ridimensionarla."
+        />
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium text-neutral-700">
+            Opzioni di risposta (da 2 a 6)
+          </legend>
+          {options.map((option, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-xs font-bold",
+                  index === answerIndex
+                    ? "border-emerald-400 bg-emerald-50 text-emerald-800"
+                    : "border-neutral-300 bg-neutral-50 text-neutral-500"
+                )}
+                aria-hidden="true"
+              >
+                {OPTION_LETTERS[index] ?? index + 1}
+              </span>
+              <input
+                name="options"
+                value={option}
+                onChange={(event) => updateOption(index, event.target.value)}
+                maxLength={300}
+                placeholder={`Opzione ${OPTION_LETTERS[index] ?? index + 1}`}
+                className={inputClass}
+              />
+              <button
+                type="button"
+                onClick={() => removeOption(index)}
+                disabled={options.length <= 2}
+                aria-label={`Rimuovi opzione ${OPTION_LETTERS[index] ?? index + 1}`}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          ))}
+          {options.length < 6 ? (
             <button
               type="button"
-              onClick={() => removeOption(index)}
-              disabled={options.length <= 2}
-              aria-label={`Rimuovi opzione ${OPTION_LETTERS[index] ?? index + 1}`}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30"
+              onClick={addOption}
+              className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50"
             >
-              <X className="h-4 w-4" aria-hidden="true" />
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Aggiungi opzione
             </button>
+          ) : null}
+        </fieldset>
+
+        <div className="grid gap-5 sm:grid-cols-3">
+          <div className="space-y-1.5">
+            <label
+              htmlFor="answer_index"
+              className="block text-sm font-medium text-neutral-700"
+            >
+              Risposta corretta
+            </label>
+            <select
+              id="answer_index"
+              name="answer_index"
+              value={answerIndex}
+              onChange={(event) =>
+                setAnswerIndex(Number.parseInt(event.target.value, 10))
+              }
+              className={inputClass}
+            >
+              {options.map((_, index) => (
+                <option key={index} value={index}>
+                  {OPTION_LETTERS[index] ?? index + 1}
+                </option>
+              ))}
+            </select>
           </div>
-        ))}
-        {options.length < 6 ? (
-          <button
-            type="button"
-            onClick={addOption}
-            className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50"
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Aggiungi opzione
-          </button>
-        ) : null}
-      </fieldset>
 
-      <div className="grid gap-5 sm:grid-cols-3">
-        <div className="space-y-1.5">
-          <label
-            htmlFor="answer_index"
-            className="block text-sm font-medium text-neutral-700"
-          >
-            Risposta corretta
-          </label>
-          <select
-            id="answer_index"
-            name="answer_index"
-            value={answerIndex}
-            onChange={(event) =>
-              setAnswerIndex(Number.parseInt(event.target.value, 10))
-            }
-            className={inputClass}
-          >
-            {options.map((_, index) => (
-              <option key={index} value={index}>
-                {OPTION_LETTERS[index] ?? index + 1}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1.5">
+            <label
+              htmlFor="topic"
+              className="block text-sm font-medium text-neutral-700"
+            >
+              Argomento
+            </label>
+            <input
+              id="topic"
+              name="topic"
+              list="admin-topics"
+              value={topicValue}
+              onChange={(event) => setTopicValue(event.target.value)}
+              maxLength={80}
+              className={inputClass}
+            />
+            <datalist id="admin-topics">
+              {topics.map((topic) => (
+                <option key={topic} value={topic} />
+              ))}
+            </datalist>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="difficulty"
+              className="block text-sm font-medium text-neutral-700"
+            >
+              Difficoltà
+            </label>
+            <select
+              id="difficulty"
+              name="difficulty"
+              value={difficultyValue}
+              onChange={(event) => setDifficultyValue(event.target.value)}
+              className={inputClass}
+            >
+              <option value="1">Base</option>
+              <option value="2">Intermedia</option>
+              <option value="3">Avanzata</option>
+            </select>
+          </div>
         </div>
 
-        <div className="space-y-1.5">
-          <label
-            htmlFor="topic"
-            className="block text-sm font-medium text-neutral-700"
-          >
-            Argomento
-          </label>
-          <input
-            id="topic"
-            name="topic"
-            list="admin-topics"
-            value={topicValue}
-            onChange={(event) => setTopicValue(event.target.value)}
-            maxLength={80}
-            className={inputClass}
-          />
-          <datalist id="admin-topics">
-            {topics.map((topic) => (
-              <option key={topic} value={topic} />
-            ))}
-          </datalist>
-        </div>
+        <RichTextEditor
+          id="explanation"
+          label="Spiegazione"
+          value={explanationHtml}
+          onChange={setExplanationHtml}
+          hint="Compare dopo la risposta dell'utente. Puoi formattare e allineare il testo e inserire immagini (PNG, JPG o WebP) tra i paragrafi e ridimensionarle trascinando la maniglia nell'angolo (gli utenti potranno aprirle a tutto schermo e fare zoom)."
+        />
 
-        <div className="space-y-1.5">
-          <label
-            htmlFor="difficulty"
-            className="block text-sm font-medium text-neutral-700"
-          >
-            Difficoltà
-          </label>
-          <select
-            id="difficulty"
-            name="difficulty"
-            value={difficultyValue}
-            onChange={(event) => setDifficultyValue(event.target.value)}
-            className={inputClass}
-          >
-            <option value="1">Base</option>
-            <option value="2">Intermedia</option>
-            <option value="3">Avanzata</option>
-          </select>
-        </div>
+        <Alert variant="info">
+          <span className="flex items-start gap-2">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            Le modifiche sono visibili immediatamente a tutti gli utenti e i
+            punteggi dei prossimi quiz useranno la nuova risposta corretta.
+          </span>
+        </Alert>
       </div>
-
-      <RichTextEditor
-        id="explanation"
-        label="Spiegazione"
-        value={explanationHtml}
-        onChange={setExplanationHtml}
-        hint="Compare dopo la risposta dell'utente. Puoi formattare e allineare il testo e inserire immagini (PNG, JPG o WebP) tra i paragrafi e ridimensionarle trascinando la maniglia nell'angolo (gli utenti potranno aprirle a tutto schermo e fare zoom)."
-      />
-
-      <Alert variant="info">
-        <span className="flex items-start gap-2">
-          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          Le modifiche sono visibili immediatamente a tutti gli utenti e i
-          punteggi dei prossimi quiz useranno la nuova risposta corretta.
-        </span>
-      </Alert>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button type="submit" disabled={pending} className="w-full sm:w-auto">
