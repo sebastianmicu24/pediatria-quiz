@@ -137,7 +137,13 @@ export function ImageLightbox({
   }, [constrain]);
 
   function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
-    event.currentTarget.setPointerCapture(event.pointerId);
+    // La cattura può non essere disponibile (es. eventi sintetici): il
+    // trascinamento funziona lo stesso finché il puntatore resta sopra.
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Ignorato di proposito.
+    }
     pointersRef.current.set(event.pointerId, {
       x: event.clientX,
       y: event.clientY,
@@ -214,8 +220,10 @@ export function ImageLightbox({
     if (tap.backdrop) onClose();
   }
 
-  function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    // Nessun tasto deve raggiungere le scorciatoie del quiz sotto.
+  function onKeyDown(event: KeyboardEvent) {
+    // Nessun tasto deve raggiungere le scorciatoie del quiz sotto: il
+    // gestore sta su `document`, quindi la propagazione si ferma qui
+    // prima di `window`.
     event.stopPropagation();
 
     switch (event.key) {
@@ -276,6 +284,13 @@ export function ImageLightbox({
     }
   }
 
+  // I tasti valgono ovunque sia il focus: Esc deve chiudere anche dopo
+  // un clic sullo sfondo o sul pulsante.
+  useEffect(() => {
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  });
+
   const zoomed = view.scale > 1.001;
 
   return createPortal(
@@ -284,7 +299,6 @@ export function ImageLightbox({
       role="dialog"
       aria-modal="true"
       aria-label={alt ? `Immagine ingrandita: ${alt}` : "Immagine ingrandita"}
-      onKeyDown={onKeyDown}
       className="fixed inset-0 z-[100] bg-neutral-950/90"
     >
       <div
