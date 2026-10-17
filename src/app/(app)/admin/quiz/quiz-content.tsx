@@ -19,6 +19,37 @@ const PAGE_SIZE = 20;
 const QUESTION_COLUMNS =
   "id, source_id, question, options, answer_index, topic, difficulty, explanation";
 
+/** Id di una domanda (UUID): `?edit=<id>` apre direttamente l'editor. */
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+type QuestionRow = {
+  id: string;
+  source_id: string | null;
+  question: string;
+  options: unknown;
+  answer_index: number;
+  topic: string | null;
+  difficulty: number | null;
+  explanation: string | null;
+};
+
+/** Riga del database → domanda dell'editor (valori mancanti normalizzati). */
+function toAdminQuestion(row: QuestionRow): AdminQuestion {
+  return {
+    id: row.id,
+    source_id: row.source_id ?? "",
+    question: row.question,
+    options: Array.isArray(row.options)
+      ? row.options.map((option) => String(option))
+      : [],
+    answer_index: row.answer_index,
+    topic: row.topic ?? "Generale",
+    difficulty: row.difficulty ?? 2,
+    explanation: row.explanation ?? "",
+  };
+}
+
 /**
  * Gestione delle domande. Filtri e paginazione sono lato server:
  * prima questa pagina scaricava tutte le domande con testo, opzioni e
@@ -37,10 +68,13 @@ export async function QuizContent({
   const page = parsePage(params.page);
   // Impostato dal tasto "Quiz successivo/precedente" quando si attraversa
   // il confine di una pagina: apre direttamente l'editor sulla prima o
-  // sull'ultima domanda della nuova pagina.
+  // sull'ultima domanda della nuova pagina. Con un id di domanda
+  // (`?edit=<uuid>`) l'editor si apre su quella domanda: è il collegamento
+  // "Modifica" che compare nel quiz agli amministratori.
   const editParam = firstParam(params.edit);
   const autoEdit =
     editParam === "first" || editParam === "last" ? editParam : null;
+  const focusId = !autoEdit && UUID_RE.test(editParam) ? editParam : null;
   const from = (page - 1) * PAGE_SIZE;
 
   const admin = createAdminClient();
@@ -78,11 +112,25 @@ export async function QuizContent({
     return fetchPage(false);
   };
 
-  const result = await measured("admin_question_list", loadPage, (page) => ({
-    rows: page.data?.length ?? 0,
-    total: page.count ?? undefined,
-    code: page.error?.code,
-  }));
+  // Domanda aperta direttamente dal quiz: una lettura per chiave primaria,
+  // solo quando l'URL la richiede.
+  const loadFocus = async (id: string) => {
+    const { data } = await admin
+      .from("questions")
+      .select(QUESTION_COLUMNS)
+      .eq("id", id)
+      .maybeSingle();
+    return data ? toAdminQuestion(data) : null;
+  };
+
+  const [result, focus] = await Promise.all([
+    measured("admin_question_list", loadPage, (page) => ({
+      rows: page.data?.length ?? 0,
+      total: page.count ?? undefined,
+      code: page.error?.code,
+    })),
+    focusId ? loadFocus(focusId) : Promise.resolve(null),
+  ]);
 
   if (result.error) {
     return (
@@ -92,18 +140,7 @@ export async function QuizContent({
     );
   }
 
-  const questions: AdminQuestion[] = (result.data ?? []).map((row) => ({
-    id: row.id,
-    source_id: row.source_id ?? "",
-    question: row.question,
-    options: Array.isArray(row.options)
-      ? row.options.map((option) => String(option))
-      : [],
-    answer_index: row.answer_index,
-    topic: row.topic ?? "Generale",
-    difficulty: row.difficulty ?? 2,
-    explanation: row.explanation ?? "",
-  }));
+  const questions: AdminQuestion[] = (result.data ?? []).map(toAdminQuestion);
 
   const total = result.count ?? questions.length;
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -119,8 +156,9 @@ export async function QuizContent({
 
       <div className="mt-6">
         <AdminQuizManager
-          key={`${page}|${topic}|${query}`}
+          key={`${page}|${topic}|${query}|${focusId ?? ""}`}
           autoEdit={autoEdit}
+          focus={focus}
           questions={questions}
           topics={topics}
           total={total}

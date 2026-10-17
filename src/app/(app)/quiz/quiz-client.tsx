@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   CloudOff,
   Home,
+  Pencil,
   RotateCcw,
   SlidersHorizontal,
   XCircle,
@@ -63,12 +64,15 @@ export function QuizClient({
   recovered,
   meta,
   availableTopics,
+  isAdmin,
 }: {
   initialQuestions: Question[];
   /** Esercitazione interrotta recuperata dal server, se c'è. */
   recovered: RecoveredQuizSession | null;
   meta: QuizFilterValues;
   availableTopics: string[];
+  /** Amministratore (allowlist ADMIN_EMAILS): abilita il link all'editor. */
+  isAdmin: boolean;
 }) {
   const router = useRouter();
 
@@ -627,6 +631,18 @@ export function QuizClient({
             </p>
           ) : null}
           <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <ButtonLink
+                href={`/admin/quiz?edit=${question.id}`}
+                variant="secondary"
+                size="sm"
+                target="_blank"
+                title="Apri questa domanda nell'editor"
+              >
+                <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                Modifica
+              </ButtonLink>
+            ) : null}
             <Button
               variant="secondary"
               size="sm"

@@ -90,6 +90,7 @@ export function AdminQuizManager({
   query,
   topic,
   autoEdit,
+  focus,
 }: {
   questions: AdminQuestion[];
   topics: string[];
@@ -100,9 +101,12 @@ export function AdminQuizManager({
   query: string;
   topic: string;
   autoEdit: AutoEdit;
+  /** Domanda da aprire subito nell'editor (collegamento dal quiz). */
+  focus: AdminQuestion | null;
 }) {
   const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(() => {
+    if (focus) return focus.id;
     if (!autoEdit || questions.length === 0) return null;
     return (autoEdit === "first" ? questions[0] : questions[questions.length - 1])
       .id;
@@ -118,11 +122,20 @@ export function AdminQuizManager({
     message: string;
   } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // La domanda aperta dal quiz resta in testa all'elenco finché l'editor
+  // è aperto; chiuso l'editor si vede la pagina normale.
+  const [focusOpen, setFocusOpen] = useState(focus !== null);
 
-  const items = useMemo(
-    () => questions.map((item) => saved[item.id] ?? item),
-    [questions, saved]
-  );
+  const items = useMemo(() => {
+    const list = questions.map((item) => saved[item.id] ?? item);
+    if (!focus || !focusOpen) return list;
+    // La domanda aperta dal quiz può non essere nella pagina richiesta:
+    // entra in testa all'elenco, così l'editor ha cosa mostrare.
+    const focused = saved[focus.id] ?? focus;
+    const index = list.findIndex((item) => item.id === focus.id);
+    if (index === -1) return [focused, ...list];
+    return list.map((item, i) => (i === index ? focused : item));
+  }, [questions, saved, focus, focusOpen]);
   const currentIndex = editingId
     ? items.findIndex((item) => item.id === editingId)
     : -1;
@@ -131,17 +144,24 @@ export function AdminQuizManager({
   const hasNext =
     currentIndex >= 0 &&
     (currentIndex < items.length - 1 || page < pageCount);
+  // Posizione nell'elenco: si mostra solo se la domanda fa parte della
+  // pagina richiesta (arrivando dal quiz la posizione non è nota).
+  const position =
+    editing && questions.some((item) => item.id === editing.id)
+      ? (page - 1) * pageSize + currentIndex + 1
+      : 0;
 
-  // Arrivati qui da un cambio di pagina: l'editor è già aperto, l'URL
-  // torna pulito e la vista riparte dall'alto.
+  // Arrivati qui da un cambio di pagina o da un collegamento al quiz:
+  // l'editor è già aperto, l'URL torna pulito e la vista riparte dall'alto.
   useEffect(() => {
-    if (!autoEdit) return;
+    if (!autoEdit && !focus) return;
     window.history.replaceState(null, "", pageHref(page, query, topic));
     window.scrollTo({ top: 0 });
-  }, [autoEdit, page, query, topic]);
+  }, [autoEdit, focus, page, query, topic]);
 
   function closeEditor() {
     setEditingId(null);
+    setFocusOpen(false);
     if (listStaleRef.current) {
       listStaleRef.current = false;
       setNotice({ type: "success", message: "Domanda aggiornata correttamente." });
@@ -196,7 +216,7 @@ export function AdminQuizManager({
         key={editing.id}
         question={editing}
         topics={topics}
-        position={(page - 1) * pageSize + currentIndex + 1}
+        position={position}
         total={total}
         hasPrevious={hasPrevious}
         hasNext={hasNext}
@@ -494,7 +514,9 @@ function QuestionEditor({
         </button>
         <div className="flex flex-wrap items-center gap-3">
           <p className="max-w-full truncate text-xs tabular-nums text-neutral-500">
-            Quiz {formatNumber(position)} di {formatNumber(total)}
+            {position > 0
+              ? `Quiz ${formatNumber(position)} di ${formatNumber(total)}`
+              : "Domanda"}
             <span className="text-neutral-400"> · ID: {question.source_id}</span>
           </p>
           <div className="flex flex-wrap items-center gap-2">

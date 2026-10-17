@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/auth";
+import { isAdminEmail } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 import { parseDifficulties } from "@/lib/utils";
 import { EXERCISE_BATCH_SIZE, isReviewStatus } from "@/lib/constants";
@@ -94,6 +95,10 @@ export async function QuizLoader({
       recovered={recovered}
       meta={{ topics, difficulties, statuses }}
       availableTopics={catalog.map((entry) => entry.topic)}
+      // Solo per gli amministratori: nella pagina compare il collegamento
+      // all'editor della domanda mostrata. Per gli altri utenti la pagina
+      // è identica a prima.
+      isAdmin={isAdminEmail(user.email)}
     />
   );
 }
