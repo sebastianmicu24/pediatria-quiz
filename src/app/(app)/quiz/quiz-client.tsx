@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   CloudOff,
   Home,
-  Pencil,
   RotateCcw,
   SlidersHorizontal,
   XCircle,
@@ -38,6 +37,7 @@ import {
   recordQuizAnswer,
   saveQuizAttempt,
 } from "./actions";
+import { QuizAdminActions } from "./quiz-admin-actions";
 import {
   QuizFilters,
   countFilters,
@@ -93,6 +93,12 @@ export function QuizClient({
   const [showRecoveredNotice, setShowRecoveredNotice] = useState(
     (recovered?.answers.length ?? 0) > 0
   );
+  // Esito dell'ultima azione dell'amministratore sulla domanda (menu
+  // "Modifica"): si vede finché non si risponde alla domanda successiva.
+  const [adminNotice, setAdminNotice] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [phase, setPhase] = useState<"active" | "summary">("active");
   const [saveState, setSaveState] = useState<
     "idle" | "saving" | "saved" | "error"
@@ -247,6 +253,29 @@ export function QuizClient({
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  /**
+   * Domanda eliminata dall'amministratore (menu accanto a "Modifica"):
+   * esce dall'esercitazione e dal riepilogo, e al suo posto compare la
+   * successiva. Era già stata salvata lato server? Le risposte collegate
+   * spariscono con la domanda (cascade): statistiche e riepilogo restano
+   * coerenti. Se era l'ultima del lotto, il precaricamento porta subito
+   * le prossime.
+   */
+  const handleDeleted = useCallback(() => {
+    const deletedId = question?.id;
+    if (!deletedId) return;
+    setQuestions((prev) => prev.filter((item) => item.id !== deletedId));
+    setAnswers((prev) => prev.filter((item) => item.questionId !== deletedId));
+    setSelected(null);
+    setRevealed(false);
+    setAdminNotice({
+      type: "success",
+      message:
+        "Domanda eliminata: non fa più parte del quiz né delle statistiche.",
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [question?.id]);
+
   /** Richiede il prossimo lotto di domande (esclude quelle già viste). */
   const ensureMore = useCallback(() => {
     if (loadingRef.current || exhausted || phaseRef.current === "summary") {
@@ -392,6 +421,7 @@ export function QuizClient({
       setSelected(optionIndex);
       setRevealed(true);
       setShowRecoveredNotice(false);
+      setAdminNotice(null);
       setAnswers((prev) => [
         ...prev,
         {
@@ -449,6 +479,7 @@ export function QuizClient({
     setSelected(null);
     setRevealed(false);
     setShowRecoveredNotice(false);
+    setAdminNotice(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
     void discardQuizSession();
   }, []);
@@ -511,6 +542,11 @@ export function QuizClient({
   if (!question) {
     return (
       <div>
+        {adminNotice ? (
+          <div className="mb-4">
+            <Alert variant={adminNotice.type}>{adminNotice.message}</Alert>
+          </div>
+        ) : null}
         <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
           <div className="min-w-0">
             <p className="text-sm font-medium tabular-nums text-neutral-900">
@@ -544,6 +580,11 @@ export function QuizClient({
 
   return (
     <>
+      {adminNotice ? (
+        <div className="mb-4">
+          <Alert variant={adminNotice.type}>{adminNotice.message}</Alert>
+        </div>
+      ) : null}
       {showRecoveredNotice ? (
         <div className="mb-4">
           <Alert variant="info">
@@ -632,16 +673,15 @@ export function QuizClient({
           ) : null}
           <div className="flex items-center gap-2">
             {isAdmin ? (
-              <ButtonLink
-                href={`/admin/quiz?edit=${question.id}`}
-                variant="secondary"
-                size="sm"
-                target="_blank"
-                title="Apri questa domanda nell'editor"
-              >
-                <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-                Modifica
-              </ButtonLink>
+              <QuizAdminActions
+                key={question.id}
+                questionId={question.id}
+                questionText={question.question}
+                onDeleted={handleDeleted}
+                onError={(message) =>
+                  setAdminNotice({ type: "error", message })
+                }
+              />
             ) : null}
             <Button
               variant="secondary"
