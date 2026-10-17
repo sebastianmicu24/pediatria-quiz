@@ -544,7 +544,12 @@ export function QuizClient({
       <div>
         {adminNotice ? (
           <div className="mb-4">
-            <Alert variant={adminNotice.type}>{adminNotice.message}</Alert>
+            <Alert
+              variant={adminNotice.type}
+              onDismiss={() => setAdminNotice(null)}
+            >
+              {adminNotice.message}
+            </Alert>
           </div>
         ) : null}
         <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
@@ -582,12 +587,20 @@ export function QuizClient({
     <>
       {adminNotice ? (
         <div className="mb-4">
-          <Alert variant={adminNotice.type}>{adminNotice.message}</Alert>
+          <Alert
+            variant={adminNotice.type}
+            onDismiss={() => setAdminNotice(null)}
+          >
+            {adminNotice.message}
+          </Alert>
         </div>
       ) : null}
       {showRecoveredNotice ? (
         <div className="mb-4">
-          <Alert variant="info">
+          <Alert
+            variant="info"
+            onDismiss={() => setShowRecoveredNotice(false)}
+          >
             <p>
               Esercitazione ripresa:{" "}
               {answers.length === 1
