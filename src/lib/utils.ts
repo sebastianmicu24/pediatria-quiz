@@ -32,13 +32,22 @@ export function formatPercent(part: number, total: number): string {
 
 /**
  * Sanitizzatore HTML minimale con allowlist.
- * Consente la formattazione usata nelle domande/spiegazioni (grassetto,
- * corsivo, sottolineato, barrato, elenchi), gli stili inline sicuri su
- * <span> (colore, sfondo, dimensione e font) e le immagini caricate nel
- * bucket Supabase "quiz-images" (solo endpoint pubblico: niente SVG,
- * data URL o script). Ogni altro tag/attributo viene rimosso.
+ *
+ * Due profili:
+ *  - "quiz" (predefinito): formattazione di domande e spiegazioni
+ *    (grassetto, corsivo, sottolineato, barrato, elenchi), stili inline
+ *    sicuri su <span> (colore, sfondo, dimensione, font), immagini del
+ *    bucket Supabase "quiz-images" e i soli pulsanti verso gli articoli
+ *    del blog (<a data-blog-button href="/blog/<slug>">). Nessun altro link.
+ *  - "blog": in più titoli, citazioni, linea orizzontale, apici/pedici,
+ *    tabelle e link (http/https, mailto, tel o percorsi interni).
+ *
+ * Niente SVG, data URL o script: ogni altro tag/attributo viene rimosso.
+ * Il markup in uscita è ricostruito da valori validati, mai copiato.
  */
-const ALLOWED_TAGS = new Set([
+export type SanitizeProfile = "quiz" | "blog";
+
+const QUIZ_TAGS = new Set([
   "p",
   "strong",
   "em",
@@ -52,9 +61,30 @@ const ALLOWED_TAGS = new Set([
   "li",
   "br",
   "img",
+  "a",
 ]);
 
-const VOID_TAGS = new Set(["br", "img"]);
+const BLOG_TAGS = new Set([
+  ...QUIZ_TAGS,
+  "h2",
+  "h3",
+  "h4",
+  "blockquote",
+  "hr",
+  "sub",
+  "sup",
+  "table",
+  "thead",
+  "tbody",
+  "tr",
+  "th",
+  "td",
+]);
+
+const VOID_TAGS = new Set(["br", "img", "hr"]);
+
+/** Tag di blocco su cui è ammesso l'allineamento del testo. */
+const ALIGNABLE_TAGS = new Set(["p", "h2", "h3", "h4"]);
 
 /** Proprietà CSS consentite nello stile inline dei <span>. */
 const TEXT_STYLE_PROPS = new Set([
@@ -64,7 +94,7 @@ const TEXT_STYLE_PROPS = new Set([
   "font-family",
 ]);
 
-/** Proprietà CSS consentite sui blocchi (paragrafi, ecc.). */
+/** Proprietà CSS consentite sui blocchi (paragrafi, titoli). */
 const BLOCK_STYLE_PROPS = new Set(["text-align"]);
 
 function isSafeTextAlignValue(value: string): boolean {
@@ -142,54 +172,153 @@ function sanitizeImageSrc(value: string): string | null {
   return src;
 }
 
-function sanitizeTagAttributes(tagName: string, attributes: string): string {
-  const kept: string[] = [];
+/** Percorso di un articolo del blog: "/blog/<slug>" e nient'altro. */
+const BLOG_PATH_REGEX = /^\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function sanitizeBlogPath(value: string): string | null {
+  const path = value.trim();
+  return path.length <= 120 && BLOG_PATH_REGEX.test(path) ? path : null;
+}
+
+type SafeLink = { href: string; kind: "internal" | "external" | "other" };
+
+/**
+ * Valida la destinazione di un link del blog. Ammessi: percorsi interni,
+ * http/https (senza credenziali nell'URL), mailto e tel. Qualsiasi altro
+ * schema (javascript:, data:, vbscript:…) viene rifiutato.
+ */
+function sanitizeLinkHref(raw: string): SafeLink | null {
+  // L'unica entità decodificata è &amp;: l'attributo viene poi riscritto
+  // con l'escape, quindi il browser ritrova esattamente il valore validato.
+  const value = raw.trim().replace(/&amp;/gi, "&");
+  if (value.length === 0 || value.length > 2000) return null;
+  if (/[\s\u0000-\u001f\u007f\\<>"']/.test(value)) return null;
+
+  if (value.startsWith("/")) {
+    if (value.startsWith("//")) return null;
+    return /^\/[A-Za-z0-9\-._~!$&()*+,;=:@%/?#]*$/.test(value)
+      ? { href: value, kind: "internal" }
+      : null;
+  }
+  if (value.startsWith("#")) {
+    return /^#[A-Za-z0-9\-._~%]+$/.test(value)
+      ? { href: value, kind: "internal" }
+      : null;
+  }
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const url = new URL(value);
+      if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+      if (!url.hostname || url.username || url.password) return null;
+      return { href: url.href, kind: "external" };
+    } catch {
+      return null;
+    }
+  }
+  if (/^mailto:[^\s?]+(\?[^\s]*)?$/i.test(value)) {
+    return { href: value, kind: "other" };
+  }
+  if (/^tel:\+?[0-9().-]{3,30}$/i.test(value)) {
+    return { href: value, kind: "other" };
+  }
+  return null;
+}
+
+/** Legge gli attributi tra virgolette; se ripetuti vale il primo. */
+function parseAttributes(attributes: string): Map<string, string> {
+  const found = new Map<string, string>();
   // Solo valori tra virgolette: gli attributi senza valore o malformati
   // vengono ignorati.
   const attributeRegex = /([a-zA-Z][a-zA-Z0-9-]*)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
   let match: RegExpExecArray | null;
   while ((match = attributeRegex.exec(attributes)) !== null) {
     const name = match[1].toLowerCase();
-    const value = match[2] ?? match[3] ?? "";
+    if (!found.has(name)) found.set(name, match[2] ?? match[3] ?? "");
+  }
+  return found;
+}
 
-    if ((tagName === "span" || tagName === "p") && name === "style") {
-      const style = sanitizeStyleAttribute(
-        value,
-        tagName === "span" ? "text" : "block"
-      );
-      if (style) kept.push(`style="${style}"`);
-    } else if (tagName === "img") {
-      if (name === "src") {
-        const src = sanitizeImageSrc(value);
-        if (src) kept.push(`src="${src}"`);
-      } else if (name === "alt") {
-        const alt = escapeAttributeValue(value.trim().slice(0, 200));
-        if (alt) kept.push(`alt="${alt}"`);
-      } else if (name === "width" || name === "height") {
-        if (/^\d{1,4}$/.test(value)) kept.push(`${name}="${value}"`);
+function sanitizeTagAttributes(
+  tagName: string,
+  attributes: string,
+  profile: SanitizeProfile
+): string {
+  const attrs = parseAttributes(attributes);
+  const kept: string[] = [];
+
+  if (tagName === "span") {
+    const style = sanitizeStyleAttribute(attrs.get("style") ?? "", "text");
+    if (style) kept.push(`style="${style}"`);
+  } else if (ALIGNABLE_TAGS.has(tagName)) {
+    const style = sanitizeStyleAttribute(attrs.get("style") ?? "", "block");
+    if (style) kept.push(`style="${style}"`);
+  } else if (tagName === "img") {
+    const src = sanitizeImageSrc(attrs.get("src") ?? "");
+    if (src) kept.push(`src="${src}"`);
+    const alt = escapeAttributeValue((attrs.get("alt") ?? "").trim().slice(0, 200));
+    if (alt) kept.push(`alt="${alt}"`);
+    for (const name of ["width", "height"]) {
+      const value = attrs.get(name);
+      if (value !== undefined && /^\d{1,4}$/.test(value)) {
+        kept.push(`${name}="${value}"`);
+      }
+    }
+  } else if (tagName === "a") {
+    if (profile === "quiz") {
+      // Solo il pulsante verso un articolo del blog, aperto in una nuova
+      // scheda per non interrompere l'esercitazione in corso.
+      const path = sanitizeBlogPath(attrs.get("href") ?? "");
+      if (path && attrs.get("data-blog-button") === "true") {
+        kept.push(
+          `href="${path}"`,
+          `data-blog-button="true"`,
+          `target="_blank"`,
+          `rel="noopener"`
+        );
+      }
+    } else {
+      const link = sanitizeLinkHref(attrs.get("href") ?? "");
+      if (link) {
+        kept.push(`href="${escapeAttributeValue(link.href)}"`);
+        if (link.kind === "external") {
+          kept.push(`target="_blank"`, `rel="noopener noreferrer nofollow"`);
+        }
+      }
+    }
+  } else if (tagName === "th" || tagName === "td") {
+    for (const name of ["colspan", "rowspan"]) {
+      const value = attrs.get(name);
+      if (value !== undefined && /^[1-9]\d?$/.test(value) && value !== "1") {
+        kept.push(`${name}="${value}"`);
       }
     }
   }
   return kept.join(" ");
 }
 
-function sanitizeTag(tag: string): string {
+function sanitizeTag(tag: string, profile: SanitizeProfile): string {
   const match = tag.match(/^<\s*(\/?)\s*([a-zA-Z0-9]+)([\s\S]*?)>$/);
   if (!match) return "";
   const closing = match[1] === "/";
   const name = match[2].toLowerCase();
-  if (!ALLOWED_TAGS.has(name)) return "";
+  const allowed = profile === "blog" ? BLOG_TAGS : QUIZ_TAGS;
+  if (!allowed.has(name)) return "";
   if (closing) return VOID_TAGS.has(name) ? "" : `</${name}>`;
 
-  const attributes = sanitizeTagAttributes(name, match[3] ?? "");
-  if (name === "br") return "<br>";
+  const attributes = sanitizeTagAttributes(name, match[3] ?? "", profile);
+  if (name === "br" || name === "hr") return `<${name}>`;
   if (name === "img") {
     return attributes.includes("src=") ? `<img ${attributes}>` : "";
   }
+  // Un link senza destinazione valida perde il tag e resta il solo testo.
+  if (name === "a") return attributes ? `<a ${attributes}>` : "";
   return attributes ? `<${name} ${attributes}>` : `<${name}>`;
 }
 
-export function sanitizeHtml(html: string): string {
+export function sanitizeHtml(
+  html: string,
+  profile: SanitizeProfile = "quiz"
+): string {
   if (!html) return "";
   // Blocchi attivi rimossi integralmente (contenuto compreso).
   const withoutBlocks = html.replace(
@@ -200,7 +329,7 @@ export function sanitizeHtml(html: string): string {
     .split(/(<[^>]*>)/)
     .map((part) => {
       if (part.startsWith("<") && part.endsWith(">")) {
-        return sanitizeTag(part);
+        return sanitizeTag(part, profile);
       }
       // Testo semplice: gli eventuali "<" spaiati (tag non chiusi) non
       // devono diventare tag nel documento renderizzato.

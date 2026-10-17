@@ -3,6 +3,7 @@ import {
   CalendarClock,
   LayoutDashboard,
   ListChecks,
+  Newspaper,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -47,6 +48,13 @@ export const APP_NAV: NavItem[] = [
     status: "live",
   },
   {
+    href: "/blog",
+    label: "Blog",
+    description: "Approfondimenti di pediatria, collegati dalle spiegazioni dei quiz.",
+    icon: Newspaper,
+    status: "live",
+  },
+  {
     href: "/turni",
     label: "Turni",
     description:
@@ -66,6 +74,7 @@ export const APP_NAV: NavItem[] = [
 export const ADMIN_NAV: { href: string; label: string; exact?: boolean }[] = [
   { href: "/admin", label: "Panoramica", exact: true },
   { href: "/admin/quiz", label: "Quiz" },
+  { href: "/admin/blog", label: "Blog" },
   { href: "/admin/utenti", label: "Utenti" },
 ];
 

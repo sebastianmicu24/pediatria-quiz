@@ -493,6 +493,9 @@ export function QuizClient({
         target &&
         (target.tagName === "INPUT" ||
           target.tagName === "TEXTAREA" ||
+          // Invio su un link (es. il pulsante verso il blog) lo apre,
+          // non fa proseguire il quiz.
+          target.tagName === "A" ||
           target.isContentEditable)
       ) {
         return;

@@ -8,6 +8,7 @@ const PROTECTED_PREFIXES = [
   "/quiz",
   "/account",
   "/statistiche",
+  "/blog",
   "/turni",
   "/strumenti",
   "/admin",

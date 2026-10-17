@@ -41,6 +41,16 @@ Tutte le correzioni sono già incluse nel codice e in `supabase/migrations/2026-
 - ✅ Tutti gli altri contenuti generati dall'utente (nome visualizzato, email) sono renderizzati come **testo** (React li scappa automaticamente).
 - ✅ **SQL injection**: nessuna query concatenata; accesso al database esclusivamente tramite `supabase-js` (query parametrizzate) e funzioni RPC tipizzate.
 
+### Blog (aggiunto il 17 ottobre 2026)
+- ✅ **Scrittura solo admin**: la tabella `blog_posts` non ha permessi di scrittura per `anon`/`authenticated`; creare, modificare, pubblicare ed eliminare passa da Server Action che ricontrollano `ADMIN_EMAILS` e scrivono con la chiave di servizio solo i campi previsti (niente mass assignment).
+- ✅ **Lettura**: RLS attiva, gli utenti autenticati leggono solo gli articoli `published` e solo le colonne elencate nel `GRANT` (non `author_id`). Le bozze le vede solo l'admin, via chiave di servizio dopo il controllo.
+- ✅ **XSS**: il testo degli articoli usa il profilo `"blog"` del sanitizzatore (titoli, citazioni, tabelle, apici/pedici, link), applicato al salvataggio e al render. I link ammettono solo percorsi interni, `http(s)` (senza credenziali nell'URL), `mailto` e `tel`; `javascript:`, `data:`, `vbscript:`, `//host` e backslash sono rifiutati e i link esterni ricevono `rel="noopener noreferrer nofollow"`. Nessuna immagine esterna o SVG.
+- ✅ **Pulsanti nelle spiegazioni dei quiz**: nel profilo `"quiz"` l'unico `<a>` ammesso è `<a href="/blog/<slug>" data-blog-button="true">`; ogni altro link viene ridotto a testo. Il pulsante si apre in una nuova scheda.
+- ✅ **Upload immagini**: stesso bucket e limiti dei quiz (PNG/JPG/WebP, 5 MB), ora con controllo dei primi byte del file oltre al tipo dichiarato; il nome del file è generato dal server.
+- ✅ **Validazione anche nel database**: formato dello slug, lunghezze e coerenza `published`/`published_at` sono vincoli `CHECK`. Slug e id sono validati prima di ogni interrogazione.
+- ✅ **Slug bloccato dopo la prima pubblicazione**, così i link già presenti nei quiz non si rompono.
+- Test: `npm run test:sanitize` copre anche i vettori di attacco sui link e sui profili.
+
 ### Web e browser
 - ✅ **CSRF**: cookie `SameSite=Lax`, controllo `Origin` sulla route distruttiva di eliminazione account e protezione nativa delle Server Actions di Next.js.
 - ✅ **Tabnabbing**: tutti i link esterni hanno `rel="noopener noreferrer"`.

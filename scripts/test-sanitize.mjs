@@ -101,11 +101,103 @@ const cases = [
   ["stile senza virgolette", "<span style=color:red>x</span>", null, "style="],
   ["font-size fuori scala", '<span style="font-size: 9999px">x</span>', null, "9999"],
   ["doppia codifica", "<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>", "&lt;script&gt;", null],
+
+  // Pulsanti verso il blog nelle spiegazioni dei quiz
+  [
+    "pulsante del blog",
+    '<p>Leggi <a href="/blog/bronchiolite-acuta" data-blog-button="true">Bronchiolite</a></p>',
+    '<a href="/blog/bronchiolite-acuta" data-blog-button="true" target="_blank" rel="noopener">Bronchiolite</a>',
+    null,
+  ],
+  ["link senza data-blog-button", '<a href="/blog/x-y">x</a>', "x", "<a"],
+  ["link esterno nel quiz", '<a href="https://evil.com" data-blog-button="true">x</a>', "x", "<a"],
+  ["pulsante verso altro percorso", '<a href="/admin/utenti" data-blog-button="true">x</a>', "x", "<a"],
+  ["pulsante con query", '<a href="/blog/x-y?a=1" data-blog-button="true">x</a>', "x", "<a"],
+  ["pulsante con maiuscole nello slug", '<a href="/blog/AbC" data-blog-button="true">x</a>', "x", "<a"],
+  [
+    "pulsante: attributi extra scartati",
+    '<a href="/blog/ab-c" data-blog-button="true" onclick="alert(1)" style="x:y">x</a>',
+    'href="/blog/ab-c"',
+    "onclick",
+  ],
+  ["quiz: titoli non ammessi", "<h2>t</h2>", "t", "<h2"],
+  ["quiz: tabelle non ammesse", "<table><tr><td>t</td></tr></table>", "t", "<table"],
+
+  // Blog
+  ["blog: titoli", "<h2>Titolo</h2><h3>Sotto</h3><h4>Sotto2</h4>", "<h2>Titolo</h2>", null, "blog"],
+  ["blog: titolo allineato", '<h2 style="text-align: center">T</h2>', 'style="text-align: center"', null, "blog"],
+  ["blog: h1 non ammesso", "<h1>T</h1>", "T", "<h1", "blog"],
+  [
+    "blog: citazione, linea, apici",
+    "<blockquote><p>q</p></blockquote><hr><p>H<sub>2</sub>O m<sup>2</sup></p>",
+    "<hr>",
+    null,
+    "blog",
+  ],
+  [
+    "blog: tabella",
+    '<table><tbody><tr><th colspan="2">a</th></tr><tr><td>b</td><td>c</td></tr></tbody></table>',
+    '<th colspan="2">a</th>',
+    null,
+    "blog",
+  ],
+  [
+    "blog: stile sulla tabella rimosso",
+    '<table style="position:fixed"><tr><td style="x:y">a</td></tr></table>',
+    "<table>",
+    "style",
+    "blog",
+  ],
+  [
+    "blog: link esterno",
+    '<a href="https://www.example.org/pagina?a=1&amp;b=2">x</a>',
+    'href="https://www.example.org/pagina?a=1&amp;b=2" target="_blank" rel="noopener noreferrer nofollow"',
+    null,
+    "blog",
+  ],
+  ["blog: link interno senza target", '<a href="/blog/altro-articolo">x</a>', 'href="/blog/altro-articolo"', "target", "blog"],
+  ["blog: mailto", '<a href="mailto:info@example.org">x</a>', 'href="mailto:info@example.org"', null, "blog"],
+  ["blog: javascript:", '<a href="javascript:alert(1)">x</a>', "x", "<a", "blog"],
+  ["blog: javascript: maiuscole", '<a href="JaVaScRiPt:alert(1)">x</a>', "x", "<a", "blog"],
+  ["blog: javascript: con spazio", '<a href=" java script:alert(1)">x</a>', "x", "<a", "blog"],
+  ["blog: javascript: con a capo", '<a href="java\nscript:alert(1)">x</a>', "x", "<a", "blog"],
+  ["blog: javascript: con entità", '<a href="&#106;avascript:alert(1)">x</a>', "x", "<a", "blog"],
+  ["blog: vbscript:", '<a href="vbscript:msgbox(1)">x</a>', "x", "<a", "blog"],
+  ["blog: data:", '<a href="data:text/html;base64,AAAA">x</a>', "x", "<a", "blog"],
+  ["blog: protocol-relative", '<a href="//evil.com">x</a>', "x", "<a", "blog"],
+  ["blog: backslash", '<a href="/\\evil.com">x</a>', "x", "<a", "blog"],
+  ["blog: credenziali nell'URL", '<a href="https://user:pw@evil.com">x</a>', "x", "<a", "blog"],
+  [
+    "blog: attributi extra sul link",
+    '<a href="https://example.org" onclick="alert(1)" target="_self">x</a>',
+    'target="_blank"',
+    "onclick",
+    "blog",
+  ],
+  [
+    "blog: virgolette nell'href",
+    `<a href='https://example.org/"onmouseover="alert(1)'>x</a>`,
+    "x",
+    'onmouseover="',
+    "blog",
+  ],
+  ["blog: immagine esterna", '<img src="https://evil.com/x.png">', null, "<img", "blog"],
+  ["blog: immagine del bucket", `<img src="${goodImage}" alt="f">`, `src="${goodImage}"`, null, "blog"],
+  ["blog: script", "<p>ok</p><script>alert(1)</script>", "<p>ok</p>", "<script", "blog"],
+  ["blog: iframe", '<iframe src="https://evil.com"></iframe>', null, "<iframe", "blog"],
+  ["blog: onerror", "<img src=x onerror=alert(1)>", null, "onerror", "blog"],
+  [
+    "blog: stile sul testo",
+    '<span style="color:#ae1c33;background-color:#fbe4e8">x</span>',
+    "color: #ae1c33",
+    null,
+    "blog",
+  ],
 ];
 
 let failures = 0;
-for (const [label, input, expected, forbidden] of cases) {
-  const output = sanitizeHtml(input);
+for (const [label, input, expected, forbidden, profile] of cases) {
+  const output = sanitizeHtml(input, profile);
   const okExpected = expected === null || output.includes(expected);
   const okForbidden = forbidden === null || !output.includes(forbidden);
   if (okExpected && okForbidden) {

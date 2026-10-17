@@ -743,7 +743,8 @@ function QuestionEditor({
           label="Spiegazione"
           value={explanationHtml}
           onChange={setExplanationHtml}
-          hint="Compare dopo la risposta dell'utente. Puoi formattare e allineare il testo e inserire immagini (PNG, JPG o WebP) tra i paragrafi e ridimensionarle trascinando la maniglia nell'angolo (gli utenti potranno aprirle a tutto schermo e fare zoom)."
+          allowBlogLinks
+          hint="Compare dopo la risposta dell'utente. Puoi formattare e allineare il testo e inserire immagini (PNG, JPG o WebP) tra i paragrafi e ridimensionarle trascinando la maniglia nell'angolo (gli utenti potranno aprirle a tutto schermo e fare zoom). Con il pulsante a forma di libro aggiungi un collegamento a un articolo del blog."
         />
 
         <Alert variant="info">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
@@ -10,7 +10,6 @@ import {
   FontSize,
   TextStyle,
 } from "@tiptap/extension-text-style";
-import { Image as ImageExtension } from "@tiptap/extension-image";
 import { TextAlign } from "@tiptap/extension-text-align";
 import {
   AlignCenter,
@@ -18,6 +17,7 @@ import {
   AlignLeft,
   AlignRight,
   Bold,
+  BookOpen,
   Eraser,
   Highlighter,
   ImagePlus,
@@ -30,6 +30,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { uploadQuizImage } from "@/app/(app)/admin/quiz/actions";
+import {
+  BlogLinkButton,
+  ResizableImage,
+} from "@/components/admin/editor-extensions";
+import {
+  ToolbarButton,
+  ToolbarDivider,
+} from "@/components/admin/editor-parts";
+import { BlogLinkPicker } from "@/components/admin/blog-link-picker";
 
 const FONT_SIZE_OPTIONS = [
   "12px",
@@ -50,38 +59,6 @@ const FONT_FAMILY_OPTIONS = [
   "Courier New",
 ];
 
-/** Larghezza/altezza intera valida (il sanitizzatore ammette solo 1-4 cifre). */
-function integerSizeAttribute(name: "width" | "height") {
-  return {
-    default: null,
-    parseHTML: (element: HTMLElement) => {
-      const value = Number.parseInt(element.getAttribute(name) ?? "", 10);
-      return Number.isFinite(value) && value > 0 ? value : null;
-    },
-    renderHTML: (attributes: Record<string, unknown>) => {
-      const value = Math.round(Number(attributes[name]));
-      return Number.isFinite(value) && value > 0
-        ? { [name]: Math.min(value, 9999) }
-        : {};
-    },
-  };
-}
-
-/**
- * Immagine ridimensionabile: la maniglia d'angolo cambia la dimensione
- * (proporzioni mantenute) e il risultato viene salvato negli attributi
- * width/height, in pixel interi.
- */
-const ResizableImage = ImageExtension.extend({
-  addAttributes() {
-    return {
-      ...this.parent?.(),
-      width: integerSizeAttribute("width"),
-      height: integerSizeAttribute("height"),
-    };
-  },
-});
-
 /** Normalizza un colore CSS in #rrggbb (per <input type="color">). */
 function normalizeColorInput(
   value: string | null | undefined,
@@ -99,7 +76,9 @@ function normalizeColorInput(
  * Editor rich text (TipTap) allineato all'allowlist del sanitizzatore:
  * grassetto, corsivo, sottolineato, barrato, elenchi, colore/sfondo,
  * dimensione e font del testo, più immagini caricate su Supabase
- * Storage (bucket "quiz-images"). Niente link, heading o SVG.
+ * Storage (bucket "quiz-images"). Niente link liberi, heading o SVG:
+ * l'unico collegamento ammesso è il pulsante verso un articolo del blog
+ * (`allowBlogLinks`), pensato per le spiegazioni.
  */
 export function RichTextEditor({
   id,
@@ -107,16 +86,19 @@ export function RichTextEditor({
   value,
   onChange,
   hint,
+  allowBlogLinks = false,
 }: {
   id: string;
   label: string;
   value: string;
   onChange: (html: string) => void;
   hint?: string;
+  allowBlogLinks?: boolean;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const uploadHandlerRef = useRef<(file: File) => void>(() => {});
 
   const editor = useEditor({
@@ -153,9 +135,20 @@ export function RichTextEditor({
           alwaysPreserveAspectRatio: true,
         },
       }),
+      // Sempre registrato: i pulsanti già presenti in un testo vengono
+      // riconosciuti e conservati anche dove la barra non permette di
+      // inserirne di nuovi.
+      BlogLinkButton,
     ],
     content: value,
     editorProps: {
+      handleClick: (_view, _pos, event) => {
+        // Nell'editor il pulsante si seleziona, non si apre.
+        if (event.target instanceof Element && event.target.closest("a")) {
+          event.preventDefault();
+        }
+        return false;
+      },
       attributes: {
         id,
         class:
@@ -465,6 +458,21 @@ export function RichTextEditor({
             }}
           />
 
+          {allowBlogLinks ? (
+            <>
+              <ToolbarDivider />
+              <ToolbarButton
+                label="Collega un articolo del blog (pulsante)"
+                active={pickerOpen}
+                expanded={pickerOpen}
+                disabled={!editor}
+                onClick={() => setPickerOpen((open) => !open)}
+              >
+                <BookOpen className="h-4 w-4" aria-hidden="true" />
+              </ToolbarButton>
+            </>
+          ) : null}
+
           <ToolbarDivider />
 
           <ToolbarButton
@@ -479,6 +487,23 @@ export function RichTextEditor({
           </ToolbarButton>
         </div>
 
+        {allowBlogLinks && pickerOpen ? (
+          <BlogLinkPicker
+            onClose={() => setPickerOpen(false)}
+            onPick={({ slug, label: buttonLabel }) => {
+              editor
+                ?.chain()
+                .focus()
+                .insertContent([
+                  { type: "blogLinkButton", attrs: { slug, label: buttonLabel } },
+                  { type: "text", text: " " },
+                ])
+                .run();
+              setPickerOpen(false);
+            }}
+          />
+        ) : null}
+
         {uploadError ? (
           <p className="border-b border-rose-100 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700">
             {uploadError}
@@ -492,38 +517,3 @@ export function RichTextEditor({
   );
 }
 
-function ToolbarDivider() {
-  return <span className="mx-1 h-5 w-px bg-neutral-200" aria-hidden="true" />;
-}
-
-function ToolbarButton({
-  label,
-  active,
-  disabled,
-  onClick,
-  children,
-}: {
-  label: string;
-  active: boolean;
-  disabled: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      title={label}
-      aria-label={label}
-      aria-pressed={active}
-      disabled={disabled}
-      onMouseDown={(event) => event.preventDefault()}
-      onClick={onClick}
-      className={cn(
-        "inline-flex h-8 w-8 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-200/70 disabled:opacity-40",
-        active && "bg-brand-100 text-brand-800"
-      )}
-    >
-      {children}
-    </button>
-  );
-}

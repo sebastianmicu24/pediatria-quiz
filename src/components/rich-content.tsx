@@ -1,26 +1,31 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { cn, sanitizeHtml } from "@/lib/utils";
+import { cn, sanitizeHtml, type SanitizeProfile } from "@/lib/utils";
 import { ImageLightbox } from "@/components/image-lightbox";
 
 /**
- * Testo formattato di domande e spiegazioni. Le immagini si aprono a
- * tutto schermo con un clic (o Invio da tastiera), con zoom e
- * spostamento.
+ * Testo formattato di domande, spiegazioni e articoli del blog (profilo
+ * "blog": titoli, tabelle e link). Le immagini si aprono a tutto schermo
+ * con un clic (o Invio da tastiera), con zoom e spostamento.
  */
 export function RichContent({
   html,
   className,
+  profile = "quiz",
 }: {
   html: string;
   className?: string;
+  profile?: SanitizeProfile;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [zoomed, setZoomed] = useState<{ src: string; alt: string } | null>(
     null
   );
-  const markup = useMemo(() => ({ __html: sanitizeHtml(html) }), [html]);
+  const markup = useMemo(
+    () => ({ __html: sanitizeHtml(html, profile) }),
+    [html, profile]
+  );
 
   // Le immagini diventano comandi raggiungibili anche da tastiera.
   useEffect(() => {
@@ -46,7 +51,11 @@ export function RichContent({
     <>
       <div
         ref={ref}
-        className={cn("rich-text rich-text-zoomable", className)}
+        className={cn(
+          profile === "blog" ? "blog-prose" : "rich-text",
+          "rich-text-zoomable",
+          className
+        )}
         dangerouslySetInnerHTML={markup}
         onClick={(event) => {
           const target = event.target;

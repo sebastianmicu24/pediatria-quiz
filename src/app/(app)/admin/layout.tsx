@@ -17,7 +17,7 @@ async function AdminGate({ children }: { children: ReactNode }) {
       <PageHeader
         eyebrow="Amministrazione"
         title="Pannello di controllo"
-        description="Statistiche globali, gestione delle domande e schede utente."
+        description="Statistiche globali, gestione di domande e articoli del blog, schede utente."
       />
       <div className="mt-6">
         <SubNav label="Sezioni amministrazione" items={ADMIN_NAV} />
