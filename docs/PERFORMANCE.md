@@ -493,6 +493,38 @@ Senza misure, le ottimizzazioni successive si fanno alla cieca:
 3. **Log di durata lato app**: wrappare le chiamate in un helper che misura e logga `route + query + ms + righe` (in dev basta `console.time`; in produzione un log strutturato). Con Vercel è il modo più rapido per capire *quale* delle N query domina.
 4. **`next build`**: con Cache Components l'output indica le rotte in parte statiche ("◐"); dopo §B dovrebbe comparire almeno un aggregato statico/cachato.
 
+### J. Quiz: salvare ogni risposta mentre si risponde (impatto: alto, sforzo: ~1 giornata)
+
+Prima le risposte vivevano solo in memoria e finivano in `save_quiz_attempt` alla pressione di «Termina»: un errore di connessione dopo 40 domande buttava via 40 risposte. Ora **ogni risposta viene scritta subito**.
+
+**Perché due tabelle nuove e non colonne su `quiz_attempts`.** `quiz_attempts` resta «esercitazione completata»: dashboard, statistiche, area admin ed export non cambiano di una riga. L'esercitazione in corso è un'altra cosa e vive in `quiz_sessions` (una riga per utente) + `quiz_session_answers` (una riga per risposta, `primary key (user_id, question_id)`).
+
+**Percorso caldo (una risposta):** una sola RPC `record_quiz_answer`, che tocca tre righe, **tutte per chiave primaria**:
+
+1. `quiz_session_answers`: `insert ... on conflict do update` → l'invio ripetuto della stessa risposta (dopo un errore di rete) non crea una seconda riga;
+2. `quiz_sessions`: aggiorna argomento/difficoltà, `updated_at` e `answers_count` (che cresce solo per una risposta nuova);
+3. `question_progress`: l'ultima risposta dell'utente per quella domanda, così copertura per argomento e stato di ripasso («da rivedere») sono aggiornati mentre si risponde. `answer_count` cresce solo se la risposta cambia davvero, quindi un invio ripetuto non la gonfia.
+
+**Perché regge molti studenti contemporaneamente:**
+
+- **una riga per utente**: nessuna contesa su righe condivise, nessuna attesa fra utenti diversi (il caso peggiore resta due schede dello stesso utente, che si sovrascrivono a vicenda come farebbe l'ultimo invio);
+- **`fillfactor = 80`** su `question_progress` e `quiz_sessions`: l'aggiornamento resta sulla stessa pagina (HOT update), senza voci di indice da riscrivere;
+- **rimossi `question_progress_user_correct_idx` e `question_progress_user_answered_idx`**: nessuna query li usava (tutte filtrano o aggregano per `user_id`, servito dalla chiave primaria) e ogni indice su una colonna che cambia era una scrittura in più per ogni risposta;
+- **correttezza calcolata in SQL**: il client non può falsificare il punteggio e non serve una lettura di conferma;
+- **nessuna attesa per l'utente**: la risposta si mostra subito, la scrittura procede in sottofondo;
+- **tetto di 2.000 risposte** per sessione (lo stesso di `save_quiz_attempt`) sul caso patologico;
+- **righe che spariscono**: la sessione viene cancellata alla conclusione; quelle abbandonate da più di 24 ore vengono eliminate alla prima riapertura di `/quiz` (pulizia pigra: una riga, evento raro).
+
+**Idempotenza.** La chiave primaria `(user_id, question_id)` rende un secondo invio un semplice aggiornamento. `record_quiz_answer` restituisce `false` — risposta da ignorare e **non ritentare** — quando la domanda non esiste più (cancellata dall'area admin), l'indice è fuori intervallo o si è raggiunto il tetto.
+
+**Chiusura (`finish_quiz_session`).** La coda rimasta sul client viaggia dentro la chiamata: il database registra prima le risposte non ancora confermate, poi ricalcola totali e correttezza **dalle risposte salvate** (non da quelle dichiarate dal client), crea `quiz_attempts` + `quiz_answers` e cancella la sessione, in una sola transazione. Se la risposta va persa *dopo* il commit, il client se ne accorge (`no_session` con risposte già confermate) e non duplica il tentativo. Le voci malformate vengono saltate invece di far fallire il salvataggio.
+
+**Interruzione e ripresa.** Se l'utente chiude la pagina a metà esercitazione, al ritorno su `/quiz` il loader legge la sessione (una query, con le risposte annidate ordinate per `answered_at`), ricarica le domande già risposte per id (una query `in (...)`) e riparte dalla prima ancora da fare; un avviso dice quante risposte sono state recuperate, con «Ricomincia da capo» che scarta la sessione (`discard_quiz_session`). Le risposte già salvate restano comunque nelle statistiche per argomento: sono state date davvero.
+
+**Costo per risposta:** tre aggiornamenti di riga e ~1-2 ms di CPU database, senza round trip aggiuntivo per l'utente. Dieci risposte costano dieci piccole transazioni invece di una grande: è il prezzo della durabilità, e resta una frazione trascurabile del costo di un lotto di domande.
+
+**Ricaduta.** Se tabelle o RPC non sono ancora state applicate al database (`PGRST202`/`PGRST205`), `recordQuizAnswer` risponde «unavailable», il client smette di provare e si comporta come prima (tutto salvato con `save_quiz_attempt` a fine esercitazione). Nessun disservizio prima della migrazione.
+
 ---
 
 ## 6. Piano a fasi
@@ -537,17 +569,26 @@ Ordine consigliato: **Fase 1 subito** (mezza giornata, dimezza il problema più 
   - `src/lib/perf.ts`: misure di durata con una riga per lettura (durata, righe, codice di errore) su `get_user_stats`, `get_quiz_questions`, `get_admin_overview`, `question_topic_counts`, elenchi admin e dettaglio utente. Sempre attive in sviluppo; in produzione si accendono con `PERF_LOG=1` per non riempire i log.
   - Materialized view + `pg_cron`: **non fatta** (voce opzionale). Le aggregazioni pesanti sono già dentro il database e quelle ripetute a ogni page view sono in cache Next: un dato non in tempo reale non vale il vantaggio residuo.
   - Verifiche: build pulita; sul server di sviluppo le rotte protette rispondono `307` verso `/login?next=…` (proxy 4-11 ms) e il catalogo risulta servito dalla cache.
-- **Nota sul database del progetto (16 ottobre 2026).** Un controllo diretto (solo letture) mostra che il database di produzione è **indietro rispetto a `supabase/schema.sql`**:
+- **Salvataggio di ogni risposta — fatto (17 ottobre 2026).**
+  - `supabase/migrations/2026-10-17_sessione-quiz-in-corso.sql`: tabelle `quiz_sessions` e `quiz_session_answers` (una riga per utente, una per risposta), RLS, le tre RPC `record_quiz_answer` / `finish_quiz_session` / `discard_quiz_session`, `fillfactor = 80` su `question_progress` e `quiz_sessions`, rimozione dei due indici inutilizzati su `question_progress`.
+  - `supabase/schema.sql` allineato (stesse tabelle, policy, RPC, permessi, `fillfactor`, `drop index`) per le installazioni da zero.
+  - `src/lib/quiz-answer-queue.ts`: coda client con invio immediato, ritentativi a attese crescenti (1,5 s → 4 s → 10 s → 30 s), deduplicazione per domanda (la chiave primaria lato database rende comunque idempotente ogni invio).
+  - `src/lib/quiz-session.ts`: lettura della sessione in corso con le risposte annidate, TTL 24 ore con pulizia pigra, ricomposizione dell'esercitazione ripresa.
+  - `src/app/(app)/quiz/actions.ts`: `recordQuizAnswer`, `finishQuizSession`, `discardQuizSession` con esiti distinti (`unavailable` = migrazione non applicata, `no_session`, `no_answers`, `error`).
+  - `quiz-client.tsx`: indicatore di salvataggio in testata, avviso «N risposte recuperate» con «Ricomincia da capo», «Termina» che svuota la coda e chiude la sessione, «Riprova il salvataggio» nel riepilogo se la scrittura fallisce. Il percorso storico resta come ricaduta.
+  - Verifiche: `npx tsc --noEmit`, `npx eslint` e `next build` (28 rotte) puliti. Sul database di produzione (dove le nuove tabelle/RPC non esistono ancora) la chiamata restituisce `PGRST202`, riconosciuto da `isMissingFunctionError`: l'esercitazione si salva con `save_quiz_attempt` come prima della modifica.
+  - **Azione richiesta:** eseguire la migrazione nell'SQL Editor di Supabase. Non è un prerequisito per il deploy: prima dell'applicazione il comportamento è quello attuale.
+- **Nota sul database del progetto (aggiornata al 17 ottobre 2026).** Un controllo diretto (solo letture) mostra che il database di produzione è ora **allineato a `supabase/schema.sql`**:
 
   | Oggetto | Stato |
   | --- | --- |
-  | `profiles.email`, viste `user_attempt_counts` / `question_topic_counts` / `admin_question_list` | presenti |
-  | `profiles.year`, `profiles.tags` | **assenti** |
-  | tabella `question_progress` | **assente** |
-  | `get_quiz_questions` (firma a 5 parametri) | **assente** (esiste una versione vecchia a 4 parametri) |
-  | `get_user_stats`, `get_admin_overview` | **assenti** |
+  | `profiles.year`, `profiles.tags`, `profiles.email` | presenti |
+  | viste `user_attempt_counts` / `question_topic_counts` / `admin_question_list` | presenti |
+  | tabella `question_progress` | presente |
+  | `get_quiz_questions` (firma a 5 parametri), `get_user_stats`, `get_admin_overview` | presenti |
+  | `quiz_sessions`, `quiz_session_answers`, `record_quiz_answer`, `finish_quiz_session`, `discard_quiz_session` | **assenti** (migrazione del 17/10 da applicare) |
 
-  Conseguenza: oggi il sito funziona interamente sui percorsi di ricaduta (quiz e dashboard leggono le tabelle; `/admin` invita ad applicare la migrazione). Le due migrazioni `2026-10-16_indici-e-statistiche-utente.sql` e `2026-10-16_panoramica-admin.sql` **non possono essere applicate** finché mancano il loro prerequisito: falliscono con `relation "public.question_progress" does not exist` e `column "year" does not exist`. La via corretta è eseguire per intero **`supabase/schema.sql`** (idempotente: crea la tabella mancante, aggiunge le colonne, ricrea funzioni e viste e include tutte e tre le migrazioni del 16/10). Dopo di che le tre migrazioni diventano superflue.
+  Il database conteneva 4 utenti e 3 tentativi, l'ultimo completato il 17 ottobre. Le migrazioni del 16/10 sono quindi superflue; resta da applicare quella del 17/10.
 
 ---
 
@@ -574,6 +615,8 @@ Ordine consigliato: **Fase 1 subito** (mezza giornata, dimezza il problema più 
 | `src/lib/questions.ts` | 70-76 | RPC `get_quiz_questions` (percorso buono) | P6 (indici) |
 | `src/lib/questions.ts` | 82-152 | fallback: count esatto + 3 × 800 righe full-column | P8, P9 |
 | `src/app/(app)/quiz/actions.ts` | 117-130 | `exclude` fino a 5000 UUID nel body | P6 |
+| `src/lib/quiz-answer-queue.ts` | 1-190 | coda di invio, una scrittura per risposta | nuovo (§J) |
+| `src/lib/quiz-session.ts` | 1-140 | lettura della sessione in corso (`/quiz`, una query) | nuovo (§J) |
 | `src/app/(app)/quiz/quiz-client.tsx` | 126-179 | prefetch ogni ~7 risposte (lotto da 10) | §G |
 | `src/app/(app)/admin/overview-content.tsx` | 77-91 | 3 scan completi (`profiles`, `quiz_attempts`, `quiz_answers`) | P1, P7 |
 | `src/app/(app)/admin/overview-content.tsx` | 193-207 | 14 × `attempts.filter()` (O(14n)) | P1 |

@@ -4,33 +4,46 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  Check,
   CheckCircle2,
+  CloudOff,
   Home,
   RotateCcw,
   SlidersHorizontal,
   XCircle,
 } from "lucide-react";
-import type { Question } from "@/lib/types";
+import type {
+  Question,
+  QuizAnswerRecord,
+  RecoveredQuizSession,
+} from "@/lib/types";
 import { cn, formatPercent } from "@/lib/utils";
 import { RichContent } from "@/components/rich-content";
 import { EXERCISE_BATCH_SIZE, difficultyLabel } from "@/lib/constants";
 import { useResetOnHide } from "@/lib/use-reset-on-hide";
+import {
+  createAnswerQueue,
+  type AnswerQueue,
+  type AnswerQueueState,
+} from "@/lib/quiz-answer-queue";
 import { Alert } from "@/components/ui/alert";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { StatStrip } from "@/components/ui/stat-strip";
-import { fetchQuizBatch, saveQuizAttempt } from "./actions";
+import {
+  discardQuizSession,
+  fetchQuizBatch,
+  finishQuizSession,
+  recordQuizAnswer,
+  saveQuizAttempt,
+} from "./actions";
 import {
   QuizFilters,
   countFilters,
   type QuizFilterValues,
 } from "./quiz-filters";
 
-type AnswerRecord = {
-  questionId: string;
-  selectedIndex: number;
-  isCorrect: boolean;
-};
+type AnswerRecord = QuizAnswerRecord;
 
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -47,10 +60,13 @@ const PREFETCH_THRESHOLD = 3;
  */
 export function QuizClient({
   initialQuestions,
+  recovered,
   meta,
   availableTopics,
 }: {
   initialQuestions: Question[];
+  /** Esercitazione interrotta recuperata dal server, se c'è. */
+  recovered: RecoveredQuizSession | null;
   meta: QuizFilterValues;
   availableTopics: string[];
 }) {
@@ -62,14 +78,22 @@ export function QuizClient({
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [filtersError, setFiltersError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
-  const [index, setIndex] = useState(0);
+  // Le domande già risposte restano nel lotto (servono al riepilogo): si
+  // riparte dalla prima domanda ancora da fare.
+  const [index, setIndex] = useState(recovered ? recovered.answers.length : 0);
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
-  const [answers, setAnswers] = useState<AnswerRecord[]>([]);
+  const [answers, setAnswers] = useState<AnswerRecord[]>(
+    recovered ? recovered.answers : []
+  );
+  const [showRecoveredNotice, setShowRecoveredNotice] = useState(
+    (recovered?.answers.length ?? 0) > 0
+  );
   const [phase, setPhase] = useState<"active" | "summary">("active");
   const [saveState, setSaveState] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
+  const [syncState, setSyncState] = useState<AnswerQueueState>("idle");
   const [loadingMore, setLoadingMore] = useState(false);
   const [exhausted, setExhausted] = useState(false);
   const [durationMs, setDurationMs] = useState(0);
@@ -82,13 +106,49 @@ export function QuizClient({
   // Cresce a ogni cambio di filtri: scarta le risposte dei lotti richiesti
   // con i filtri precedenti.
   const generationRef = useRef(0);
+  // Argomento/difficoltà con cui parte l'esercitazione (dai filtri
+  // dell'URL): etichettano il tentativo e viaggiano con ogni risposta.
+  const initialScope = {
+    topic: meta.topics.length === 1 ? meta.topics[0] : null,
+    difficulty: meta.difficulties.length === 1 ? meta.difficulties[0] : null,
+  };
+  const scopeRef = useRef(initialScope);
   // Filtri cambiati dopo aver già risposto: il tentativo non ha più un
-  // solo argomento/difficoltà da registrare.
-  const filtersChangedRef = useRef(false);
+  // solo argomento/difficoltà da registrare. Vale la stessa regola se
+  // l'esercitazione ripresa era iniziata con filtri diversi dagli attuali.
+  const filtersChangedRef = useRef(
+    recovered !== null &&
+      (recovered.topic !== initialScope.topic ||
+        recovered.difficulty !== initialScope.difficulty)
+  );
+  const queueRef = useRef<AnswerQueue | null>(null);
 
   // Avvia il cronometro dell'esercitazione al montaggio.
   useEffect(() => {
     startedAtRef.current = Date.now();
+  }, []);
+
+  // Coda di salvataggio: ogni risposta parte subito verso il server e le
+  // risposte non ancora confermate confluiscono in "Termina". Vive fuori
+  // dal ciclo di render: creata al montaggio, fermata allo smontaggio.
+  useEffect(() => {
+    const queue = createAnswerQueue({
+      send: (answer) =>
+        recordQuizAnswer({
+          questionId: answer.questionId,
+          selectedIndex: answer.selectedIndex,
+          topic: filtersChangedRef.current ? null : scopeRef.current.topic,
+          difficulty: filtersChangedRef.current
+            ? null
+            : scopeRef.current.difficulty,
+        }),
+      onState: setSyncState,
+    });
+    queueRef.current = queue;
+    return () => {
+      queue.dispose();
+      queueRef.current = null;
+    };
   }, []);
 
   // Se la pagina viene nascosta (navigazione) e poi ripristinata, il
@@ -108,8 +168,58 @@ export function QuizClient({
   ].sort((a, b) => a.localeCompare(b, "it"));
   const correctCount = answers.filter((a) => a.isCorrect).length;
 
+  /**
+   * Salva l'esercitazione conclusa: prima svuota la coda di salvataggio,
+   * poi trasforma la sessione in un tentativo. Le risposte rimaste in coda
+   * vengono registrate da "Termina" insieme alla chiusura, così riepilogo e
+   * dati salvati restano coerenti anche se la rete è caduta.
+   */
+  const persistResults = useCallback(async (finalAnswers: AnswerRecord[]) => {
+    setSaveState("saving");
+
+    const queue = queueRef.current;
+    const leftovers = queue ? await queue.flush() : [];
+
+    if (queue && queue.state() !== "unavailable") {
+      const result = await finishQuizSession(leftovers);
+      if (result.ok) {
+        setSaveState("saved");
+        return;
+      }
+      if (result.reason === "no_session" && queue.savedCount() > 0) {
+        // La sessione non c'è più ma le risposte erano state salvate: il
+        // tentativo è già stato creato (risposta andata persa dopo il
+        // commit), quindi non si duplica l'esercitazione.
+        setSaveState("saved");
+        return;
+      }
+      if (result.reason === "error") {
+        setSaveState("error");
+        return;
+      }
+      // unavailable / no_session / no_answers: si ricade sul salvataggio
+      // unico, che registra tutte le risposte insieme.
+    }
+
+    const singleScope = !filtersChangedRef.current;
+    try {
+      const result = await saveQuizAttempt({
+        topic: singleScope ? scopeRef.current.topic : null,
+        difficulty: singleScope ? scopeRef.current.difficulty : null,
+        answers: finalAnswers.map((answer) => ({
+          questionId: answer.questionId,
+          selectedIndex: answer.selectedIndex,
+        })),
+      });
+      setSaveState(result.ok ? "saved" : "error");
+    } catch {
+      setSaveState("error");
+    }
+  }, []);
+
+  /** Chiude l'esercitazione e mostra il riepilogo. */
   const finish = useCallback(
-    (finalAnswers: AnswerRecord[]) => {
+    async (finalAnswers: AnswerRecord[]) => {
       if (phaseRef.current === "summary") return;
       phaseRef.current = "summary";
       setDurationMs(
@@ -121,28 +231,9 @@ export function QuizClient({
       window.scrollTo({ top: 0, behavior: "smooth" });
 
       if (finalAnswers.length === 0) return;
-      setSaveState("saving");
-      const singleScope = !filtersChangedRef.current;
-      saveQuizAttempt({
-        topic:
-          singleScope && filters.topics.length === 1 ? filters.topics[0] : null,
-        difficulty:
-          singleScope && filters.difficulties.length === 1
-            ? filters.difficulties[0]
-            : null,
-        answers: finalAnswers.map((a) => ({
-          questionId: a.questionId,
-          selectedIndex: a.selectedIndex,
-        })),
-      })
-        .then((result) => {
-          setSaveState(result.ok ? "saved" : "error");
-        })
-        .catch(() => {
-          setSaveState("error");
-        });
+      await persistResults(finalAnswers);
     },
-    [filters.topics, filters.difficulties]
+    [persistResults]
   );
 
   const advance = useCallback(() => {
@@ -242,6 +333,12 @@ export function QuizClient({
           loadingRef.current = false;
           pendingAdvanceRef.current = false;
           if (answers.length > 0) filtersChangedRef.current = true;
+          // I filtri attuali etichettano l'esercitazione (vale finché
+          // non si risponde: dopo, il tentativo non ha più uno scope).
+          scopeRef.current = {
+            topic: next.topics.length === 1 ? next.topics[0] : null,
+            difficulty: next.difficulties.length === 1 ? next.difficulties[0] : null,
+          };
 
           setLoadingMore(false);
           setExhausted(false);
@@ -285,9 +382,12 @@ export function QuizClient({
 
   const handleSelect = useCallback(
     (optionIndex: number) => {
-      if (revealed || phase !== "active" || applyingFilters) return;
+      if (!question || revealed || phase !== "active" || applyingFilters) {
+        return;
+      }
       setSelected(optionIndex);
       setRevealed(true);
+      setShowRecoveredNotice(false);
       setAnswers((prev) => [
         ...prev,
         {
@@ -296,6 +396,12 @@ export function QuizClient({
           isCorrect: optionIndex === question.answer_index,
         },
       ]);
+      // Salvataggio immediato: un'interruzione di rete non fa perdere
+      // la risposta (la coda ritenta da sola finché il server conferma).
+      queueRef.current?.push({
+        questionId: question.id,
+        selectedIndex: optionIndex,
+      });
       // Porta la spiegazione in vista senza nascondere l'opzione scelta.
       requestAnimationFrame(() => {
         explanationRef.current?.scrollIntoView({
@@ -304,7 +410,7 @@ export function QuizClient({
         });
       });
     },
-    [revealed, phase, question, applyingFilters]
+    [question, revealed, phase, applyingFilters]
   );
 
   const goNext = useCallback(() => {
@@ -314,7 +420,7 @@ export function QuizClient({
       return;
     }
     if (exhausted) {
-      finish(answers);
+      void finish(answers);
       return;
     }
     // Fine del lotto: richiedi il prossimo e prosegui appena pronto.
@@ -327,13 +433,26 @@ export function QuizClient({
       router.push("/dashboard");
       return;
     }
-    finish(answers);
+    void finish(answers);
   }, [answers, finish, router]);
+
+  /** Scarta l'esercitazione ripresa e ricomincia da zero. */
+  const handleRestart = useCallback(() => {
+    queueRef.current?.reset();
+    filtersChangedRef.current = false;
+    setAnswers([]);
+    setIndex(0);
+    setSelected(null);
+    setRevealed(false);
+    setShowRecoveredNotice(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    void discardQuizSession();
+  }, []);
 
   // Scorciatoie da tastiera: 1-6 / A-F per rispondere, Invio per proseguire.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (phase !== "active" || filtersOpen) return;
+      if (phase !== "active" || filtersOpen || !question) return;
       const target = event.target as HTMLElement | null;
       if (
         target &&
@@ -373,11 +492,40 @@ export function QuizClient({
         answers={answers}
         saveState={saveState}
         durationMs={durationMs}
+        onRetry={() => void persistResults(answers)}
         onReplay={() => {
           router.refresh();
           window.scrollTo({ top: 0 });
         }}
       />
+    );
+  }
+
+  // Nessuna domanda da mostrare ma esercitazione in corso da salvare
+  // (tutte le domande disponibili con questi filtri sono già state
+  // risposte): si può solo concludere.
+  if (!question) {
+    return (
+      <div>
+        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          <div className="min-w-0">
+            <p className="text-sm font-medium tabular-nums text-neutral-900">
+              Esercitazione in corso
+            </p>
+            <p className="mt-0.5 truncate text-xs text-neutral-500">
+              {answers.length}{" "}
+              {answers.length === 1 ? "risposta salvata" : "risposte salvate"}
+            </p>
+          </div>
+          <Button variant="secondary" size="sm" onClick={handleTerminate}>
+            Termina
+          </Button>
+        </header>
+        <Alert variant="info" className="mt-4">
+          Hai già risposto a tutte le domande disponibili con questi filtri.
+          Premi «Termina» per salvare il risultato.
+        </Alert>
+      </div>
     );
   }
 
@@ -392,6 +540,30 @@ export function QuizClient({
 
   return (
     <>
+      {showRecoveredNotice ? (
+        <div className="mb-4">
+          <Alert variant="info">
+            <p>
+              Esercitazione ripresa:{" "}
+              {answers.length === 1
+                ? "1 risposta recuperata"
+                : `${answers.length} risposte recuperate`}{" "}
+              dall&apos;ultima volta. Le trovi nel riepilogo finale; quanto già
+              risposto resta nelle tue statistiche.
+            </p>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-2"
+              onClick={handleRestart}
+            >
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+              Ricomincia da capo
+            </Button>
+          </Alert>
+        </div>
+      ) : null}
+
       <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
         <div className="min-w-0">
           <p className="text-sm font-medium tabular-nums text-neutral-900">
@@ -421,6 +593,39 @@ export function QuizClient({
               {answers.length - correctCount}
             </span>
           </p>
+          {syncState === "saving" ||
+          syncState === "saved" ||
+          syncState === "error" ? (
+            <p
+              className="flex items-center gap-1.5 text-xs text-neutral-500"
+              role="status"
+            >
+              {syncState === "saving" ? (
+                <>
+                  <Spinner className="h-3 w-3" />
+                  Salvataggio…
+                </>
+              ) : null}
+              {syncState === "saved" ? (
+                <>
+                  <Check
+                    className="h-3.5 w-3.5 text-emerald-600"
+                    aria-hidden="true"
+                  />
+                  Salvato
+                </>
+              ) : null}
+              {syncState === "error" ? (
+                <>
+                  <CloudOff
+                    className="h-3.5 w-3.5 text-amber-600"
+                    aria-hidden="true"
+                  />
+                  Salvataggio in attesa, riprovo
+                </>
+              ) : null}
+            </p>
+          ) : null}
           <div className="flex items-center gap-2">
             <Button
               variant="secondary"
@@ -599,12 +804,14 @@ function QuizResults({
   answers,
   saveState,
   durationMs,
+  onRetry,
   onReplay,
 }: {
   questions: Question[];
   answers: AnswerRecord[];
   saveState: "idle" | "saving" | "saved" | "error";
   durationMs: number;
+  onRetry: () => void;
   onReplay: () => void;
 }) {
   const total = answers.length;
@@ -673,10 +880,20 @@ function QuizResults({
               Risultati salvati nelle tue statistiche.
             </p>
           ) : saveState === "error" ? (
-            <p className="font-medium text-amber-700">
-              Risultati non salvati: le statistiche potrebbero non includere
-              questa esercitazione.
-            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="font-medium text-amber-700">
+                Risultati non salvati: le statistiche potrebbero non includere
+                questa esercitazione.
+              </p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onRetry}
+              >
+                <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+                Riprova il salvataggio
+              </Button>
+            </div>
           ) : null}
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">

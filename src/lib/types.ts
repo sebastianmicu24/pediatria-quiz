@@ -13,6 +13,21 @@ export type QuizAnswerInput = {
   selectedIndex: number;
 };
 
+/** Risposta dell'esercitazione in corso, come la conosce il client. */
+export type QuizAnswerRecord = QuizAnswerInput & { isCorrect: boolean };
+
+/**
+ * Esercitazione interrotta e ripresa dal server: le risposte già salvate
+ * (in ordine cronologico) e le domande corrispondenti, che servono al
+ * riepilogo finale.
+ */
+export type RecoveredQuizSession = {
+  answers: QuizAnswerRecord[];
+  questions: Question[];
+  topic: string | null;
+  difficulty: number | null;
+};
+
 export type Profile = {
   display_name: string | null;
   accepted_terms_at: string | null;

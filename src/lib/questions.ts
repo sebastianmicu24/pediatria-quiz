@@ -172,3 +172,27 @@ export async function fetchQuestionBatch(
   }
   return [];
 }
+
+/**
+ * Legge un insieme di domande per id (una sola query indicizzata).
+ *
+ * Serve a ricostruire un'esercitazione ripresa dopo un'interruzione:
+ * la sessione salvata contiene gli id delle domande già risposte e il
+ * riepilogo ne ha bisogno per mostrare opzioni e spiegazioni.
+ */
+export async function fetchQuestionsByIds(
+  supabase: SupabaseClient,
+  ids: string[]
+): Promise<Question[]> {
+  if (ids.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("questions")
+    .select(QUESTION_COLUMNS)
+    .in("id", ids);
+
+  if (error) return [];
+  return ((data as QuestionRow[] | null) ?? [])
+    .map(toQuestion)
+    .filter(isValidQuestion);
+}
